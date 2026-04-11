@@ -5,37 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); min-height: 100vh; font-family: sans-serif; }
-        .job-card { transition: all 0.3s ease; border: 1px solid #e2e8f0; }
-        .job-card:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-color: #3b82f6; }
+        body { background: #f8fafc; font-family: sans-serif; }
+        .job-card { border-left: 4px solid #3b82f6; transition: 0.3s; }
+        .job-card:hover { transform: scale(1.02); }
     </style>
 </head>
-<body class="p-4 flex flex-col items-center">
-    <div class="w-full max-w-md bg-white rounded-3xl shadow-xl p-6 border border-blue-50">
-        <div class="text-center mb-6">
-            <h1 class="text-3xl font-black text-blue-900 uppercase tracking-tighter">ROZGAR</h1>
-            <p class="text-xs text-blue-500 font-bold">LATEST JOB UPDATES 2026</p>
+<body class="p-4">
+    <div class="max-w-md mx-auto bg-white rounded-3xl shadow-2xl p-6 border border-blue-100">
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-black text-blue-900 italic">ROZGAR</h1>
+            <p class="text-blue-500 font-bold text-xs uppercase tracking-widest">Find Your Future</p>
         </div>
 
         <div id="setup-section" class="space-y-4">
-            <input id="u_name" placeholder="Apna Naam" class="w-full p-4 bg-gray-50 border rounded-2xl outline-none focus:border-blue-500">
-            <input id="u_state" placeholder="Rajya (e.g. Bihar)" class="w-full p-4 bg-gray-50 border rounded-2xl outline-none focus:border-blue-500">
-            <input id="u_interest" placeholder="Job Type (e.g. Railway)" class="w-full p-4 bg-gray-50 border rounded-2xl outline-none focus:border-blue-500">
-            <button onclick="startSearch()" class="w-full bg-blue-600 text-white p-4 rounded-2xl font-bold shadow-lg hover:bg-blue-700 transition-all">Search Jobs 🔍</button>
+            <input id="u_name" placeholder="Apna Naam" class="w-full p-4 bg-slate-50 border rounded-2xl outline-none focus:ring-2 ring-blue-400 transition-all">
+            <input id="u_state" placeholder="State (e.g. Bihar)" class="w-full p-4 bg-slate-50 border rounded-2xl outline-none focus:ring-2 ring-blue-400 transition-all">
+            <input id="u_interest" placeholder="Job Category (e.g. ITI)" class="w-full p-4 bg-slate-50 border rounded-2xl outline-none focus:ring-2 ring-blue-400 transition-all">
+            <button onclick="startSearch()" class="w-full bg-blue-600 text-white p-4 rounded-2xl font-black text-lg shadow-lg hover:bg-blue-700 active:scale-95 transition-all">SEARCH NOW 🔍</button>
         </div>
 
         <div id="results-section" class="hidden mt-6">
-            <div class="flex justify-between items-center mb-4">
-                <h2 id="greet" class="font-bold text-gray-700 text-sm"></h2>
-                <button onclick="location.reload()" class="text-red-500 text-xs font-bold bg-red-50 px-2 py-1 rounded">Reset</button>
+            <div class="flex justify-between items-center mb-6">
+                <p id="greet" class="font-bold text-slate-600 text-sm"></p>
+                <button onclick="clearData()" class="text-red-500 text-xs font-bold border border-red-200 px-3 py-1 rounded-full bg-red-50">Reset</button>
             </div>
-            
             <div id="jobs-list" class="space-y-4"></div>
-            
-            <div id="loader" class="hidden text-center py-6 text-blue-500 font-bold animate-pulse">Searching for jobs...</div>
-            
+            <div id="loader" class="hidden text-center py-10 font-bold text-blue-500 animate-pulse text-sm">Searching latest jobs...</div>
             <div id="load-more-container" class="hidden mt-8 mb-4 text-center">
-                <button onclick="loadMore()" id="load-btn" class="w-full bg-gray-100 text-blue-600 py-3 rounded-xl font-bold border-2 border-dashed border-blue-200 hover:bg-blue-50">Aur Jobs Dekho ↓</button>
+                <button onclick="loadMore()" id="load-btn" class="w-full bg-slate-100 text-blue-600 py-4 rounded-2xl font-black border-2 border-dashed border-blue-200 uppercase text-xs">Aur Jobs Dekho ↓</button>
             </div>
         </div>
     </div>
@@ -43,17 +40,41 @@
     <script>
         let currentPage = 1;
 
-        async function startSearch() {
+        // Page load hote hi details check karo
+        window.onload = function() {
+            const savedName = localStorage.getItem('rozgar_name');
+            const savedState = localStorage.getItem('rozgar_state');
+            const savedInterest = localStorage.getItem('rozgar_interest');
+
+            if(savedName) document.getElementById('u_name').value = savedName;
+            if(savedState) document.getElementById('u_state').value = savedState;
+            if(savedInterest) document.getElementById('u_interest').value = savedInterest;
+        };
+
+        function startSearch() {
             const name = document.getElementById('u_name').value;
-            if(!name) return alert("Pehle apna naam bataiye!");
-            
+            const state = document.getElementById('u_state').value;
+            const interest = document.getElementById('u_interest').value;
+
+            if(!name || !state || !interest) return alert("Please fill all details!");
+
+            // Local Storage mein save karo
+            localStorage.setItem('rozgar_name', name);
+            localStorage.setItem('rozgar_state', state);
+            localStorage.setItem('rozgar_interest', interest);
+
             document.getElementById('setup-section').classList.add('hidden');
             document.getElementById('results-section').classList.remove('hidden');
-            document.getElementById('greet').innerText = "Hi " + name + ", results niche dekhein:";
-            
+            document.getElementById('greet').innerText = "Hi " + name + ", Bihar Jobs:";
+
             currentPage = 1;
             document.getElementById('jobs-list').innerHTML = '';
             fetchJobs();
+        }
+
+        function clearData() {
+            localStorage.clear();
+            location.reload();
         }
 
         async function loadMore() {
@@ -65,7 +86,6 @@
             const state = document.getElementById('u_state').value;
             const interest = document.getElementById('u_interest').value;
             const loader = document.getElementById('loader');
-            const loadBtn = document.getElementById('load-btn');
             const loadContainer = document.getElementById('load-more-container');
 
             loader.classList.remove('hidden');
@@ -78,7 +98,6 @@
                     body: JSON.stringify({state, interest, page: currentPage})
                 });
                 const jobs = await res.json();
-                
                 loader.classList.add('hidden');
                 
                 if(jobs.length > 0) {
@@ -86,19 +105,19 @@
                     let html = '';
                     jobs.forEach(j => {
                         html += `
-                            <div class="job-card p-4 bg-white rounded-2xl shadow-sm">
-                                <h3 class="font-bold text-blue-900 text-sm leading-tight mb-1">${j.title}</h3>
-                                <p class="text-[10px] text-gray-500 mb-3">${j.snippet.substring(0, 120)}...</p>
-                                <a href="${j.link}" target="_blank" class="text-center block w-full bg-blue-50 text-blue-700 py-2 rounded-lg text-xs font-black uppercase tracking-widest border border-blue-100">Apply Now</a>
+                            <div class="job-card p-4 bg-white rounded-xl shadow-md border border-slate-100 mb-4">
+                                <h3 class="font-black text-blue-900 text-sm mb-1">${j.title}</h3>
+                                <p class="text-[10px] text-slate-500 mb-4">${j.snippet.substring(0, 150)}...</p>
+                                <a href="${j.link}" target="_blank" class="block text-center bg-blue-600 text-white py-2 rounded-lg text-[10px] font-bold uppercase">Open Link</a>
                             </div>`;
                     });
                     document.getElementById('jobs-list').innerHTML += html;
                 } else {
-                    loadContainer.innerHTML = "<p class='text-gray-400 text-xs mt-4'>Aur results nahi mile.</p>";
+                    loadContainer.innerHTML = "<p class='text-slate-400 text-xs'>Aur jobs nahi hain.</p>";
                     loadContainer.classList.remove('hidden');
                 }
-            } catch (e) { 
-                alert("Server busy hai, thoda ruko!");
+            } catch (e) {
+                alert("Error connecting to server!");
                 loader.classList.add('hidden');
             }
         }
