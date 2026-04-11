@@ -1,6 +1,7 @@
 
   import requests
 from flask import Flask, render_template, request, jsonify
+import os
 
 app = Flask(__name__)
 
@@ -20,7 +21,7 @@ def search():
         
         query = f"{interest} latest vacancy in {state} 2026"
         headers = {'X-API-KEY': API_KEY, 'Content-Type': 'application/json'}
-        payload = {'q': query, 'num': 20, 'page': page}
+        payload = {'q': query, 'num': 10, 'page': page}
         
         response = requests.post('https://google.serper.dev/search', headers=headers, json=payload)
         return jsonify(response.json().get('organic', []))
@@ -28,4 +29,5 @@ def search():
         return jsonify([])
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080)
+    port = int(os.environ.get("PORT", 8080))
+    app.run(host='0.0.0.0', port=port)
