@@ -1,4 +1,4 @@
- import requests
+import requests
 from flask import Flask, render_template, request, jsonify
 import os
 
@@ -17,11 +17,9 @@ def search():
         interest = data.get('interest', 'jobs')
         state = data.get('state', 'India')
         page = data.get('page', 1)
-        
         query = f"{interest} latest vacancy in {state} 2026"
         headers = {'X-API-KEY': API_KEY, 'Content-Type': 'application/json'}
         payload = {'q': query, 'num': 10, 'page': page}
-        
         response = requests.post('https://google.serper.dev/search', headers=headers, json=payload)
         return jsonify(response.json().get('organic', []))
     except Exception as e:
