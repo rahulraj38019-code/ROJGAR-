@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ROZGAR AI - R YADAV PRODUCTION</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="/static/style.css">
     <style>
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .active-btn { background: #172554 !important; color: white !important; transform: scale(1.05); box-shadow: 0 10px 20px rgba(23, 37, 84, 0.3); }
@@ -17,13 +16,15 @@
         .live-tag { animation: pulse 2s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
         
+        /* Floating Buttons Animation */
         .float-btn { animation: bounce 3s infinite; }
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
 
-        #floating-support { touch-action: none; user-select: none; }
-        
-        /* Dark Mode Transition */
-        body { transition: background-color 0.3s, color 0.3s; }
+        /* Draggable Styles */
+        #floating-support {
+            touch-action: none; /* Mobile drag fix */
+            user-select: none;
+        }
     </style>
 </head>
 <body class="bg-slate-100 font-sans overflow-x-hidden">
@@ -38,10 +39,7 @@
                     <p class="text-[7px] font-bold text-blue-400 uppercase tracking-widest">R YADAV PRODUCTION</p>
                 </div>
             </div>
-            <div class="flex gap-2">
-                <button onclick="toggleDarkMode()" id="dark-btn" class="bg-blue-800 p-2.5 rounded-full shadow-lg active:scale-90 transition">🌙</button>
-                <button onclick="showChat()" class="bg-blue-800 p-2.5 rounded-full shadow-lg active:scale-90 transition">🤖 AI</button>
-            </div>
+            <button onclick="showChat()" class="bg-blue-800 p-2.5 rounded-full shadow-lg active:scale-90 transition">🤖 AI</button>
         </div>
 
         <div id="dash-view" class="flex-1 flex flex-col hidden">
@@ -51,7 +49,7 @@
                 </div>
             </div>
 
-            <div class="p-3 grid grid-cols-2 gap-3 bg-white border-b shadow-sm main-tabs">
+            <div class="p-3 grid grid-cols-2 gap-3 bg-white border-b shadow-sm">
                 <button id="master-govt" onclick="switchMaster('govt')" class="py-4 border-2 border-blue-950 rounded-2xl text-[10px] font-black uppercase flex flex-col items-center gap-1 active-btn">
                     <span>🏛️ Government</span>
                 </button>
@@ -130,37 +128,174 @@
     <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-black text-white px-6 py-3 rounded-full text-[10px] font-bold uppercase hidden z-[5000] shadow-2xl">Details Copied! ✅</div>
 
     <script>
-        // --- DARK MODE LOGIC ---
-        function toggleDarkMode() {
-            const body = document.body;
-            const btn = document.getElementById('dark-btn');
-            body.classList.toggle('dark-mode');
-            
-            if(body.classList.contains('dark-mode')) {
-                btn.innerText = "☀️";
-                localStorage.setItem('theme', 'dark');
+        let currentMaster = 'govt';
+        let currentQ = "";
+        let pageNum = 1;
+
+        const filters = {
+            govt: [
+                { id: 'g-all', label: 'All India Jobs 🇮🇳', q: 'latest central govt jobs notification 2026' },
+                { id: 'g-iti', label: 'ITI Apprentice 🛠️', q: 'latest ITI apprentice railway drdo ncl vacancy 2026' },
+                { id: 'g-1012', label: '10th/12th Pass 🎓', q: 'govt jobs for 10th 12th pass students 2026' },
+                { id: 'g-bihar', label: 'Bihar Jobs 🚩', q: 'bihar police bssc ssc vacancy notification 2026' },
+                { id: 'r-admit', label: 'Admit Card 🎟️', q: 'latest govt exam admit card download 2026' },
+                { id: 'r-ssc', label: 'Results ✅', q: 'SSC GD BSSC Bihar Police result marksheet 2026' }
+            ],
+            private: [
+                { id: 'p-wfh', label: 'Work From Home 🏠', q: 'remote work from home jobs india 2026 internshala' },
+                { id: 'p-intern', label: 'Internships 🎓', q: 'internshala student internship for freshers 2026' },
+                { id: 'p-apna', label: 'Apna App Jobs 📱', q: 'site:apna.co latest job openings 2026' },
+                { id: 'p-pt', label: 'Part Time ⏰', q: 'part time evening jobs for students india' }
+            ]
+        };
+
+        // --- DRAG LOGIC START ---
+        const dragItem = document.getElementById("floating-support");
+        let active = false, currentX, currentY, initialX, initialY, xOffset = 0, yOffset = 0;
+
+        const dragStart = (e) => {
+            if (e.type === "touchstart") {
+                initialX = e.touches[0].clientX - xOffset;
+                initialY = e.touches[0].clientY - yOffset;
             } else {
-                btn.innerText = "🌙";
-                localStorage.setItem('theme', 'light');
+                initialX = e.clientX - xOffset;
+                initialY = e.clientY - yOffset;
             }
+            if (e.target.closest("#floating-support")) active = true;
+        };
+
+        const dragEnd = () => { initialX = currentX; initialY = currentY; active = false; };
+
+        const drag = (e) => {
+            if (active) {
+                e.preventDefault();
+                if (e.type === "touchmove") {
+                    currentX = e.touches[0].clientX - initialX;
+                    currentY = e.touches[0].clientY - initialY;
+                } else {
+                    currentX = e.clientX - initialX;
+                    currentY = e.clientY - initialY;
+                }
+                xOffset = currentX; yOffset = currentY;
+                setTranslate(currentX, currentY, dragItem);
+            }
+        };
+
+        const setTranslate = (xPos, yPos, el) => {
+            el.style.transform = `translate3d(${xPos}px, ${yPos}px, 0)`;
+        };
+
+        dragItem.addEventListener("touchstart", dragStart, false);
+        dragItem.addEventListener("touchend", dragEnd, false);
+        dragItem.addEventListener("touchmove", drag, false);
+        dragItem.addEventListener("mousedown", dragStart, false);
+        dragItem.addEventListener("mouseup", dragEnd, false);
+        dragItem.addEventListener("mousemove", drag, false);
+        // --- DRAG LOGIC END ---
+
+        function switchMaster(type) {
+            currentMaster = type;
+            document.getElementById('master-govt').classList.toggle('active-btn', type === 'govt');
+            document.getElementById('master-private').classList.toggle('active-btn', type === 'private');
+            renderFilters();
         }
 
-        // Apply theme on load
-        window.addEventListener('DOMContentLoaded', () => {
-            if(localStorage.getItem('theme') === 'dark') {
-                toggleDarkMode();
-            }
-            // Check Login
-            if(localStorage.getItem('user_n')) {
-                document.getElementById('dash-view').classList.remove('hidden');
-                document.getElementById('floating-support').classList.remove('hidden');
-            } else {
-                document.getElementById('login-view').classList.remove('hidden');
-            }
-        });
+        function renderFilters() {
+            const container = document.getElementById('filter-tabs');
+            container.innerHTML = "";
+            filters[currentMaster].forEach((f, index) => {
+                const btn = document.createElement('button');
+                btn.id = 'f-' + f.id;
+                btn.className = `px-5 py-2.5 border-2 border-slate-200 rounded-xl text-[9px] font-black uppercase whitespace-nowrap transition-all flex-shrink-0 mr-2 ${index === 0 ? 'active-sub-btn' : ''}`;
+                btn.innerText = f.label;
+                btn.onclick = () => {
+                    document.querySelectorAll('#filter-tabs button').forEach(b => b.classList.remove('active-sub-btn'));
+                    btn.classList.add('active-sub-btn');
+                    loadData(f.q);
+                };
+                container.appendChild(btn);
+            });
+            loadData(filters[currentMaster][0].q);
+        }
 
-        // --- PURANA JS LOGIC START ---
-        // (Yahan apna baaki ka sara purana JS code paste kar do)
-    </script>
-</body>
-</html>
+        async function loadData(q, isMore = false) {
+            const box = document.getElementById('results-box');
+            const ldr = document.getElementById('loader');
+            const lm = document.getElementById('load-more-div');
+            if(!isMore) { box.innerHTML = ""; pageNum = 1; }
+            currentQ = q;
+            ldr.classList.remove('hidden');
+            lm.classList.add('hidden');
+            try {
+                const res = await fetch('/search', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ interest: q + " " + (isMore ? pageNum : ""), ts: Date.now() })
+                });
+                const data = await res.json();
+                ldr.classList.add('hidden');
+                const isResult = q.toLowerCase().includes('result') || q.toLowerCase().includes('admit');
+                const themeColor = isResult ? 'emerald-600' : (currentMaster === 'govt' ? 'blue-950' : 'indigo-600');
+                const btnText = isResult ? 'CHECK NOW ✅' : 'DETAILS & APPLY 🚀';
+                data.forEach(item => {
+                    const liveBadge = item.is_live ? `<span class="live-tag bg-red-600 text-white px-2 py-0.5 rounded text-[7px] font-bold">LIVE FORM</span>` : '';
+                    box.innerHTML += `<div class="job-card p-6 bg-white border-2 border-slate-100 shadow-xl border-l-[10px] border-${themeColor}"><div class="flex justify-between items-start mb-2"><button onclick="copyMyInfo()" class="bg-yellow-400 text-black px-3 py-1 rounded-lg text-[8px] font-black uppercase shadow-md active:scale-95">📋 Copy My Info</button>${liveBadge}</div><h3 class="font-black text-sm uppercase mb-3 mt-1 text-slate-900 leading-tight">${item.title}</h3><p class="text-[10px] text-slate-500 mb-6 line-clamp-2 italic">${item.snippet}</p><a href="${item.link}" target="_blank" class="block w-full text-center bg-${themeColor} text-white py-4 rounded-2xl font-black text-[10px] shadow-lg uppercase tracking-wider">${btnText}</a></div>`;
+                });
+                if(data.length > 0) lm.classList.remove('hidden');
+            } catch(e) { ldr.classList.add('hidden'); }
+        }
+
+        function copyMyInfo() {
+            const info = `Name: ${localStorage.getItem('user_n')}\nEmail: ${localStorage.getItem('user_e')}\nPhone: ${localStorage.getItem('user_p')}\nResume: ${localStorage.getItem('user_r')}`;
+            navigator.clipboard.writeText(info);
+            const t = document.getElementById('toast');
+            t.classList.remove('hidden');
+            setTimeout(() => t.classList.add('hidden'), 2000);
+        }
+
+        function showProfile() {
+            document.getElementById('p-name-in').value = localStorage.getItem('user_n') || '';
+            document.getElementById('p-email-in').value = localStorage.getItem('user_e') || '';
+            document.getElementById('p-phone-in').value = localStorage.getItem('user_p') || '';
+            document.getElementById('p-resume-in').value = localStorage.getItem('user_r') || '';
+            document.getElementById('profile-ui').style.display = 'flex';
+        }
+        function hideProfile() { document.getElementById('profile-ui').style.display = 'none'; }
+        
+        function updateProfile() {
+            localStorage.setItem('user_n', document.getElementById('p-name-in').value);
+            localStorage.setItem('user_e', document.getElementById('p-email-in').value);
+            localStorage.setItem('user_p', document.getElementById('p-phone-in').value);
+            localStorage.setItem('user_r', document.getElementById('p-resume-in').value);
+            alert("Details Update Ho Gayi!");
+            hideProfile();
+        }
+
+        function doLogin() {
+            const n = document.getElementById('un').value;
+            const e = document.getElementById('ue').value;
+            const p = document.getElementById('u-phone').value;
+            const r = document.getElementById('u-resume').value;
+            if(!n || !e) return alert("Bhai, kam se kam Naam aur Email toh dalo!");
+            localStorage.setItem('user_n', n); localStorage.setItem('user_e', e); localStorage.setItem('user_p', p); localStorage.setItem('user_r', r);
+            location.reload();
+        }
+
+        function showChat() { document.getElementById('chat-ui').style.display = 'flex'; }
+        function hideChat() { document.getElementById('chat-ui').style.display = 'none'; }
+
+        async function sendChat() {
+            const inp = document.getElementById('chat-in'), box = document.getElementById('msg-box');
+            if(!inp.value) return;
+            const msg = inp.value;
+            box.innerHTML += `<div class="bg-blue-950 text-white p-4 rounded-2xl ml-10 font-bold text-sm shadow-md">${msg}</div>`;
+            inp.value = "";
+            box.scrollTop = box.scrollHeight;
+            try {
+                const res = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ message: msg, name: localStorage.getItem('user_n') })
+                });
+                const d = await res.json();
+                box.innerHTML += `<div class="bg-white border-2 p-5 roun
