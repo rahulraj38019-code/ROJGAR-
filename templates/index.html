@@ -3,42 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ROZGAR AI - Professional</title>
+    <title>ROZGAR AI - Smart Portal</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --blue: #2563eb; --dark: #1e3a8a; --bg: #f8fafc; --green: #059669; }
+        :root { --blue: #2563eb; --dark: #1e3a8a; --bg: #f8fafc; --green: #059669; --insta: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
         body { background: var(--bg); font-family: 'Inter', sans-serif; margin: 0; padding: 0; }
         .container { max-width: 500px; margin: 0 auto; padding: 20px; box-sizing: border-box; }
-        .card { background: white; padding: 25px; border-radius: 30px; box-shadow: 0 15px 30px rgba(0,0,0,0.05); border: 1px solid #fff; }
+        .card { background: white; padding: 25px; border-radius: 30px; box-shadow: 0 15px 30px rgba(0,0,0,0.05); }
         .input-group { margin-bottom: 15px; }
         label { display: block; font-size: 11px; font-weight: 800; color: var(--dark); margin-bottom: 5px; text-transform: uppercase; }
         input, select { width: 100%; padding: 15px; border-radius: 15px; border: 2px solid #e2e8f0; font-weight: 600; box-sizing: border-box; outline: none; }
         .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
         .dash-card { background: white; padding: 20px; border-radius: 25px; text-align: center; box-shadow: 0 8px 15px rgba(0,0,0,0.03); cursor: pointer; transition: 0.3s; border: 2px solid transparent; }
         .dash-card:hover { border-color: var(--blue); transform: translateY(-3px); }
-        .result-tile { background: #f1f5f9; padding: 12px; border-radius: 12px; font-weight: 700; font-size: 12px; cursor: pointer; text-align: center; }
         .btn-primary { width: 100%; background: var(--blue); color: white; padding: 18px; border: none; border-radius: 20px; font-size: 16px; font-weight: 900; cursor: pointer; }
         .hidden { display: none; }
         .nav-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 20px; }
-        .job-card { background: white; padding: 20px; border-radius: 20px; margin-bottom: 15px; box-shadow: 0 5px 10px rgba(0,0,0,0.02); animation: fadeInUp 0.4s ease; border-left: 5px solid var(--blue); }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .social-btn { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; border-radius: 15px; color: white; text-decoration: none; font-weight: 800; font-size: 13px; flex: 1; transition: 0.3s; }
+        .social-btn:active { transform: scale(0.95); }
+        .job-card { background: white; padding: 20px; border-radius: 20px; margin-bottom: 15px; box-shadow: 0 5px 10px rgba(0,0,0,0.02); border-left: 5px solid var(--blue); }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div id="login-sec" class="hidden">
-        <h1 style="text-align:center; color:var(--dark); font-weight:900; font-style:italic;">ROZGAR AI</h1>
+        <h1 style="text-align:center; color:var(--dark); font-weight:900; font-style:italic; font-size: 40px; margin-bottom: 5px;">ROZGAR AI</h1>
+        <p style="text-align:center; color:gray; font-weight:700; font-size:10px; margin-bottom: 25px; letter-spacing: 2px;">BY RAHUL YADAV</p>
         <div class="card">
             <div class="input-group"><label>Naam</label><input type="text" id="u-name" placeholder="Rahul Raj"></div>
             <div class="input-group"><label>Date of Birth</label><input type="date" id="u-dob"></div>
             <div class="input-group"><label>State</label><input type="text" id="u-state" placeholder="Bihar"></div>
-            <div class="input-group">
-                <label>Education</label>
+            <div class="input-group"><label>Education</label>
                 <select id="u-edu">
-                    <option value="10th">10th</option>
-                    <option value="12th" selected>12th</option>
-                    <option value="ITI">ITI</option>
+                    <option value="10th">10th Pass</option>
+                    <option value="12th" selected>12th Pass</option>
+                    <option value="ITI">ITI Pass</option>
                     <option value="Graduate">Graduation</option>
                 </select>
             </div>
@@ -49,7 +49,7 @@
     <div id="dash-sec" class="hidden">
         <div class="nav-header">
             <div><h2 style="margin:0; font-weight:900;">Hi, <span id="p-name" style="color:var(--blue);">User</span></h2></div>
-            <button onclick="logout()" style="border:none; background:none; color:red; font-weight:700;">Logout</button>
+            <button onclick="logout()" style="border:none; background:none; color:red; font-weight:800; font-size: 12px;">LOGOUT</button>
         </div>
         <div class="dash-grid">
             <div class="dash-card" onclick="openJobs('govt')"><i>🏛️</i><span>Govt Jobs</span></div>
@@ -59,18 +59,30 @@
             <div class="dash-card" onclick="openJobs('bpsc')"><i>✍️</i><span>BPSC/PSC</span></div>
             <div class="dash-card" onclick="showResults()"><i>📄</i><span>All Results</span></div>
         </div>
+
+        <div style="margin-top: 40px; text-align: center;">
+            <p style="font-size: 11px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px;">Connect & Feedback ↓</p>
+            <div style="display: flex; gap: 10px; margin-top: 12px;">
+                <a href="https://www.instagram.com/___rahul_yadav_._?igsh=b3ltc2FwaDd4bzB1" target="_blank" class="social-btn" style="background: var(--insta); box-shadow: 0 4px 15px rgba(220, 39, 67, 0.25);">
+                    📸 Insta
+                </a>
+                <a href="https://whatsapp.com/channel/0029VbCL3cTElagwBiU2aJ2N" target="_blank" class="social-btn" style="background: #25D366; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.25);">
+                    💬 WhatsApp
+                </a>
+            </div>
+        </div>
     </div>
 
     <div id="res-sec" class="hidden">
         <div class="nav-header"><h3>Result Portal</h3><button onclick="showDash()" style="color:var(--blue); border:none; background:none; font-weight:800;">Back</button></div>
         <div class="card">
-            <input type="text" id="res-inp" placeholder="Search Result (e.g. SSC GD)" style="margin-bottom:10px;">
+            <input type="text" id="res-inp" placeholder="SSC GD, Railway, etc." style="margin-bottom:10px;">
             <button onclick="searchRes()" class="btn-primary" style="padding:10px;">Search 🔍</button>
             <div class="dash-grid" style="grid-template-columns: 1fr 1fr; margin-top:15px;">
-                <div class="result-tile" onclick="openJobs('SSC Result')">SSC</div>
-                <div class="result-tile" onclick="openJobs('Bihar Police Result')">Bihar Police</div>
-                <div class="result-tile" onclick="openJobs('UP Police Result')">UP Police</div>
-                <div class="result-tile" onclick="openJobs('Board Result')">10th/12th Result</div>
+                <div class="dash-card" style="padding:12px; font-size:12px;" onclick="openJobs('SSC Result')">SSC Result</div>
+                <div class="dash-card" style="padding:12px; font-size:12px;" onclick="openJobs('Bihar Police Result')">Bihar Police</div>
+                <div class="dash-card" style="padding:12px; font-size:12px;" onclick="openJobs('UP Police Result')">UP Police</div>
+                <div class="dash-card" style="padding:12px; font-size:12px;" onclick="openJobs('Board Result')">10/12th Board</div>
             </div>
         </div>
     </div>
@@ -96,7 +108,7 @@
         const d = document.getElementById('u-dob').value;
         const s = document.getElementById('u-state').value;
         const e = document.getElementById('u-edu').value;
-        if(!n || !s || !d) return alert("Fill all!");
+        if(!n || !s || !d) return alert("Please fill details!");
         user = {name:n, dob:d, state:s, edu:e};
         localStorage.setItem('rozgarUser', JSON.stringify(user));
         showDash();
@@ -122,7 +134,7 @@
         fetchData();
     }
 
-    function searchRes() { const v = document.getElementById('res-inp').value; if(v) openJobs(v + " Result"); }
+    function searchRes() { const v = document.getElementById('res-inp').value; if(v) openJobs(v); }
 
     async function fetchData() {
         if(loading) return; loading = true;
@@ -137,9 +149,9 @@
             data.forEach(i => {
                 document.getElementById('list').innerHTML += `
                 <div class="job-card" style="border-left-color:${isRes ? 'var(--green)' : 'var(--blue)'}">
-                    <h3 style="margin:0; font-size:16px;">${i.title}</h3>
+                    <h3 style="margin:0; font-size:16px; font-weight:900;">${i.title}</h3>
                     <p style="font-size:12px; color:gray; margin:8px 0;">${i.snippet}</p>
-                    <a href="${i.link}" target="_blank" class="btn-primary" style="display:block; text-align:center; text-decoration:none; padding:10px; font-size:14px; background:${isRes ? 'var(--green)' : 'var(--blue)'}">
+                    <a href="${i.link}" target="_blank" class="btn-primary" style="display:block; text-align:center; text-decoration:none; padding:12px; font-size:14px; background:${isRes ? 'var(--green)' : 'var(--blue)'}">
                         ${isRes ? 'CHECK RESULT 📄' : 'APPLY NOW 🚀'}
                     </a>
                 </div>`;
@@ -148,7 +160,7 @@
         } catch(e) {} loading = false;
     }
 
-    window.onscroll = () => { if((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) fetchData(); };
+    window.onscroll = () => { if((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 600) fetchData(); };
     function logout() { localStorage.removeItem('rozgarUser'); location.reload(); }
 </script>
 </body>
