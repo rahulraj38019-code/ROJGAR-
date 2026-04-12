@@ -3,172 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ROZGAR AI - R YADAV PRODUCTION</title>
+    <title>ROZGAR AI - Job Finder</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <style>
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .active-tab { background: #1e3a8a !important; color: white !important; transform: scale(1.05); }
-        .active-chip { background: #ef4444 !important; color: white !important; border-color: #ef4444; }
-        .live-tag { animation: blink 1.2s infinite; background: #ef4444; color: white; font-size: 7px; padding: 2px 8px; border-radius: 99px; font-weight: 900; }
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
-        .job-card { border-radius: 28px !important; background: white; transition: 0.3s; border: 1px solid #f1f5f9; }
-        #profile-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; backdrop-filter: blur(12px); overflow-y: auto; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .job-card { 
+            border-radius: 25px; 
+            transition: 0.3s; 
+            border: 2px solid #f1f5f9;
+        }
+        .job-card:hover { transform: scale(1.02); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        input, select { font-size: 1.1rem !important; } /* Bada font inputs ke liye */
     </style>
 </head>
-<body class="bg-slate-50 font-sans">
+<body class="bg-white text-slate-900">
 
-    <div id="profile-overlay" class="p-6 flex items-center justify-center">
-        <div class="bg-white w-full max-w-sm rounded-[32px] p-6 shadow-2xl my-10">
-            <h2 class="text-xl font-black text-blue-950 mb-4 uppercase">User Profile</h2>
-            <div class="space-y-3 text-left">
-                <input type="text" id="u-name" placeholder="Naam (e.g. Rahul)" class="w-full p-3 bg-slate-100 rounded-xl text-xs outline-none font-bold">
-                <input type="text" id="u-state" placeholder="State (e.g. Bihar)" class="w-full p-3 bg-slate-100 rounded-xl text-xs outline-none font-bold">
-                <input type="date" id="u-dob" class="w-full p-3 bg-slate-100 rounded-xl text-xs outline-none font-bold">
-                <input type="email" id="u-email" placeholder="Email" class="w-full p-3 bg-slate-100 rounded-xl text-xs outline-none font-bold">
-                <input type="tel" id="u-phone" placeholder="Mobile Number" class="w-full p-3 bg-slate-100 rounded-xl text-xs outline-none font-bold">
-                <select id="u-edu" class="w-full p-3 bg-slate-100 rounded-xl text-xs outline-none font-bold border-2 border-blue-100">
-                    <option value="10TH">10th Level</option>
-                    <option value="12TH">12th Level</option>
-                    <option value="GRADUATION">Graduation Level</option>
-                </select>
-                <button onclick="saveUser()" class="w-full bg-blue-900 text-white py-4 rounded-2xl font-black text-[10px] uppercase shadow-lg mt-2">Save & Update Jobs ⚡</button>
-                <button onclick="closeProfile()" class="w-full py-2 text-slate-400 font-bold text-[10px]">CANCEL</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="max-w-md mx-auto min-h-screen flex flex-col bg-white relative shadow-2xl">
-        <div class="p-4 bg-blue-950 text-white flex justify-between items-center sticky top-0 z-50">
-            <div class="flex items-center gap-3">
-                <button onclick="smartBack()" class="w-10 h-10 flex items-center justify-center bg-blue-800 rounded-full text-xl active:scale-90 transition">←</button>
-                <h1 class="text-sm font-black italic uppercase leading-none">ROZGAR <br><span class="text-[7px] text-blue-400">R YADAV PRODUCTION</span></h1>
-            </div>
-            <div onclick="showProfile()" class="w-10 h-10 rounded-full bg-blue-800 border-2 border-blue-400 flex items-center justify-center font-black text-[10px] cursor-pointer">PFP</div>
+    <div class="max-w-xl mx-auto min-h-screen p-6">
+        <div class="text-center py-10">
+            <h1 class="text-4xl font-black text-blue-900 italic">ROZGAR AI</h1>
+            <p class="text-slate-400 font-bold uppercase tracking-widest text-sm">R Yadav Production</p>
         </div>
 
-        <div class="p-4 bg-white sticky top-[64px] z-40 border-b">
-            <input type="text" id="main-search" onkeyup="filterCards()" placeholder="Search Unlimited Jobs..." class="w-full p-4 rounded-2xl bg-slate-100 font-bold text-xs outline-none border-2 border-transparent focus:border-blue-500">
-        </div>
-
-        <div class="p-3 grid grid-cols-3 gap-2 bg-white border-b sticky top-[135px] z-30 shadow-sm">
-            <button id="tab-govt" onclick="switchMainTab('govt')" class="py-3 border rounded-xl text-[9px] font-black active-tab uppercase">🏛️ Govt</button>
-            <button id="tab-result" onclick="switchMainTab('result')" class="py-3 border rounded-xl text-[9px] font-black uppercase">📄 Result</button>
-            <button id="tab-private" onclick="switchMainTab('private')" class="py-3 border rounded-xl text-[9px] font-black uppercase">🏢 Private</button>
-        </div>
-
-        <div id="chip-container" class="p-3 flex gap-2 overflow-x-auto no-scrollbar bg-slate-50 border-b sticky top-[204px] z-20">
+        <div id="form-section" class="space-y-6 bg-blue-50 p-8 rounded-[40px]">
+            <h2 class="text-2xl font-black text-center text-blue-950 uppercase">User Details</h2>
+            
+            <input type="text" id="name" placeholder="Apna Naam" class="w-full p-5 rounded-2xl border-none outline-none shadow-sm font-bold">
+            
+            <div class="grid grid-cols-2 gap-4">
+                <input type="text" id="state" placeholder="State" class="p-5 rounded-2xl border-none outline-none shadow-sm font-bold">
+                <input type="text" id="country" placeholder="Country" value="India" class="p-5 rounded-2xl border-none outline-none shadow-sm font-bold">
             </div>
 
-        <div id="content-box" class="p-4 space-y-4 flex-1"></div>
+            <input type="email" id="email" placeholder="Email Address" class="w-full p-5 rounded-2xl border-none outline-none shadow-sm font-bold">
+            <input type="date" id="dob" class="w-full p-5 rounded-2xl border-none outline-none shadow-sm font-bold">
+            
+            <select id="edu" class="w-full p-5 rounded-2xl border-none outline-none shadow-sm font-bold bg-white">
+                <option value="10th">10th Level</option>
+                <option value="12th">12th Level</option>
+                <option value="Graduation">Graduation</option>
+            </select>
 
-        <div id="load-more-div" class="p-4 text-center pb-32">
-            <button onclick="loadMore()" class="px-8 py-3 bg-blue-50 text-blue-900 rounded-full font-black text-[10px] uppercase border border-blue-200">
-                Load More Jobs ↓
+            <button onclick="findJobs()" class="w-full bg-blue-900 text-white py-6 rounded-[30px] text-xl font-black uppercase shadow-2xl active:scale-95 transition">
+                Find Your Best Job 🚀
             </button>
+        </div>
+
+        <div id="results-section" class="hidden mt-10 space-y-6 pb-20">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-black text-blue-900">Matched Jobs</h2>
+                <button onclick="location.reload()" class="text-blue-500 font-bold underline">Change Info</button>
+            </div>
+            <div id="job-list" class="space-y-6">
+                </div>
         </div>
     </div>
 
     <script>
-        // SMART BACK BUTTON: Previous page par jayega naki direct home
-        function smartBack() {
-            if (window.history.length > 1) {
-                window.history.back();
-            } else {
-                switchMainTab('govt');
+        async function findJobs() {
+            const userData = {
+                name: document.getElementById('name').value,
+                state: document.getElementById('state').value,
+                edu: document.getElementById('edu').value
+            };
+
+            if(!userData.name || !userData.state) {
+                alert("Please fill all details!");
+                return;
+            }
+
+            // UI Switch
+            document.getElementById('form-section').classList.add('hidden');
+            document.getElementById('results-section').classList.remove('hidden');
+            const list = document.getElementById('job-list');
+            list.innerHTML = `<p class="text-center py-10 font-bold text-blue-600 animate-pulse text-xl">Searching Best Jobs for you...</p>`;
+
+            try {
+                const response = await fetch('/fetch_jobs', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(userData)
+                });
+                
+                const jobs = await response.json();
+                list.innerHTML = '';
+
+                jobs.forEach(job => {
+                    list.innerHTML += `
+                        <div class="job-card p-8 bg-white shadow-lg">
+                            <span class="text-xs font-black text-blue-500 uppercase">${job.source}</span>
+                            <h3 class="text-2xl font-black text-slate-800 mt-2 mb-3">${job.title}</h3>
+                            <p class="text-slate-500 text-lg leading-relaxed mb-6">${job.snippet}</p>
+                            <a href="${job.link}" target="_blank" class="block text-center bg-blue-950 text-white py-4 rounded-2xl font-black text-lg uppercase shadow-md">
+                                Apply Now 🚀
+                            </a>
+                        </div>`;
+                });
+            } catch (error) {
+                list.innerHTML = `<p class="text-red-500 font-bold">Error loading jobs. Please check API Key.</p>`;
             }
         }
-
-        const database = {
-            govt: [
-                { title: "Bihar Police Constable", cat: "BIHAR_POLICE", edu: "12TH", isLive: true, info: "21,391 Posts", url: "https://csbc.bih.nic.in" },
-                { title: "Railway ALP 2025", cat: "RAILWAY", edu: "10TH", isLive: true, info: "Technician/Loco Pilot", url: "https://rrb.gov.in" },
-                { title: "SSC GD Constable", cat: "SSC", edu: "10TH", isLive: false, info: "Coming in July", url: "https://ssc.gov.in" },
-                { title: "BPSC 70th Exam", cat: "BPSC", edu: "GRADUATION", isLive: true, info: "Apply Now", url: "https://bpsc.bih.nic.in" }
-            ],
-            result: [
-                { title: "Bihar Board 10th Result", cat: "10TH", edu: "10TH", isLive: true, info: "Matric Annual 2025", url: "#" },
-                { title: "Bihar Board 12th Result", cat: "12TH", edu: "12TH", isLive: true, info: "Inter Annual 2025", url: "#" },
-                { title: "SSC CGL Result", cat: "SSC", edu: "GRADUATION", isLive: false, info: "Available Soon", url: "#" }
-            ],
-            private: [
-                { title: "Amazon WFH Executive", cat: "WFH", edu: "12TH", isLive: true, source: "Internshala", url: "https://internshala.com" },
-                { title: "Google Tech Intern", cat: "GRADUATION", edu: "GRADUATION", isLive: true, source: "Naukri", url: "https://naukri.com" },
-                { title: "Flipkart Delivery Partner", cat: "10TH", edu: "10TH", isLive: true, source: "Apna App", url: "https://apna.co" },
-                { title: "Remote Data Entry", cat: "WFH", edu: "12TH", isLive: true, source: "LinkedIn", url: "https://linkedin.com" }
-            ]
-        };
-
-        const chips = {
-            govt: ["ALL", "SSC", "RAILWAY", "BIHAR_POLICE", "BPSC"],
-            result: ["ALL", "10TH", "12TH", "SSC", "BPSC"],
-            private: ["ALL", "WFH", "10TH", "12TH", "GRADUATION"]
-        };
-
-        let currentTab = 'govt';
-        let currentChip = 'ALL';
-        let itemsLimit = 3;
-
-        function showProfile() { document.getElementById('profile-overlay').style.display = 'flex'; }
-        function closeProfile() { document.getElementById('profile-overlay').style.display = 'none'; }
-        
-        function saveUser() {
-            localStorage.setItem('userEdu', document.getElementById('u-edu').value);
-            alert("Profile Updated!");
-            closeProfile();
-            itemsLimit = 3;
-            filterCards();
-        }
-
-        function switchMainTab(tab) {
-            currentTab = tab; currentChip = 'ALL'; itemsLimit = 3;
-            document.querySelectorAll('.grid button').forEach(b => b.classList.remove('active-tab'));
-            document.getElementById('tab-' + tab).classList.add('active-tab');
-            loadChips();
-            filterCards();
-        }
-
-        function loadChips() {
-            const container = document.getElementById('chip-container');
-            container.innerHTML = '';
-            chips[currentTab].forEach(c => {
-                container.innerHTML += `<button onclick="setChip('${c}')" class="filter-chip px-5 py-2 rounded-full text-[8px] font-black uppercase ${currentChip===c?'active-chip':'bg-white'}">${c}</button>`;
-            });
-        }
-
-        function setChip(c) { currentChip = c; itemsLimit = 3; loadChips(); filterCards(); }
-        function loadMore() { itemsLimit += 5; filterCards(); }
-
-        function filterCards() {
-            const box = document.getElementById('content-box');
-            const userEdu = localStorage.getItem('userEdu') || "12TH";
-            const q = document.getElementById('main-search').value.toLowerCase();
-            box.innerHTML = '';
-
-            let data = database[currentTab].filter(i => {
-                const mEdu = i.edu === userEdu;
-                const mChip = currentChip === 'ALL' || i.cat === currentChip;
-                const mSearch = i.title.toLowerCase().includes(q);
-                return mEdu && mChip && mSearch;
-            });
-
-            data.slice(0, itemsLimit).forEach(item => {
-                box.innerHTML += `
-                    <div class="job-card p-5 relative shadow-sm">
-                        <div class="flex justify-between mb-2">
-                            <span class="text-[6px] font-black uppercase text-blue-600">${item.source || 'Official Update'}</span>
-                            ${item.isLive ? '<span class="live-tag">● FORM LIVE</span>' : ''}
-                        </div>
-                        <h3 class="font-black text-blue-950 uppercase text-xs mb-1">${item.title}</h3>
-                        <p class="text-[9px] text-slate-400 font-bold mb-4 italic">${item.info}</p>
-                        <button onclick="window.open('${item.url}', '_blank')" class="w-full bg-blue-950 text-white py-3 rounded-2xl font-black text-[9px] uppercase active:scale-95 transition">Apply / Check Now 🚀</button>
-                    </div>`;
-            });
-
-            document.getElementById('load-more-div').style.display = itemsLimit >= data.length ? 'none' : 'block';
-        }
-
-        window.onload = () => switchMainTab('govt');
     </script>
 </body>
 </html>
