@@ -1,3 +1,4 @@
+from utils import send_job_notification
 import requests
 from flask import Flask, render_template, request, jsonify
 import os, json
