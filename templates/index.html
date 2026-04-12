@@ -5,98 +5,74 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background: #f0f4f8; font-family: 'Inter', sans-serif; overflow-x: hidden; }
-        .job-card { border-radius: 24px; transition: 0.3s; border: 1px solid #e2e8f0; background: white; }
-        .tab-active { background: #1e40af; color: white; border-radius: 12px; }
+        body { background: #f8fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .job-card { border-radius: 20px; transition: 0.3s; border: 1px solid #e5e7eb; background: white; }
+        .tab-active { background: #1d4ed8 !important; color: white !important; }
         .ai-window { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 200; display: none; background: white; flex-direction: column; }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        .animate-up { animation: slideUp 0.3s ease-out; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
-        .animate-marquee { display: inline-block; animation: marquee 20s linear infinite; }
+        
+        /* Sundar aur Slow Notification */
+        .news-container { background: #1e3a8a; color: white; padding: 10px 0; overflow: hidden; position: relative; }
+        .marquee { display: flex; width: 200%; animation: scroll 30s linear infinite; }
+        .marquee span { padding: 0 40px; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        @keyframes scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
     </style>
 </head>
 <body>
 
-    <div class="max-w-md mx-auto min-h-screen bg-white shadow-2xl flex flex-col relative">
+    <div class="max-w-md mx-auto min-h-screen bg-white shadow-2xl flex flex-col relative overflow-hidden">
         
         <div id="setup-section" class="p-8 flex-1 flex flex-col justify-center">
-            <div class="text-center mb-8">
-                <h1 class="text-6xl font-black text-blue-900 italic tracking-tighter">ROZGAR</h1>
-                <p class="text-blue-600 font-bold text-[10px] uppercase tracking-[0.3em] mt-2">Sapne Aapke, Raasta Humara</p>
-            </div>
-            
-            <div class="bg-blue-50 p-6 rounded-[2rem] mb-8 border border-blue-100">
-                <p class="text-center text-blue-900 font-bold italic text-sm">
-                    "Mehnat tumhari, manzil humari. <br>Ab naukri hogi tumhari mutthi mein!"
-                </p>
-            </div>
-
+            <h1 class="text-5xl font-black text-blue-900 italic text-center mb-10">ROZGAR</h1>
             <div class="space-y-4">
                 <input id="u_name" type="text" placeholder="Apna Naam" class="w-full p-4 rounded-2xl border-2 border-slate-100 outline-none focus:border-blue-500 bg-slate-50">
-                <input id="u_state" type="text" placeholder="Apna Rajya (e.g. Bihar)" class="w-full p-4 rounded-2xl border-2 border-slate-100 outline-none focus:border-blue-500 bg-slate-50">
-                <div class="relative">
-                    <span class="absolute left-4 top-1 text-[9px] text-blue-400 font-black uppercase">Date of Birth</span>
-                    <input id="u_dob" type="date" class="w-full p-5 pt-7 rounded-2xl border-2 border-slate-100 outline-none focus:border-blue-500 bg-slate-50">
-                </div>
-                <button onclick="saveUser()" class="w-full bg-blue-700 text-white p-5 rounded-3xl font-black text-xl shadow-xl active:scale-95 transition-all">START SEARCHING 🚀</button>
+                <input id="u_state" type="text" placeholder="Apna Rajya" class="w-full p-4 rounded-2xl border-2 border-slate-100 outline-none focus:border-blue-500 bg-slate-50">
+                <input id="u_dob" type="date" class="w-full p-4 rounded-2xl border-2 border-slate-100 outline-none focus:border-blue-500 bg-slate-50">
+                <button onclick="saveUser()" class="w-full bg-blue-700 text-white p-5 rounded-3xl font-black text-xl shadow-lg">START JOURNEY 🚀</button>
             </div>
         </div>
 
         <div id="main-dashboard" class="hidden flex-1 flex flex-col">
-            <div class="p-5 bg-white border-b sticky top-0 z-10 shadow-sm">
+            <div class="p-4 bg-white border-b sticky top-0 z-10">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-2xl font-black text-blue-900 italic">ROZGAR</h2>
-                    <button onclick="clearUser()" class="text-red-500 text-[10px] font-bold bg-red-50 px-3 py-1 rounded-full border border-red-100">RESET</button>
+                    <button onclick="clearUser()" class="text-red-500 text-[10px] font-bold">RESET</button>
                 </div>
                 <div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
-                    <button onclick="setFilter('all')" id="f-all" class="px-5 py-2 text-xs font-black tab-active whitespace-nowrap uppercase">All Jobs</button>
-                    <button onclick="setFilter('central')" id="f-central" class="px-5 py-2 text-xs font-black bg-slate-100 rounded-xl whitespace-nowrap uppercase">Central</button>
-                    <button onclick="setFilter('state')" id="f-state" class="px-5 py-2 text-xs font-black bg-slate-100 rounded-xl whitespace-nowrap uppercase">State</button>
-                    <button onclick="fetchData('results')" id="f-results" class="px-5 py-2 text-xs font-black bg-slate-100 rounded-xl whitespace-nowrap uppercase">Results</button>
+                    <button onclick="setFilter('all')" id="f-all" class="px-5 py-2 text-xs font-bold bg-slate-100 rounded-xl whitespace-nowrap">Latest Jobs</button>
+                    <button onclick="setFilter('central')" id="f-central" class="px-5 py-2 text-xs font-bold bg-slate-100 rounded-xl whitespace-nowrap">Central</button>
+                    <button onclick="setFilter('state')" id="f-state" class="px-5 py-2 text-xs font-bold bg-slate-100 rounded-xl whitespace-nowrap">State</button>
+                    <button onclick="setFilter('results')" id="f-results" class="px-5 py-2 text-xs font-bold bg-slate-100 rounded-xl whitespace-nowrap">Exam Results 📄</button>
                 </div>
             </div>
 
-            <div class="bg-blue-900 text-white text-[9px] py-2 overflow-hidden whitespace-nowrap font-bold uppercase tracking-widest">
-                <div class="inline-block animate-marquee">
-                    🔥 Latest Update: SSC GD Notification Out | Bihar Police Exam Date | Railway Recruitment 2026 | New ITI Jobs in Bihar | Stay Updated with ROZGAR App 
+            <div class="news-container">
+                <div class="marquee">
+                    <span>🔥 SSC GD Notification 2026 Out | Bihar Police Result Updates | Railway New Vacancy 2026 | ITI Campus Selection Details | Check Your Results Now</span>
+                    <span>🔥 SSC GD Notification 2026 Out | Bihar Police Result Updates | Railway New Vacancy 2026 | ITI Campus Selection Details | Check Your Results Now</span>
                 </div>
             </div>
 
             <div id="content-list" class="p-4 space-y-6 pb-24"></div>
-            <div id="loader" class="hidden text-center py-20 font-black text-blue-600 animate-pulse text-xs uppercase tracking-tighter">Searching Official Jobs...</div>
+            <div id="loader" class="hidden text-center py-20 font-bold text-blue-600 animate-pulse text-xs">SEARCHING UPDATES...</div>
         </div>
 
-        <div id="ai-window" class="ai-window animate-up">
+        <div id="ai-window" class="ai-window">
             <div class="p-5 bg-slate-900 text-white flex justify-between items-center">
-                <div>
-                    <h2 class="text-xl font-black italic">ROZGAR AI</h2>
-                    <div class="flex items-center gap-1">
-                        <span class="w-2 h-2 bg-green-500 rounded-full"></span>
-                        <p class="text-[8px] text-slate-400 font-bold uppercase">Active Assistant</p>
-                    </div>
-                </div>
-                <button onclick="closeAI()" class="text-white text-xs font-bold bg-slate-800 px-4 py-2 rounded-xl border border-slate-700">EXIT CHAT</button>
+                <h2 class="text-xl font-black italic">ROZGAR AI</h2>
+                <button onclick="closeAI()" class="text-xs bg-slate-700 px-4 py-2 rounded-lg">CLOSE</button>
             </div>
-            <div id="ai-messages" class="flex-1 p-5 overflow-y-auto space-y-4 bg-slate-50">
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 text-sm leading-relaxed">
-                    👋 <b>Namaste!</b> Main aapka AI assistant hoon. <br><br>Aap mujhse kisi bhi job ki eligibility, form kaise bhare, ya documents ke baare mein puch sakte hain.
-                </div>
-            </div>
+            <div id="ai-messages" class="flex-1 p-5 overflow-y-auto space-y-4 bg-slate-50"></div>
             <div class="p-4 border-t bg-white flex gap-2">
-                <input id="ai-input" type="text" placeholder="Apna sawal likhiye..." class="flex-1 p-4 bg-slate-100 rounded-2xl outline-none focus:ring-2 ring-blue-500">
-                <button onclick="aiChat()" class="bg-blue-700 text-white px-6 rounded-2xl font-black italic shadow-lg">ASK</button>
+                <input id="ai-input" type="text" placeholder="Apna sawal likhiye..." class="flex-1 p-4 bg-slate-100 rounded-2xl outline-none">
+                <button onclick="aiChat()" class="bg-blue-700 text-white px-6 rounded-2xl font-bold">ASK</button>
             </div>
         </div>
 
-        <button onclick="openAI()" class="fixed bottom-6 right-6 w-16 h-16 bg-blue-900 text-white rounded-full shadow-2xl flex items-center justify-center text-3xl border-4 border-white z-[150] active:scale-90 transition-all">
-            🤖
-        </button>
+        <button onclick="openAI()" class="fixed bottom-6 right-6 w-16 h-16 bg-blue-900 text-white rounded-full shadow-2xl flex items-center justify-center text-3xl z-[150]">🤖</button>
     </div>
 
     <script>
         let currentFilter = 'all';
-        let currentPage = 1;
 
         window.onload = function() {
             if(localStorage.getItem('r_name')) showDashboard();
@@ -105,11 +81,9 @@
         function saveUser() {
             const name = document.getElementById('u_name').value;
             const state = document.getElementById('u_state').value;
-            const dob = document.getElementById('u_dob').value;
-            if(!name || !state || !dob) return alert("Bhai saari details bharo!");
+            if(!name || !state) return alert("Details bharo bhai!");
             localStorage.setItem('r_name', name);
             localStorage.setItem('r_state', state);
-            localStorage.setItem('r_dob', dob);
             showDashboard();
         }
 
@@ -121,70 +95,66 @@
 
         function setFilter(type) {
             currentFilter = type;
-            document.querySelectorAll('#main-dashboard button').forEach(b => b.classList.remove('tab-active', 'bg-slate-100'));
+            document.querySelectorAll('#main-dashboard button').forEach(b => b.classList.remove('tab-active'));
             document.getElementById('f-' + type).classList.add('tab-active');
             document.getElementById('content-list').innerHTML = '';
             fetchData();
         }
 
-        async function fetchData(specialType = null) {
+        async function fetchData() {
             const state = localStorage.getItem('r_state');
             const loader = document.getElementById('loader');
             loader.classList.remove('hidden');
             
-            const interest = specialType === 'results' ? 'exam result sarkari' : 'latest jobs';
-
             try {
                 const res = await fetch('/search', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({state, type: currentFilter, page: currentPage, interest: interest})
+                    body: JSON.stringify({state, type: currentFilter})
                 });
                 const data = await res.json();
                 loader.classList.add('hidden');
                 
                 data.forEach(j => {
-                    const isCentral = currentFilter === 'central' || j.title.toLowerCase().includes('india') || j.title.toLowerCase().includes('ssc') || j.title.toLowerCase().includes('railway');
-                    const color = isCentral ? 'blue' : 'green';
-                    const tag = isCentral ? 'CENTRAL JOB' : 'STATE JOB';
-                    
                     document.getElementById('content-list').innerHTML += `
-                        <div class="job-card p-6 border-l-[12px] border-${color}-600 shadow-md">
-                            <div class="flex justify-between items-center mb-3">
-                                <span class="text-[8px] font-black bg-${color}-50 text-${color}-700 px-3 py-1 rounded-full uppercase tracking-widest border border-${color}-100">${tag}</span>
-                                <button onclick="window.open('https://api.whatsapp.com/send?text=Bhai ye job dekh: ${j.title} Link: ${j.link}')" class="text-green-600 text-[10px] font-black uppercase">Share 📲</button>
-                            </div>
-                            <h2 class="text-lg font-black text-slate-800 leading-tight mb-2 uppercase">${j.title}</h2>
-                            <p class="text-[10px] text-slate-500 mb-5 font-medium leading-relaxed">${j.snippet}</p>
-                            <a href="${j.link}" target="_blank" class="block w-full text-center bg-slate-900 text-white py-4 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-lg active:bg-blue-900">Open Official Details</a>
+                        <div class="job-card p-6 shadow-sm border-l-8 border-blue-600">
+                            <h2 class="text-lg font-black text-slate-800 leading-tight mb-2">${j.title}</h2>
+                            <p class="text-xs text-slate-500 mb-4">${j.snippet}</p>
+                            <a href="${j.link}" target="_blank" class="block w-full text-center bg-slate-900 text-white py-3 rounded-xl font-bold text-xs uppercase">Open Official Site</a>
                         </div>`;
                 });
-            } catch (e) { loader.innerText = "Error Loading!"; }
+            } catch (e) { loader.innerText = "Error!"; }
         }
 
         function openAI() { document.getElementById('ai-window').style.display = 'flex'; }
         function closeAI() { document.getElementById('ai-window').style.display = 'none'; }
         
-        function aiChat() {
+        async function aiChat() {
             const input = document.getElementById('ai-input');
             const box = document.getElementById('ai-messages');
             if(!input.value) return;
-            box.innerHTML += `<div class="bg-blue-600 text-white p-4 rounded-2xl rounded-tr-none text-sm font-bold ml-12 shadow-sm">${input.value}</div>`;
-            const userMsg = input.value;
+            
+            const msg = input.value;
+            box.innerHTML += `<div class="bg-blue-600 text-white p-4 rounded-2xl ml-10 text-sm font-bold shadow-sm">${msg}</div>`;
             input.value = '';
             
-            setTimeout(() => {
-                box.innerHTML += `<div class="bg-white p-4 rounded-2xl rounded-tl-none shadow-sm border border-slate-200 text-sm italic text-slate-400 animate-pulse">Thinking...</div>`;
+            const typing = document.createElement('div');
+            typing.className = "text-xs font-bold text-slate-400 animate-pulse";
+            typing.innerText = "ROZGAR AI is thinking...";
+            box.appendChild(typing);
+            box.scrollTop = box.scrollHeight;
+
+            try {
+                const res = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({message: msg, state: localStorage.getItem('r_state')})
+                });
+                const data = await res.json();
+                typing.remove();
+                box.innerHTML += `<div class="bg-white p-4 rounded-2xl shadow-md border border-slate-200 text-sm leading-relaxed"><b>AI:</b> ${data.reply}</div>`;
                 box.scrollTop = box.scrollHeight;
-                
-                // Demo Response
-                setTimeout(() => {
-                    const lastMsg = box.lastElementChild;
-                    lastMsg.classList.remove('animate-pulse', 'italic', 'text-slate-400');
-                    lastMsg.innerHTML = `Bhai, ${localStorage.getItem('r_name')}, main search kar raha hoon. Aapke age ke hisab se ye best option ho sakta hai. Kya aapko Bihar ki jobs dekhni hain ya Central ki?`;
-                    box.scrollTop = box.scrollHeight;
-                }, 1000);
-            }, 500);
+            } catch (e) { typing.innerText = "Error!"; }
         }
 
         function clearUser() { localStorage.clear(); location.reload(); }
