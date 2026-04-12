@@ -5,7 +5,6 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-# Serper API Key
 SERPER_API_KEY = "268aa2e751d03f3d61ffa0fe6b46cd80bf6ec73d"
 
 @app.route('/')
@@ -21,37 +20,26 @@ def fetch_jobs():
         edu = data.get('edu', '')
         page = data.get('page', 1)
 
-        # --- REFINED SEARCH LOGIC ---
-        if category == "govt":
+        # --- REFINED SEARCH LOGIC (SSC & BOARD SEPARATED) ---
+        if category == "SSC Result":
+            # Specifically targeting Staff Selection Commission
+            query = f"SSC GD CGL CHSL MTS official result 2026 site:ssc.gov.in OR site:sarkariresult.com"
+        elif category == "Board Result":
+            query = f"{state} board 10th 12th exam results 2026 official link"
+        elif category == "govt":
             query = f"latest government jobs for {edu} pass in {state} 2026 site:sarkariresult.com"
-        elif category == "wfh":
-            query = f"work from home remote jobs India 2026 for {edu} site:naukri.com"
-        elif category == "iti":
-            query = f"latest ITI apprentice and technician jobs 2026 {state}"
         elif category == "railway":
-            query = "RRB Railway recruitment 2026 Group D NTPC ALP official"
-        elif category == "bpsc":
-            query = "BPSC Bihar Public Service Commission latest updates 2026"
-        
-        # Specific Result Logic (Tiles ke liye)
+            query = "Railway RRB Group D NTPC recruitment 2026 official notification"
         elif "Result" in category:
-            query = f"latest {category} 2026 {state} official link check online"
-        
+            query = f"latest {category} 2026 {state} official link"
         else:
-            # Fallback (Agar search bar use karein)
-            query = f"{category} latest updates 2026 {state}"
+            query = f"{category} latest jobs updates 2026 {state}"
 
         headers = {'X-API-KEY': SERPER_API_KEY, 'Content-Type': 'application/json'}
-        payload = {
-            'q': query,
-            'num': 10,
-            'start': (page - 1) * 10,
-            'gl': 'in'
-        }
+        payload = {'q': query, 'num': 10, 'start': (page - 1) * 10, 'gl': 'in'}
 
         response = requests.post('https://google.serper.dev/search', headers=headers, json=payload)
         return jsonify(response.json().get('organic', []))
-    
     except Exception as e:
         return jsonify({"error": str(e)})
 
