@@ -6,74 +6,119 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        .marquee-slow { animation: scroll 35s linear infinite; }
+        .marquee-slow { animation: scroll 40s linear infinite; }
         @keyframes scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-        .official-tag { background: linear-gradient(90deg, #065f46, #059669); }
+        .update-screen { position: fixed; inset: 0; background: #0f172a; z-index: 1000; display: none; align-items: center; justify-content: center; flex-direction: column; color: white; }
+        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
     </style>
 </head>
-<body class="bg-slate-50 font-sans">
-    <div class="max-w-md mx-auto min-h-screen bg-white shadow-2xl flex flex-col relative">
+<body class="bg-slate-100 font-sans">
+
+    <div id="update-overlay" class="update-screen text-center p-6">
+        <h1 class="text-4xl font-black italic mb-2 tracking-tighter">ROZGAR <span class="text-blue-500">2.0</span></h1>
+        <p class="text-blue-400 font-bold tracking-[0.3em] text-[10px] mb-10">R YADAV PRODUCTION</p>
+        <div class="w-64 h-1.5 bg-slate-800 rounded-full overflow-hidden">
+            <div id="progress-fill" class="h-full bg-blue-500 transition-all duration-300" style="width: 0%"></div>
+        </div>
+        <p id="progress-text" class="mt-4 text-xs font-mono text-slate-400 uppercase tracking-widest">System Booting... 0%</p>
+    </div>
+
+    <div id="app-container" class="max-w-md mx-auto min-h-screen bg-white shadow-2xl flex flex-col relative overflow-hidden">
         
-        <div id="setup-section" class="p-8 flex-1 flex flex-col justify-center">
-            <h1 class="text-6xl font-black text-blue-900 italic text-center mb-4">ROZGAR</h1>
-            <p class="text-center text-slate-500 mb-8 font-bold uppercase text-[10px] tracking-widest">Sarkari Updates, Seedhe Official Source Se</p>
+        <div class="p-4 bg-blue-950 text-white flex justify-between items-center shadow-md border-b border-blue-800">
+            <div>
+                <h1 class="text-xl font-black italic tracking-tighter">ROZGAR</h1>
+                <p class="text-[7px] font-bold text-blue-400 uppercase">BY R YADAV PRODUCTION</p>
+            </div>
+            <div id="user-tag" class="hidden text-right">
+                <p id="nav-name" class="text-[9px] font-black text-blue-200"></p>
+                <button onclick="clearUser()" class="text-[7px] text-red-400 font-bold underline">LOGOUT</button>
+            </div>
+        </div>
+
+        <div id="setup-section" class="p-10 flex-1 flex flex-col justify-center">
+            <div class="text-center mb-10">
+                <div class="inline-block p-4 bg-blue-50 rounded-3xl mb-4">💼</div>
+                <h2 class="text-3xl font-black text-slate-900">Digital Bihar</h2>
+                <p class="text-slate-500 text-xs font-bold mt-2 uppercase tracking-widest">Official Jobs & Study Plans</p>
+            </div>
             <div class="space-y-4">
-                <input id="u_name" type="text" placeholder="Apna Naam" class="w-full p-4 rounded-2xl border-2 bg-slate-50 outline-none focus:border-blue-600">
-                <input id="u_state" type="text" placeholder="State (e.g. Bihar)" class="w-full p-4 rounded-2xl border-2 bg-slate-50 outline-none focus:border-blue-600">
-                <button onclick="saveUser()" class="w-full bg-blue-700 text-white p-5 rounded-3xl font-black text-xl shadow-xl active:scale-95 transition">LOGIN 🚀</button>
+                <input id="u_name" type="text" placeholder="Full Name" class="w-full p-4 rounded-2xl border-2 bg-slate-50 outline-none focus:border-blue-950">
+                <input id="u_state" type="text" placeholder="State (e.g. Bihar)" class="w-full p-4 rounded-2xl border-2 bg-slate-50 outline-none focus:border-blue-950">
+                <button onclick="saveUser()" class="w-full bg-blue-950 text-white p-5 rounded-2xl font-black text-lg shadow-xl">START JOURNEY 🚀</button>
             </div>
         </div>
 
-        <div id="main-dashboard" class="hidden flex-1 flex flex-col">
-            <div class="p-4 bg-white sticky top-0 z-20 shadow-sm border-b">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-2xl font-black text-blue-900 italic">ROZGAR</h2>
-                    <button onclick="clearUser()" class="text-red-500 font-bold text-xs uppercase">Reset</button>
-                </div>
-                <div class="flex gap-2 overflow-x-auto no-scrollbar pb-2">
-                    <button onclick="setFilter('all', 'latest jobs')" class="tab-btn px-4 py-2 bg-slate-100 rounded-xl text-[10px] font-black uppercase whitespace-nowrap">All Jobs</button>
-                    <button onclick="setFilter('results', 'SSC MTS result')" class="tab-btn px-4 py-2 bg-slate-100 rounded-xl text-[10px] font-black uppercase whitespace-nowrap">SSC Results</button>
-                    <button onclick="setFilter('results', '10th 12th board result')" class="tab-btn px-4 py-2 bg-slate-100 rounded-xl text-[10px] font-black uppercase whitespace-nowrap">Board Results</button>
-                    <button onclick="setFilter('results', 'Railway Police BPSC result')" class="tab-btn px-4 py-2 bg-slate-100 rounded-xl text-[10px] font-black uppercase whitespace-nowrap">Govt Exams</button>
+        <div id="main-dashboard" class="hidden flex-1 flex flex-col bg-slate-50">
+            <div class="glass sticky top-0 z-20 border-b p-3">
+                <div class="flex gap-2 overflow-x-auto no-scrollbar py-1">
+                    <button onclick="setFilter('all', 'latest jobs')" class="px-4 py-2 bg-white border shadow-sm rounded-xl text-[9px] font-black text-slate-700 whitespace-nowrap uppercase">Nayi Bharti</button>
+                    <button onclick="setFilter('results', 'SSC MTS Railway result')" class="px-4 py-2 bg-white border shadow-sm rounded-xl text-[9px] font-black text-slate-700 whitespace-nowrap uppercase">Results ✅</button>
+                    <button onclick="setFilter('results', '10th 12th board result')" class="px-4 py-2 bg-white border shadow-sm rounded-xl text-[9px] font-black text-slate-700 whitespace-nowrap uppercase">Boards</button>
+                    <button onclick="setFilter('all', '6 hour study plan reasoning maths')" class="px-4 py-2 bg-blue-900 text-white rounded-xl text-[9px] font-black whitespace-nowrap uppercase">Study Plan 📖</button>
                 </div>
             </div>
 
-            <div class="bg-blue-900 text-white py-2 overflow-hidden">
-                <div class="marquee-slow flex whitespace-nowrap font-bold text-[10px] uppercase">
-                    <span>• Official Links Only • No Third Party • SSC Results Out • Railway Update 2026 • 10th-12th Results Official Portal • Rozgar AI active •</span>
-                    <span>• Official Links Only • No Third Party • SSC Results Out • Railway Update 2026 • 10th-12th Results Official Portal • Rozgar AI active •</span>
+            <div class="bg-yellow-400 text-black py-1.5 overflow-hidden border-y border-yellow-500">
+                <div class="marquee-slow flex whitespace-nowrap font-black text-[8px] uppercase tracking-widest">
+                    <span>• R YADAV PRODUCTION PRESENTS • TRUSTED GOVT LINKS ONLY • SSC GD, RAILWAY, POLICE UPDATES • CREATED BY RAHUL RAJ •</span>
                 </div>
             </div>
 
-            <div id="content-list" class="p-4 space-y-6 pb-24"></div>
-            <div id="loader" class="hidden text-center py-20 font-black text-blue-600 animate-pulse text-[10px]">VERIFYING OFFICIAL LINKS...</div>
+            <div id="content-list" class="p-4 space-y-4 pb-32"></div>
+            <div id="loader" class="hidden text-center py-20 font-black text-blue-950 animate-pulse text-[10px]">SYNCING WITH GOVT SERVERS...</div>
         </div>
 
-        <div id="ai-window" class="fixed inset-0 bg-white z-[300] hidden flex-col">
-            <div class="p-5 bg-slate-900 text-white flex justify-between items-center">
-                <h2 class="font-black italic">ROZGAR AI (GEMINI)</h2>
-                <button onclick="closeAI()" class="text-xs bg-red-600 px-4 py-2 rounded-lg font-bold">EXIT</button>
+        <div id="ai-window" class="fixed inset-0 bg-white z-[500] hidden flex-col">
+            <div class="p-5 bg-blue-950 text-white flex justify-between items-center shadow-2xl">
+                <div>
+                    <h2 class="font-black italic text-xl">ROZGAR AI</h2>
+                    <p class="text-[7px] text-blue-400 font-bold uppercase">Rahul Raj's Smart Assistant</p>
+                </div>
+                <button onclick="closeAI()" class="text-[9px] bg-red-600 px-4 py-2 rounded-xl font-black">EXIT</button>
             </div>
-            <div id="ai-messages" class="flex-1 p-5 overflow-y-auto space-y-4 bg-slate-50 text-sm"></div>
-            <div class="p-4 border-t bg-white flex gap-2">
-                <input id="ai-input" type="text" placeholder="Kuchh bhi puchho..." class="flex-1 p-4 bg-slate-100 rounded-2xl outline-none border focus:border-blue-500">
-                <button onclick="aiChat()" class="bg-blue-700 text-white px-8 rounded-2xl font-black">ASK</button>
+            <div id="ai-messages" class="flex-1 p-5 overflow-y-auto space-y-4 bg-slate-50"></div>
+            <div class="p-4 border-t bg-white flex gap-2 shadow-inner">
+                <input id="ai-input" type="text" placeholder="Ask for a 6-hour Study Plan..." class="flex-1 p-4 bg-slate-100 rounded-2xl outline-none text-sm font-medium">
+                <button onclick="aiChat()" class="bg-blue-950 text-white px-8 rounded-2xl font-black text-sm uppercase">ASK</button>
             </div>
         </div>
 
-        <button onclick="openAI()" class="fixed bottom-6 right-6 w-16 h-16 bg-blue-900 text-white rounded-full shadow-2xl flex items-center justify-center text-3xl z-[250] border-4 border-white">🤖</button>
+        <button onclick="openAI()" class="fixed bottom-6 right-6 w-16 h-16 bg-blue-950 text-white rounded-full shadow-2xl flex items-center justify-center text-3xl z-[400] border-4 border-white">🤖</button>
     </div>
 
     <script>
-        let currentType = 'all';
-        let currentInterest = 'latest jobs';
+        const MY_VER = "1.2";
 
-        window.onload = () => { if(localStorage.getItem('r_name')) showDashboard(); };
+        async function checkUpdates() {
+            try {
+                const res = await fetch('/get_version');
+                const data = await res.json();
+                if(data.version !== MY_VER) {
+                    const overlay = document.getElementById('update-overlay');
+                    const fill = document.getElementById('progress-fill');
+                    const text = document.getElementById('progress-text');
+                    overlay.style.display = 'flex';
+                    let p = 0;
+                    let inv = setInterval(() => {
+                        p += Math.random() * 12;
+                        if(p >= 100) { p = 100; clearInterval(inv); setTimeout(()=>location.reload(true), 600); }
+                        fill.style.width = p + '%';
+                        text.innerText = "Installing R Yadav Production Update... " + Math.floor(p) + "%";
+                    }, 250);
+                }
+            } catch(e){}
+        }
+
+        window.onload = () => { 
+            checkUpdates(); 
+            if(localStorage.getItem('r_name')) showDashboard(); 
+        };
 
         function saveUser() {
             const name = document.getElementById('u_name').value;
             const state = document.getElementById('u_state').value;
-            if(!name || !state) return alert("Bhai, details fill kijiye!");
+            if(!name || !state) return alert("Bhai, details toh bharo!");
             localStorage.setItem('r_name', name);
             localStorage.setItem('r_state', state);
             showDashboard();
@@ -81,54 +126,54 @@
 
         function showDashboard() {
             document.getElementById('setup-section').classList.add('hidden');
+            document.getElementById('user-tag').classList.remove('hidden');
             document.getElementById('main-dashboard').classList.remove('hidden');
+            document.getElementById('nav-name').innerText = "NAMASTE, " + localStorage.getItem('r_name');
             fetchData();
         }
 
-        function setFilter(type, interest) {
-            currentType = type;
-            currentInterest = interest;
+        function setFilter(t, i) {
             document.getElementById('content-list').innerHTML = '';
-            fetchData();
+            fetchData(t, i);
         }
 
-        async function fetchData() {
+        async function fetchData(type='all', interest='latest jobs') {
             const loader = document.getElementById('loader');
             loader.classList.remove('hidden');
             try {
                 const res = await fetch('/search', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({state: localStorage.getItem('r_state'), type: currentType, interest: currentInterest})
+                    body: JSON.stringify({state: localStorage.getItem('r_state'), type: type, interest: interest})
                 });
                 const data = await res.json();
                 loader.classList.add('hidden');
                 data.forEach(j => {
                     document.getElementById('content-list').innerHTML += `
-                        <div class="p-6 bg-white border-l-8 border-emerald-600 rounded-2xl shadow-sm border border-slate-100">
-                            <span class="official-tag text-[8px] text-white px-3 py-1 rounded-full font-black uppercase tracking-tighter">Official Source Verified ✅</span>
-                            <h2 class="text-lg font-black text-slate-900 mt-2 mb-2 leading-tight uppercase">${j.title}</h2>
-                            <p class="text-[10px] text-slate-500 mb-4 font-medium">${j.snippet}</p>
-                            <a href="${j.link}" target="_blank" class="block w-full text-center bg-blue-900 text-white py-3 rounded-xl font-black text-[10px] uppercase tracking-widest">VISIT OFFICIAL WEBSITE</a>
+                        <div class="p-5 bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md transition">
+                            <span class="bg-emerald-100 text-emerald-800 text-[7px] px-2 py-1 rounded-md font-black uppercase">Official Link ✅</span>
+                            <h2 class="text-xs font-black text-slate-900 mt-2 mb-2 leading-tight">${j.title}</h2>
+                            <p class="text-[9px] text-slate-500 mb-4 line-clamp-2">${j.snippet}</p>
+                            <a href="${j.link}" target="_blank" class="block w-full text-center bg-slate-900 text-white py-2.5 rounded-xl font-black text-[8px] uppercase tracking-widest">Visit Official Portal</a>
                         </div>`;
                 });
-            } catch (e) { loader.innerText = "Check Connection!"; }
+            } catch (e) { loader.innerText = "Network Error!"; }
         }
 
         function openAI() { document.getElementById('ai-window').style.display = 'flex'; }
         function closeAI() { document.getElementById('ai-window').style.display = 'none'; }
-        
+
         async function aiChat() {
             const input = document.getElementById('ai-input');
             const box = document.getElementById('ai-messages');
             if(!input.value) return;
             const msg = input.value;
-            box.innerHTML += `<div class="bg-blue-600 text-white p-4 rounded-2xl ml-12 font-bold shadow-md">${msg}</div>`;
+            box.innerHTML += `<div class="bg-blue-50 text-blue-900 p-4 rounded-2xl ml-8 font-bold border border-blue-100 shadow-sm">${msg}</div>`;
             input.value = '';
             
-            const typing = document.createElement('div');
-            typing.className = "font-black text-blue-600 animate-bounce p-2";
-            typing.innerText = "Gemini is thinking...";
+            const typing = document.createElement('p');
+            typing.className = "text-[10px] font-black text-blue-950 animate-pulse";
+            typing.innerText = "ROZGAR AI IS CALCULATING YOUR PLAN...";
             box.appendChild(typing);
             box.scrollTop = box.scrollHeight;
 
@@ -139,7 +184,7 @@
             });
             const data = await res.json();
             typing.remove();
-            box.innerHTML += `<div class="bg-white p-4 rounded-2xl border-2 border-blue-50 shadow-sm leading-relaxed text-slate-800"><b>Gemini AI:</b><br>${data.reply}</div>`;
+            box.innerHTML += `<div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-lg text-sm leading-relaxed text-slate-800"><b>AI Assistant:</b><br>${data.reply}</div>`;
             box.scrollTop = box.scrollHeight;
         }
 
