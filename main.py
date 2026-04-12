@@ -8,13 +8,12 @@ import os, json
 app = Flask(__name__)
 CORS(app)
 
-# Cache Setup: Performance boost ke liye (10 min timeout)
-cache = Cache(app, config={'CACHE_TYPE': 'SimpleCache', 'CACHE_DEFAULT_TIMEOUT': 600})
+# Caching ko thoda flexible rakha hai taaki filters switch karne par turant naya data mile
+cache = Cache(app, config={'CACHE_TYPE': 'SimpleCache', 'CACHE_DEFAULT_TIMEOUT': 300})
 
-# API Keys
 SERPER_API_KEY = "268aa2e751d03f3d61ffa0fe6b46cd80bf6ec73d"
 GEMINI_API_KEY = "AIzaSyDxIVi8NxFf5QEGoXb2wT1FRbzyKqfHKf0" 
-CURRENT_APP_VERSION = "3.1" # Naya Version
+CURRENT_APP_VERSION = "3.5 PRO"
 
 @app.route('/')
 def index(): 
@@ -25,22 +24,28 @@ def get_version():
     return jsonify({"version": CURRENT_APP_VERSION})
 
 @app.route('/search', methods=['POST'])
-@cache.cached(timeout=600, query_string=True)
+# Cache bypass logic added via frontend timestamp
 def search():
     try:
         data = request.get_json()
-        q_text = data.get('interest', 'latest jobs')
+        q_text = data.get('interest', 'latest jobs').lower()
         
-        # PRO AGGREGATOR LOGIC: 
-        # Agar query mein 'govt' ya 'sarkari' hai toh ye sites target hongi
-        if "govt" in q_text.lower() or "sarkari" in q_text.lower() or "railway" in q_text.lower():
-            smart_query = f"{q_text} (site:sarkariresult.com OR site:freejobalert.com OR site:ssc.nic.in) 2026"
-        # Agar Private/WFH hai toh LinkedIn aur Naukri target honge
+        # --- SMART AGGREGATOR LOGIC ---
+        
+        # 1. Agar user RESULTS dekh raha hai (Board, SSC, Police)
+        if "result" in q_text:
+            smart_query = f"{q_text} last 1 year declaration date site:sarkariresult.com OR site:indiaresults.com OR site:fastjobsearchers.com 2025-2026"
+        
+        # 2. Agar specifically GOVERNMENT JOBS/NOTIFICATIONS hai
+        elif any(x in q_text for x in ["govt", "sarkari", "notification", "form live"]):
+            smart_query = f"{q_text} official notification last date to apply total post vacancy site:sarkariresult.com OR site:freejobalert.com 2026"
+        
+        # 3. Agar PRIVATE JOBS/WFH/INTERNSHALA hai
         else:
+            # Isme Internshala aur Apna app ko priority di hai
             smart_query = (
-                f"{q_text} (site:naukri.com OR site:linkedin.com/jobs OR "
-                f"site:internshala.com OR site:indeed.com) "
-                f"work from home remote 2026"
+                f"{q_text} (site:internshala.com OR site:apna.co OR site:naukri.com OR site:linkedin.com/jobs) "
+                f"immediate hiring work from home remote jobs 2026"
             )
         
         headers = {
@@ -48,28 +53,31 @@ def search():
             'Content-Type': 'application/json'
         }
         
-        # 40 results taaki variety bani rahe
+        # 50 results taaki filter karne ke liye kaafi data ho
         response = requests.post(
             'https://google.serper.dev/search', 
             headers=headers, 
-            json={'q': smart_query, 'num': 40}, 
+            json={'q': smart_query, 'num': 50, 'gl': 'in'}, 
             timeout=20
         )
         
         results = response.json().get('organic', [])
 
-        # Backup: Agar results kam milti hain toh generic search mix karega
-        if len(results) < 8:
-            backup_query = f"{q_text} vacancy 2026"
-            res_backup = requests.post(
-                'https://google.serper.dev/search', 
-                headers=headers, 
-                json={'q': backup_query, 'num': 20}, 
-                timeout=15
-            )
-            results.extend(res_backup.json().get('organic', []))
+        # Post-Processing: Card mein extra details dikhane ke liye snippet clean-up
+        processed_results = []
+        for item in results:
+            # Agar form live hai toh title mein detect karega
+            is_live = "apply" in item.get('snippet', '').lower() or "live" in item.get('snippet', '').lower()
+            
+            processed_results.append({
+                "title": item.get('title'),
+                "link": item.get('link'),
+                "snippet": item.get('snippet'),
+                "source": item.get('link').split('/')[2], # Website ka naam (e.g. internshala.com)
+                "is_live": is_live
+            })
 
-        return jsonify(results)
+        return jsonify(processed_results)
     except Exception as e:
         print(f"Aggregator Error: {e}")
         return jsonify([])
@@ -84,15 +92,15 @@ def chat():
         url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
         
         prompt = f"""
-        You are Rozgar AI, a career expert by R YADAV PRODUCTION.
-        User Name: {name}
-        User's Concern: {message}
-        Goal: Provide job search tips (Govt/Private), career guidance, and motivation in friendly Hinglish.
-        Explain WFH (Work from home) and Part-time benefits if asked.
+        You are Rozgar AI by R YADAV PRODUCTION. 
+        User Name: {name}. Message: {message}.
+        Task: Provide specific career advice for Indian students (Bihar/Arwal focus).
+        If they ask about govt exams, give info about dates and patterns.
+        If they ask about private, suggest Internshala/LinkedIn tips.
+        Language: Hinglish.
         """
         
         payload = {"contents": [{"parts": [{"text": prompt}]}]}
-        
         res = requests.post(url, headers={'Content-Type': 'application/json'}, data=json.dumps(payload), timeout=30)
         res_json = res.json()
         
@@ -100,7 +108,7 @@ def chat():
             reply = res_json['candidates'][0]['content']['parts'][0]['text']
             return jsonify({"reply": reply})
         else:
-            return jsonify({"reply": "Bhai, AI server thoda slow hai, ek baar phir se koshish karein!"})
+            return jsonify({"reply": "Bhai, AI server thoda busy hai, dobara try karo."})
             
     except Exception as e:
         return jsonify({"reply": "Network issue! Kripya internet check karein."})
