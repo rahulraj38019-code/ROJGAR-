@@ -5,7 +5,7 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-# Apni API KEY yahan check kar lena
+# Serper API Key
 SERPER_API_KEY = "268aa2e751d03f3d61ffa0fe6b46cd80bf6ec73d"
 
 @app.route('/')
@@ -19,30 +19,54 @@ def fetch_jobs():
         category = data.get('category', 'latest jobs')
         state = data.get('state', 'India')
         edu = data.get('edu', '')
+        dob = data.get('dob', '') # DOB handle karne ke liye naya field
         search_query = data.get('search_query', '')
         page = data.get('page', 1)
 
-        # Smart Query Building
+        # --- SMART QUERY LOGIC (Purana wala delete nahi kiya, bas upgrade kiya hai) ---
+        
         if search_query:
-            query = f"{search_query} details and link 2026"
+            # Agar user result menu se search kare
+            query = f"{search_query} official link 2026"
+            
         elif category == "govt":
             query = f"latest government jobs for {edu} in {state} 2026 site:sarkariresult.com OR site:freejobalert.com"
+            
         elif category == "wfh":
             query = f"work from home remote jobs India 2026 site:linkedin.com OR site:naukri.com"
+            
         elif category == "iti":
-            query = f"latest ITI apprentice and technician jobs 2026 {state}"
+            query = f"latest ITI apprentice and technician jobs 2026 {state} for {edu} pass"
+            
         elif category == "railway":
-            query = "Railway RRB recruitment 2026 Group D NTPC ALP official"
-        elif category == "result":
-            query = f"latest exam results 10th 12th SSC {state} Police 2026"
+            query = "Railway RRB recruitment 2026 Group D NTPC ALP Technician official notification"
+            
         elif category == "bpsc":
-            query = "BPSC Bihar Public Service Commission latest notification 2026"
-        else:
-            query = f"latest jobs for {edu} in {state} 2026"
+            query = "BPSC Bihar Public Service Commission latest recruitment and exam calendar 2026"
 
-        headers = {'X-API-KEY': SERPER_API_KEY, 'Content-Type': 'application/json'}
+        # --- STATE POLICE & SPECIFIC RESULT LOGIC ---
+        elif "Police Result" in category:
+            query = f"{category} 2026 {state} merit list official site"
+            
+        elif "Board Result" in category:
+            query = f"10th 12th board exam results 2026 {state} official link"
+
+        elif category == "result":
+            # Dashboard ke 'All Result' section ke liye general query
+            query = f"latest ssc railway state police results 2026 {state} site:sarkariresult.com"
+
+        else:
+            # Default fallback agar kuch match na ho
+            query = f"latest jobs and recruitment for {edu} pass in {state} 2026"
+
+        # Age-based filter (optional logic agar query mein DOB use karna ho)
+        # Example: if dob: query += f" for age limit check"
+
+        headers = {
+            'X-API-KEY': SERPER_API_KEY, 
+            'Content-Type': 'application/json'
+        }
         
-        # 'start' parameter page wise data lata hai
         payload = {
             'q': query,
             'num': 10,
