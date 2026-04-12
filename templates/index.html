@@ -3,236 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ROZGAR AI - Professional</title>
-    
+    <title>ROZGAR AI - Professional Job Portal</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
-    
     <style>
-        /* --- PROFESSIONAL CSS INTERNAL --- */
-        :root {
-            --primary-blue: #2563eb;
-            --dark-blue: #1e3a8a;
-            --bg-light: #f1f5f9;
-        }
+        :root { --blue: #2563eb; --dark: #1e3a8a; --bg: #f1f5f9; --green: #059669; }
+        body { background: var(--bg); font-family: 'Inter', sans-serif; margin: 0; color: #1e293b; }
+        .container { max-width: 500px; margin: 0 auto; padding: 15px; }
+        
+        .header { text-align: center; padding: 30px 0; }
+        .header h1 { font-size: 40px; font-weight: 900; color: var(--dark); margin: 0; font-style: italic; }
+        
+        .card { background: white; padding: 25px; border-radius: 30px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        
+        .input-group { margin-bottom: 15px; }
+        label { display: block; font-size: 11px; font-weight: 800; color: var(--dark); margin-bottom: 5px; text-transform: uppercase; }
+        input, select { width: 100%; padding: 15px; border-radius: 15px; border: 2px solid #e2e8f0; font-weight: 600; box-sizing: border-box; }
+        
+        .category-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 15px; }
+        .cat-btn { padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; background: white; font-weight: 700; cursor: pointer; font-size: 12px; transition: 0.2s; }
+        .cat-btn.active { background: var(--dark); color: white; border-color: var(--dark); }
 
-        body {
-            background-color: var(--bg-light);
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            color: #1e293b;
-        }
+        .btn-search { width: 100%; background: var(--blue); color: white; padding: 18px; border: none; border-radius: 20px; font-size: 16px; font-weight: 900; margin-top: 20px; cursor: pointer; }
 
-        .app-container {
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        /* Profile Card Interface */
-        .pro-card {
-            background: white;
-            border-radius: 35px;
-            padding: 30px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
-            border: 1px solid #ffffff;
-        }
-
-        .input-group {
-            margin-bottom: 20px;
-        }
-
-        .input-group label {
-            display: block;
-            font-size: 11px;
-            font-weight: 800;
-            color: var(--dark-blue);
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 18px;
-            border-radius: 20px;
-            border: 2px solid #e2e8f0;
-            background: #ffffff;
-            font-size: 16px;
-            font-weight: 600;
-            transition: 0.3s;
-            box-sizing: border-box;
-        }
-
-        input:focus {
-            border-color: var(--primary-blue);
-            outline: none;
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
-        }
-
-        .btn-main {
-            width: 100%;
-            background: linear-gradient(135deg, var(--dark-blue) 0%, var(--primary-blue) 100%);
-            color: white;
-            padding: 22px;
-            border: none;
-            border-radius: 25px;
-            font-size: 18px;
-            font-weight: 900;
-            text-transform: uppercase;
-            cursor: pointer;
-            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
-        }
-
-        /* Premium Job Cards */
-        .job-item {
-            background: white;
-            border-radius: 30px;
-            padding: 25px;
-            margin-bottom: 25px;
-            box-shadow: 0 10px 15px rgba(0,0,0,0.03);
-            border: 1px solid #e2e8f0;
-            animation: fadeInUp 0.5s ease;
-        }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .source-badge {
-            background: #dbeafe;
-            color: #1e40af;
-            padding: 6px 14px;
-            border-radius: 50px;
-            font-size: 10px;
-            font-weight: 900;
-            text-transform: uppercase;
-        }
-
-        .job-title {
-            font-size: 22px;
-            font-weight: 900;
-            color: #0f172a;
-            margin: 15px 0 10px 0;
-            line-height: 1.2;
-        }
-
-        .job-desc {
-            font-size: 14px;
-            color: #64748b;
-            margin-bottom: 20px;
-            line-height: 1.6;
-        }
-
-        /* Blue Apply Button with Emoji */
-        .apply-now-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            width: 100%;
-            background-color: #2563eb;
-            color: white;
-            padding: 16px;
-            border-radius: 18px;
-            text-decoration: none;
-            font-weight: 800;
-            font-size: 16px;
-            transition: 0.3s;
-        }
-
-        .apply-now-btn:hover { background-color: #1d4ed8; }
-
+        /* Job Items */
+        .job-card { background: white; padding: 25px; border-radius: 25px; margin-bottom: 15px; border-left: 6px solid var(--blue); box-shadow: 0 4px 6px rgba(0,0,0,0.05); animation: fadeInUp 0.4s ease; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .apply-btn { display: block; width: 100%; padding: 14px; background: var(--blue); color: white; text-align: center; text-decoration: none; border-radius: 15px; font-weight: 800; margin-top: 15px; }
+        .result-btn { background: var(--green); }
+        
+        .loading-text { text-align: center; padding: 20px; font-weight: 800; color: var(--blue); }
         .hidden { display: none; }
     </style>
 </head>
 <body>
 
-    <div class="app-container">
-        <div style="text-align: center; padding: 40px 0;">
-            <h1 style="font-size: 45px; font-weight: 900; color: #1e3a8a; margin: 0; font-style: italic; letter-spacing: -2px;">ROZGAR AI</h1>
-            <p style="font-size: 10px; font-weight: 700; color: #64748b; letter-spacing: 5px; text-transform: uppercase;">R YADAV PRODUCTION</p>
-        </div>
-
-        <div id="setup-form" class="pro-card">
-            <h2 style="font-size: 18px; font-weight: 900; margin-bottom: 25px; text-align: center; color: #334155;">BASIC INFORMATION</h2>
-            
-            <div class="input-group">
-                <label>Pura Naam</label>
-                <input type="text" id="u-name" placeholder="Rahul Raj">
-            </div>
-
-            <div class="input-group">
-                <label>Apna State</label>
-                <input type="text" id="u-state" placeholder="Bihar">
-            </div>
-
-            <div class="input-group">
-                <label>Education</label>
-                <select id="u-edu">
-                    <option value="10th">10th Standard</option>
-                    <option value="12th" selected>12th Standard</option>
-                    <option value="Graduation">Graduation / Degree</option>
-                </select>
-            </div>
-
-            <button onclick="getJobs()" class="btn-main">Find Your Best Job 🚀</button>
-        </div>
-
-        <div id="results-view" class="hidden">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
-                <h3 style="font-weight: 900; font-size: 20px; color: #1e3a8a;">LATEST UPDATES ↓</h3>
-                <button onclick="location.reload()" style="font-size: 12px; font-weight: 700; color: #2563eb; border: none; background: none; cursor: pointer;">Reset</button>
-            </div>
-            
-            <div id="job-feed">
-                </div>
-        </div>
+<div class="container">
+    <div class="header">
+        <h1>ROZGAR AI</h1>
+        <p style="font-size: 9px; letter-spacing: 4px; font-weight: 700; color: gray;">R YADAV PRODUCTION</p>
     </div>
 
-    <script>
-        async function getJobs() {
-            const name = document.getElementById('u-name').value;
-            const state = document.getElementById('u-state').value;
-            const edu = document.getElementById('u-edu').value;
+    <div id="form-section" class="card">
+        <div class="input-group">
+            <label>Naam</label>
+            <input type="text" id="name" placeholder="Rahul Raj">
+        </div>
+        <div class="input-group">
+            <label>State</label>
+            <input type="text" id="state" placeholder="Bihar">
+        </div>
+        
+        <label>Category Select Karein ↓</label>
+        <div class="category-grid">
+            <button class="cat-btn active" onclick="setCat('govt', this)">Government 🏛️</button>
+            <button class="cat-btn" onclick="setCat('wfh', this)">Private/WFH 🏠</button>
+            <button class="cat-btn" onclick="setCat('iti', this)">ITI Special ⚙️</button>
+            <button class="cat-btn" onclick="setCat('railway', this)">Railway 🚂</button>
+            <button class="cat-btn" onclick="setCat('bpsc', this)">BPSC/PSC ✍️</button>
+            <button class="cat-btn" onclick="setCat('result', this)">All Results 📄</button>
+        </div>
 
-            if(!name || !state) { alert("Naam aur State bharna zaroori hai!"); return; }
+        <div id="result-search" class="hidden" style="margin-top:15px;">
+            <input type="text" id="custom-search" placeholder="Search Result (e.g. SSC Result)">
+        </div>
 
-            document.getElementById('setup-form').classList.add('hidden');
-            document.getElementById('results-view').classList.remove('hidden');
+        <button onclick="startSearch()" class="btn-search">Search Unlimited Jobs 🚀</button>
+    </div>
+
+    <div id="feed-section" class="hidden">
+        <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+            <h3 id="title-text" style="font-weight:900;">MATCHED DATA ↓</h3>
+            <button onclick="location.reload()" style="border:none; background:none; color:var(--blue); font-weight:700;">Edit Info</button>
+        </div>
+        <div id="list"></div>
+        <div id="load-more" class="loading-text hidden">Loading more jobs...</div>
+    </div>
+</div>
+
+<script>
+    let currentCat = 'govt';
+    let page = 1;
+    let loading = false;
+    let endOfData = false;
+
+    function setCat(cat, btn) {
+        currentCat = cat;
+        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('result-search').className = (cat === 'result') ? '' : 'hidden';
+    }
+
+    async function startSearch() {
+        const name = document.getElementById('name').value;
+        const state = document.getElementById('state').value;
+        if(!name || !state) { alert("Details fill karein!"); return; }
+
+        document.getElementById('form-section').classList.add('hidden');
+        document.getElementById('feed-section').classList.remove('hidden');
+        
+        page = 1;
+        endOfData = false;
+        document.getElementById('list').innerHTML = '';
+        fetchItems();
+    }
+
+    async function fetchItems() {
+        if(loading || endOfData) return;
+        loading = true;
+        document.getElementById('load-more').classList.remove('hidden');
+
+        const state = document.getElementById('state').value;
+        const search_query = document.getElementById('custom-search').value;
+
+        try {
+            const res = await fetch('/fetch_jobs', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ category: currentCat, state, search_query, page: page })
+            });
+            const data = await res.json();
             
-            const feed = document.getElementById('job-feed');
-            feed.innerHTML = '<div style="text-align:center; padding:50px;"><p style="font-weight:900; color:#2563eb; font-size:18px; animate-pulse">Searching the best jobs for you...</p></div>';
-
-            try {
-                const res = await fetch('/fetch_jobs', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({name, state, edu})
-                });
-                const jobs = await res.json();
-                feed.innerHTML = '';
-
-                jobs.forEach(job => {
-                    feed.innerHTML += `
-                        <div class="job-item">
-                            <div style="display:flex; justify-content:space-between; align-items:center;">
-                                <span class="source-badge">${job.source}</span>
-                                <span style="font-size:10px; font-weight:900; color:#22c55e;">● LIVE NOW</span>
-                            </div>
-                            <div class="job-title">${job.title}</div>
-                            <div class="job-desc">${job.snippet}</div>
-                            <a href="${job.link}" target="_blank" class="apply-now-btn">
-                                <span>Apply On Official Site</span>
-                                <span style="font-size:20px;">🔗</span>
-                            </a>
-                        </div>
-                    `;
-                });
-            } catch (e) {
-                feed.innerHTML = '<p style="color:red; font-weight:bold; text-align:center;">Network Issue! Try again.</p>';
+            if(data.length === 0) {
+                endOfData = true;
+                document.getElementById('load-more').innerHTML = "Bas bhai, aur data nahi hai!";
+            } else {
+                renderJobs(data);
+                page++;
+                document.getElementById('load-more').classList.add('hidden');
             }
+        } catch (e) { console.log(e); }
+        loading = false;
+    }
+
+    function renderJobs(data) {
+        const list = document.getElementById('list');
+        data.forEach(job => {
+            const isResult = currentCat === 'result' || job.title.toLowerCase().includes('result');
+            list.innerHTML += `
+                <div class="job-card">
+                    <div style="display:flex; justify-content:space-between;">
+                        <span style="font-size:10px; font-weight:900; color:gray;">2026 UPDATE</span>
+                        <span style="font-size:10px; font-weight:900; color:var(--green);">● ACTIVE</span>
+                    </div>
+                    <h2 class="job-title" style="font-size:18px; font-weight:900; margin:10px 0;">${job.title}</h2>
+                    <p style="font-size:13px; color:#64748b; line-height:1.5;">${job.snippet}</p>
+                    <a href="${job.link}" target="_blank" class="apply-btn ${isResult ? 'result-btn' : ''}">
+                        ${isResult ? 'CHECK RESULT 📄' : 'APPLY NOW 🚀'}
+                    </a>
+                </div>
+            `;
+        });
+    }
+
+    // Infinite Scroll Logic
+    window.onscroll = function() {
+        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 800) {
+            fetchItems();
         }
-    </script>
+    };
+</script>
+
 </body>
 </html>
