@@ -3,257 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ROZGAR AI - Professional Dashboard</title>
+    <title>ROZGAR AI - Professional</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { --blue: #2563eb; --dark: #1e3a8a; --bg: #f8fafc; --green: #059669; }
-        body { background: var(--bg); font-family: 'Inter', sans-serif; margin: 0; color: #1e293b; }
-        .container { max-width: 500px; margin: 0 auto; padding: 15px; }
-        
-        /* Glass Cards */
-        .card { background: white; padding: 25px; border-radius: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.05); border: 1px solid #fff; }
-        
-        /* Inputs */
+        body { background: var(--bg); font-family: 'Inter', sans-serif; margin: 0; padding: 0; }
+        .container { max-width: 500px; margin: 0 auto; padding: 20px; box-sizing: border-box; }
+        .card { background: white; padding: 25px; border-radius: 30px; box-shadow: 0 15px 30px rgba(0,0,0,0.05); border: 1px solid #fff; }
         .input-group { margin-bottom: 15px; }
         label { display: block; font-size: 11px; font-weight: 800; color: var(--dark); margin-bottom: 5px; text-transform: uppercase; }
-        input, select { width: 100%; padding: 16px; border-radius: 15px; border: 2px solid #e2e8f0; font-weight: 600; box-sizing: border-box; outline: none; transition: 0.3s; }
-        input:focus { border-color: var(--blue); }
-
-        /* Dashboard Buttons */
+        input, select { width: 100%; padding: 15px; border-radius: 15px; border: 2px solid #e2e8f0; font-weight: 600; box-sizing: border-box; outline: none; }
         .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
-        .dash-card { 
-            background: white; padding: 20px; border-radius: 25px; text-align: center;
-            box-shadow: 0 8px 15px rgba(0,0,0,0.04); cursor: pointer; border: 2px solid transparent; transition: 0.3s;
-        }
-        .dash-card:hover { border-color: var(--blue); transform: translateY(-5px); }
-        .dash-card i { font-size: 28px; display: block; margin-bottom: 8px; }
-        .dash-card span { font-weight: 800; font-size: 13px; color: var(--dark); }
-
-        /* Result Tiles */
-        .result-tile { background: #f1f5f9; padding: 12px; border-radius: 15px; font-weight: 700; font-size: 12px; cursor: pointer; text-align: center; transition: 0.2s; }
-        .result-tile:hover { background: var(--green); color: white; }
-
-        .btn-primary { width: 100%; background: var(--blue); color: white; padding: 18px; border: none; border-radius: 20px; font-size: 16px; font-weight: 900; cursor: pointer; transition: 0.3s; }
-        .btn-primary:active { transform: scale(0.98); }
-
-        .job-card { 
-            background: white; padding: 20px; border-radius: 25px; margin-bottom: 15px; 
-            border-left: 6px solid var(--blue); box-shadow: 0 4px 6px rgba(0,0,0,0.03); 
-            animation: fadeInUp 0.4s ease;
-        }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
+        .dash-card { background: white; padding: 20px; border-radius: 25px; text-align: center; box-shadow: 0 8px 15px rgba(0,0,0,0.03); cursor: pointer; transition: 0.3s; border: 2px solid transparent; }
+        .dash-card:hover { border-color: var(--blue); transform: translateY(-3px); }
+        .result-tile { background: #f1f5f9; padding: 12px; border-radius: 12px; font-weight: 700; font-size: 12px; cursor: pointer; text-align: center; }
+        .btn-primary { width: 100%; background: var(--blue); color: white; padding: 18px; border: none; border-radius: 20px; font-size: 16px; font-weight: 900; cursor: pointer; }
         .hidden { display: none; }
-        .nav-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 0 20px 0; }
-        
-        .loading-indicator { text-align: center; padding: 20px; font-weight: 800; color: var(--blue); }
+        .nav-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 20px; }
+        .job-card { background: white; padding: 20px; border-radius: 20px; margin-bottom: 15px; box-shadow: 0 5px 10px rgba(0,0,0,0.02); animation: fadeInUp 0.4s ease; border-left: 5px solid var(--blue); }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div id="login-section" class="hidden">
-        <div style="text-align:center; padding: 30px 0;">
-            <h1 style="font-size:42px; font-weight:900; color:var(--dark); font-style:italic; letter-spacing:-2px;">ROZGAR AI</h1>
-            <p style="font-weight:700; color:gray; font-size:10px; letter-spacing:2px;">CREATE YOUR ACCOUNT</p>
-        </div>
+    <div id="login-sec" class="hidden">
+        <h1 style="text-align:center; color:var(--dark); font-weight:900; font-style:italic;">ROZGAR AI</h1>
         <div class="card">
-            <div class="input-group"><label>Pura Naam</label><input type="text" id="u-name" placeholder="Rahul Raj"></div>
+            <div class="input-group"><label>Naam</label><input type="text" id="u-name" placeholder="Rahul Raj"></div>
             <div class="input-group"><label>Date of Birth</label><input type="date" id="u-dob"></div>
             <div class="input-group"><label>State</label><input type="text" id="u-state" placeholder="Bihar"></div>
             <div class="input-group">
                 <label>Education</label>
                 <select id="u-edu">
-                    <option value="10th">10th Pass</option>
-                    <option value="12th" selected>12th Pass</option>
-                    <option value="ITI">ITI Pass</option>
+                    <option value="10th">10th</option>
+                    <option value="12th" selected>12th</option>
+                    <option value="ITI">ITI</option>
                     <option value="Graduate">Graduation</option>
                 </select>
             </div>
-            <button onclick="saveAndLogin()" class="btn-primary">Login & Save Details 🚀</button>
+            <button onclick="saveLogin()" class="btn-primary">Login & Save 🚀</button>
         </div>
     </div>
 
-    <div id="dashboard-section" class="hidden">
+    <div id="dash-sec" class="hidden">
         <div class="nav-header">
-            <div>
-                <h2 style="margin:0; font-weight:900; font-size:22px;">Namaste, <span id="display-name" style="color:var(--blue);">User</span></h2>
-                <p id="display-info" style="font-size:12px; color:gray; margin:0; font-weight:600;"></p>
-            </div>
-            <button onclick="logout()" style="background:#fee2e2; border:none; color:#ef4444; font-weight:800; padding:8px 15px; border-radius:12px; font-size:12px;">Logout</button>
+            <div><h2 style="margin:0; font-weight:900;">Hi, <span id="p-name" style="color:var(--blue);">User</span></h2></div>
+            <button onclick="logout()" style="border:none; background:none; color:red; font-weight:700;">Logout</button>
         </div>
-
         <div class="dash-grid">
             <div class="dash-card" onclick="openJobs('govt')"><i>🏛️</i><span>Govt Jobs</span></div>
-            <div class="dash-card" onclick="openJobs('wfh')"><i>🏠</i><span>Private/WFH</span></div>
+            <div class="dash-card" onclick="openJobs('wfh')"><i>🏠</i><span>Remote/WFH</span></div>
             <div class="dash-card" onclick="openJobs('iti')"><i>⚙️</i><span>ITI Jobs</span></div>
             <div class="dash-card" onclick="openJobs('railway')"><i>🚂</i><span>Railway</span></div>
             <div class="dash-card" onclick="openJobs('bpsc')"><i>✍️</i><span>BPSC/PSC</span></div>
-            <div class="dash-card" onclick="openResultMenu()"><i>📄</i><span>All Results</span></div>
+            <div class="dash-card" onclick="showResults()"><i>📄</i><span>All Results</span></div>
         </div>
     </div>
 
-    <div id="result-menu" class="hidden">
-        <div class="nav-header">
-            <h2 style="font-weight:900;">Exam Results</h2>
-            <button onclick="showDash()" style="color:var(--blue); border:none; background:none; font-weight:800;">Home</button>
-        </div>
+    <div id="res-sec" class="hidden">
+        <div class="nav-header"><h3>Result Portal</h3><button onclick="showDash()" style="color:var(--blue); border:none; background:none; font-weight:800;">Back</button></div>
         <div class="card">
-            <div class="input-group">
-                <label>Search Specific Result</label>
-                <div style="display:flex; gap:8px;">
-                    <input type="text" id="res-search" placeholder="E.g. SSC GD Result" style="padding:12px;">
-                    <button onclick="searchManualResult()" style="background:var(--dark); color:white; border:none; border-radius:12px; padding:0 15px;">🔍</button>
-                </div>
-            </div>
-            
-            <label style="margin-top:10px;">Quick Access ↓</label>
-            <div class="dash-grid" style="grid-template-columns: 1fr 1fr; gap:10px;">
-                <div class="result-tile" onclick="openJobs('SSC Result')">SSC Result</div>
-                <div class="result-tile" onclick="openJobs('Railway Result')">Railway Result</div>
+            <input type="text" id="res-inp" placeholder="Search Result (e.g. SSC GD)" style="margin-bottom:10px;">
+            <button onclick="searchRes()" class="btn-primary" style="padding:10px;">Search 🔍</button>
+            <div class="dash-grid" style="grid-template-columns: 1fr 1fr; margin-top:15px;">
+                <div class="result-tile" onclick="openJobs('SSC Result')">SSC</div>
                 <div class="result-tile" onclick="openJobs('Bihar Police Result')">Bihar Police</div>
                 <div class="result-tile" onclick="openJobs('UP Police Result')">UP Police</div>
-                <div class="result-tile" onclick="openJobs('Board Result')">10th/12th Board</div>
-                <div class="result-tile" onclick="openJobs('ITI Result')">ITI Results</div>
+                <div class="result-tile" onclick="openJobs('Board Result')">10th/12th Result</div>
             </div>
         </div>
     </div>
 
-    <div id="feed-section" class="hidden">
-        <div class="nav-header">
-            <h3 id="feed-title" style="font-weight:900; text-transform:uppercase; color:var(--dark);">JOBS</h3>
-            <button onclick="showDash()" style="color:var(--blue); border:none; background:none; font-weight:800;">Back</button>
-        </div>
+    <div id="feed-sec" class="hidden">
+        <div class="nav-header"><h3 id="f-title" style="text-transform:uppercase;">JOBS</h3><button onclick="showDash()" style="color:var(--blue); border:none; background:none; font-weight:800;">Home</button></div>
         <div id="list"></div>
-        <div id="load-more-text" class="loading-indicator">Scrolling for more...</div>
+        <div id="loading" style="text-align:center; padding:20px; font-weight:800; color:var(--blue);">Loading...</div>
     </div>
 </div>
 
 <script>
-    let userData = {};
-    let page = 1;
-    let currentCategory = '';
-    let isLoading = false;
-    let endOfData = false;
+    let user = {}; let page = 1; let currentCat = ''; let loading = false;
 
-    // Load saved session
     window.onload = () => {
         const saved = localStorage.getItem('rozgarUser');
-        if(saved) {
-            userData = JSON.parse(saved);
-            showDash();
-        } else {
-            document.getElementById('login-section').classList.remove('hidden');
-        }
+        if(saved) { user = JSON.parse(saved); showDash(); } 
+        else { document.getElementById('login-sec').classList.remove('hidden'); }
     };
 
-    function saveAndLogin() {
-        const name = document.getElementById('u-name').value;
-        const dob = document.getElementById('u-dob').value;
-        const state = document.getElementById('u-state').value;
-        const edu = document.getElementById('u-edu').value;
-
-        if(!name || !state || !dob) { alert("Please fill all details!"); return; }
-
-        userData = { name, dob, state, edu };
-        localStorage.setItem('rozgarUser', JSON.stringify(userData));
+    function saveLogin() {
+        const n = document.getElementById('u-name').value;
+        const d = document.getElementById('u-dob').value;
+        const s = document.getElementById('u-state').value;
+        const e = document.getElementById('u-edu').value;
+        if(!n || !s || !d) return alert("Fill all!");
+        user = {name:n, dob:d, state:s, edu:e};
+        localStorage.setItem('rozgarUser', JSON.stringify(user));
         showDash();
     }
 
     function showDash() {
-        document.getElementById('login-section').className = 'hidden';
-        document.getElementById('result-menu').className = 'hidden';
-        document.getElementById('feed-section').className = 'hidden';
-        document.getElementById('dashboard-section').className = '';
-        
-        document.getElementById('display-name').innerText = userData.name;
-        document.getElementById('display-info').innerText = `${userData.edu} | ${userData.state}`;
+        document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
+        document.getElementById('dash-sec').classList.remove('hidden');
+        document.getElementById('p-name').innerText = user.name;
     }
 
-    function openResultMenu() {
-        document.getElementById('dashboard-section').className = 'hidden';
-        document.getElementById('result-menu').className = '';
+    function showResults() {
+        document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
+        document.getElementById('res-sec').classList.remove('hidden');
     }
 
     function openJobs(cat) {
-        currentCategory = cat;
-        page = 1;
-        endOfData = false;
-        document.getElementById('dashboard-section').className = 'hidden';
-        document.getElementById('result-menu').className = 'hidden';
-        document.getElementById('feed-section').className = '';
-        document.getElementById('feed-title').innerText = cat;
+        currentCat = cat; page = 1;
+        document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
+        document.getElementById('feed-sec').classList.remove('hidden');
+        document.getElementById('f-title').innerText = cat;
         document.getElementById('list').innerHTML = '';
         fetchData();
     }
 
-    function searchManualResult() {
-        const q = document.getElementById('res-search').value;
-        if(!q) return;
-        openJobs(q);
-    }
+    function searchRes() { const v = document.getElementById('res-inp').value; if(v) openJobs(v + " Result"); }
 
     async function fetchData() {
-        if(isLoading || endOfData) return;
-        isLoading = true;
-        document.getElementById('load-more-text').classList.remove('hidden');
-
+        if(loading) return; loading = true;
         try {
             const res = await fetch('/fetch_jobs', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ 
-                    category: currentCategory, 
-                    state: userData.state, 
-                    edu: userData.edu, 
-                    page: page,
-                    dob: userData.dob 
-                })
+                body: JSON.stringify({category: currentCat, state: user.state, edu: user.edu, page: page})
             });
             const data = await res.json();
-            
-            if(data.length === 0) {
-                endOfData = true;
-                document.getElementById('load-more-text').innerText = "End of Results.";
-            } else {
-                renderItems(data);
-                page++;
-                document.getElementById('load-more-text').classList.add('hidden');
-            }
-        } catch (e) { console.error(e); }
-        isLoading = false;
-    }
-
-    function renderItems(data) {
-        const list = document.getElementById('list');
-        data.forEach(item => {
-            const isResult = currentCategory.toLowerCase().includes('result') || item.title.toLowerCase().includes('result');
-            list.innerHTML += `
-                <div class="job-card" style="border-left-color: ${isResult ? 'var(--green)' : 'var(--blue)'};">
-                    <div style="display:flex; justify-content:space-between; font-size:10px; font-weight:900; color:gray; margin-bottom:10px;">
-                        <span>2026 UPDATE</span>
-                        <span style="color:${isResult ? 'var(--green)' : 'var(--blue)'};">● ACTIVE</span>
-                    </div>
-                    <h3 style="margin:0; font-size:17px; font-weight:900;">${item.title}</h3>
-                    <p style="font-size:13px; color:#64748b; margin:10px 0;">${item.snippet}</p>
-                    <a href="${item.link}" target="_blank" style="display:block; text-align:center; padding:14px; background:${isResult ? 'var(--green)' : 'var(--blue)'}; color:white; text-decoration:none; border-radius:15px; font-weight:800; font-size:14px;">
-                        ${isResult ? 'CHECK RESULT 📄' : 'APPLY NOW 🚀'}
+            const isRes = currentCat.toLowerCase().includes('result');
+            data.forEach(i => {
+                document.getElementById('list').innerHTML += `
+                <div class="job-card" style="border-left-color:${isRes ? 'var(--green)' : 'var(--blue)'}">
+                    <h3 style="margin:0; font-size:16px;">${i.title}</h3>
+                    <p style="font-size:12px; color:gray; margin:8px 0;">${i.snippet}</p>
+                    <a href="${i.link}" target="_blank" class="btn-primary" style="display:block; text-align:center; text-decoration:none; padding:10px; font-size:14px; background:${isRes ? 'var(--green)' : 'var(--blue)'}">
+                        ${isRes ? 'CHECK RESULT 📄' : 'APPLY NOW 🚀'}
                     </a>
                 </div>`;
-        });
+            });
+            page++;
+        } catch(e) {} loading = false;
     }
 
-    // Infinite Scroll Logic
-    window.onscroll = function() {
-        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 800) {
-            fetchData();
-        }
-    };
-
-    function logout() {
-        localStorage.removeItem('rozgarUser');
-        location.reload();
-    }
+    window.onscroll = () => { if((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) fetchData(); };
+    function logout() { localStorage.removeItem('rozgarUser'); location.reload(); }
 </script>
 </body>
 </html>
