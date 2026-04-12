@@ -44,6 +44,7 @@
         .meta-item { background: var(--light-blue); color: var(--blue); font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 4px; }
         
         .btn-apply { display: block; text-align: center; background: var(--blue); color: white; padding: 12px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 13px; margin-top: 15px; }
+        .btn-result { background: #22c55e !important; } /* Green color for results */
         .btn-primary { width: 100%; background: var(--blue); color: white; padding: 18px; border: none; border-radius: 15px; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3); }
         
         /* Bottom Nav */
@@ -228,6 +229,11 @@
             });
             const data = await res.json();
             data.forEach(i => {
+                // Logic to check if title contains "Result"
+                const isResult = i.title.toLowerCase().includes('result') || currentCat.toLowerCase().includes('result');
+                const btnText = isResult ? "Check Result ✅" : "View Details & Apply";
+                const btnClass = isResult ? "btn-apply btn-result" : "btn-apply";
+
                 document.getElementById('list').innerHTML += `
                 <div class="job-card">
                     <p style="color:var(--blue); font-size:10px; font-weight:800; text-transform:uppercase;">Verified Source</p>
@@ -238,7 +244,7 @@
                         <div class="meta-item">📅 2026</div>
                         <div class="meta-item">🎓 ${user.edu}</div>
                     </div>
-                    <a href="${i.link}" target="_blank" class="btn-apply">View Details & Apply</a>
+                    <a href="${i.link}" target="_blank" class="${btnClass}">${btnText}</a>
                 </div>`;
             });
             page++;
