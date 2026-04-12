@@ -3,166 +3,200 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ROZGAR AI - Professional Job Portal</title>
+    <title>ROZGAR AI - Smart Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --blue: #2563eb; --dark: #1e3a8a; --bg: #f1f5f9; --green: #059669; }
-        body { background: var(--bg); font-family: 'Inter', sans-serif; margin: 0; color: #1e293b; }
-        .container { max-width: 500px; margin: 0 auto; padding: 15px; }
+        :root { --blue: #2563eb; --dark: #1e3a8a; --bg: #f8fafc; --green: #059669; }
+        body { background: var(--bg); font-family: 'Inter', sans-serif; margin: 0; }
+        .container { max-width: 500px; margin: 0 auto; padding: 20px; }
+        .card { background: white; padding: 30px; border-radius: 35px; box-shadow: 0 20px 40px rgba(0,0,0,0.05); }
         
-        .header { text-align: center; padding: 30px 0; }
-        .header h1 { font-size: 40px; font-weight: 900; color: var(--dark); margin: 0; font-style: italic; }
-        
-        .card { background: white; padding: 25px; border-radius: 30px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
-        
+        /* Input Styles */
         .input-group { margin-bottom: 15px; }
         label { display: block; font-size: 11px; font-weight: 800; color: var(--dark); margin-bottom: 5px; text-transform: uppercase; }
-        input, select { width: 100%; padding: 15px; border-radius: 15px; border: 2px solid #e2e8f0; font-weight: 600; box-sizing: border-box; }
-        
-        .category-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 15px; }
-        .cat-btn { padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; background: white; font-weight: 700; cursor: pointer; font-size: 12px; transition: 0.2s; }
-        .cat-btn.active { background: var(--dark); color: white; border-color: var(--dark); }
+        input, select { width: 100%; padding: 16px; border-radius: 15px; border: 2px solid #e2e8f0; font-weight: 600; box-sizing: border-box; }
 
-        .btn-search { width: 100%; background: var(--blue); color: white; padding: 18px; border: none; border-radius: 20px; font-size: 16px; font-weight: 900; margin-top: 20px; cursor: pointer; }
+        /* Dashboard Buttons */
+        .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .dash-card { 
+            background: white; padding: 20px; border-radius: 25px; text-align: center;
+            box-shadow: 0 10px 15px rgba(0,0,0,0.05); cursor: pointer; border: 2px solid transparent; transition: 0.3s;
+        }
+        .dash-card:hover { border-color: var(--blue); transform: translateY(-5px); }
+        .dash-card i { font-size: 30px; display: block; margin-bottom: 10px; }
+        .dash-card span { font-weight: 800; font-size: 14px; color: var(--dark); }
 
-        /* Job Items */
-        .job-card { background: white; padding: 25px; border-radius: 25px; margin-bottom: 15px; border-left: 6px solid var(--blue); box-shadow: 0 4px 6px rgba(0,0,0,0.05); animation: fadeInUp 0.4s ease; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .apply-btn { display: block; width: 100%; padding: 14px; background: var(--blue); color: white; text-align: center; text-decoration: none; border-radius: 15px; font-weight: 800; margin-top: 15px; }
-        .result-btn { background: var(--green); }
-        
-        .loading-text { text-align: center; padding: 20px; font-weight: 800; color: var(--blue); }
+        /* Result Tiles */
+        .result-tile { background: #f1f5f9; padding: 12px; border-radius: 12px; font-weight: 700; font-size: 13px; cursor: pointer; text-align: center; }
+        .result-tile:hover { background: var(--green); color: white; }
+
+        .btn-primary { width: 100%; background: var(--blue); color: white; padding: 18px; border: none; border-radius: 20px; font-size: 16px; font-weight: 900; cursor: pointer; }
         .hidden { display: none; }
+        .nav-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 20px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="header">
-        <h1>ROZGAR AI</h1>
-        <p style="font-size: 9px; letter-spacing: 4px; font-weight: 700; color: gray;">R YADAV PRODUCTION</p>
+    <div id="login-section" class="hidden">
+        <div style="text-align:center; padding: 40px 0;">
+            <h1 style="font-size:40px; font-weight:900; color:var(--dark); font-style:italic;">ROZGAR AI</h1>
+            <p style="font-weight:700; color:gray;">CREATE YOUR ACCOUNT</p>
+        </div>
+        <div class="card">
+            <div class="input-group"><label>Pura Naam</label><input type="text" id="u-name" placeholder="Rahul Raj"></div>
+            <div class="input-group"><label>Date of Birth</label><input type="date" id="u-dob"></div>
+            <div class="input-group"><label>State</label><input type="text" id="u-state" placeholder="Bihar"></div>
+            <div class="input-group">
+                <label>Education</label>
+                <select id="u-edu">
+                    <option value="10th">10th</option>
+                    <option value="12th">12th</option>
+                    <option value="ITI">ITI</option>
+                    <option value="Graduate">Graduation</option>
+                </select>
+            </div>
+            <button onclick="saveAndLogin()" class="btn-primary">Login & Save Details 🚀</button>
+        </div>
     </div>
 
-    <div id="form-section" class="card">
-        <div class="input-group">
-            <label>Naam</label>
-            <input type="text" id="name" placeholder="Rahul Raj">
-        </div>
-        <div class="input-group">
-            <label>State</label>
-            <input type="text" id="state" placeholder="Bihar">
-        </div>
-        
-        <label>Category Select Karein ↓</label>
-        <div class="category-grid">
-            <button class="cat-btn active" onclick="setCat('govt', this)">Government 🏛️</button>
-            <button class="cat-btn" onclick="setCat('wfh', this)">Private/WFH 🏠</button>
-            <button class="cat-btn" onclick="setCat('iti', this)">ITI Special ⚙️</button>
-            <button class="cat-btn" onclick="setCat('railway', this)">Railway 🚂</button>
-            <button class="cat-btn" onclick="setCat('bpsc', this)">BPSC/PSC ✍️</button>
-            <button class="cat-btn" onclick="setCat('result', this)">All Results 📄</button>
+    <div id="dashboard-section" class="hidden">
+        <div class="nav-header">
+            <div>
+                <h2 style="margin:0; font-weight:900;">Namaste, <span id="display-name" style="color:var(--blue);">User</span></h2>
+                <p id="display-info" style="font-size:12px; color:gray; margin:0;"></p>
+            </div>
+            <button onclick="logout()" style="background:none; border:none; color:red; font-weight:700;">Logout</button>
         </div>
 
-        <div id="result-search" class="hidden" style="margin-top:15px;">
-            <input type="text" id="custom-search" placeholder="Search Result (e.g. SSC Result)">
+        <div class="dash-grid">
+            <div class="dash-card" onclick="openJobs('govt')"><i>🏛️</i><span>Govt Jobs</span></div>
+            <div class="dash-card" onclick="openJobs('wfh')"><i>🏠</i><span>Private/WFH</span></div>
+            <div class="dash-card" onclick="openJobs('iti')"><i>⚙️</i><span>ITI Jobs</span></div>
+            <div class="dash-card" onclick="openJobs('railway')"><i>🚂</i><span>Railway</span></div>
+            <div class="dash-card" onclick="openJobs('bpsc')"><i>✍️</i><span>BPSC/PSC</span></div>
+            <div class="dash-card" onclick="openResultMenu()"><i>📄</i><span>All Results</span></div>
         </div>
+    </div>
 
-        <button onclick="startSearch()" class="btn-search">Search Unlimited Jobs 🚀</button>
+    <div id="result-menu" class="hidden">
+        <div class="nav-header">
+            <h2 style="font-weight:900;">Exam Results</h2>
+            <button onclick="showDash()" style="color:var(--blue); border:none; background:none; font-weight:700;">Back</button>
+        </div>
+        <div class="card">
+            <input type="text" id="res-search" placeholder="Type Result Name (e.g. SSC GD)" style="margin-bottom:15px;">
+            <button onclick="searchManualResult()" class="btn-primary" style="padding:10px; margin-bottom:20px;">Search Result 🔍</button>
+            
+            <label>Categories ↓</label>
+            <div class="dash-grid" style="grid-template-columns: 1fr 1fr 1fr; gap:8px;">
+                <div class="result-tile" onclick="openJobs('SSC Result')">SSC</div>
+                <div class="result-tile" onclick="openJobs('Railway Result')">Railway</div>
+                <div class="result-tile" onclick="openJobs('Bihar Police Result')">Bihar Police</div>
+                <div class="result-tile" onclick="openJobs('UP Police Result')">UP Police</div>
+                <div class="result-tile" onclick="openJobs('10th 12th Board Result')">Board Exam</div>
+                <div class="result-tile" onclick="openJobs('ITI Result')">ITI</div>
+            </div>
+        </div>
     </div>
 
     <div id="feed-section" class="hidden">
-        <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
-            <h3 id="title-text" style="font-weight:900;">MATCHED DATA ↓</h3>
-            <button onclick="location.reload()" style="border:none; background:none; color:var(--blue); font-weight:700;">Edit Info</button>
+        <div class="nav-header">
+            <h3 id="feed-title" style="font-weight:900; text-transform:uppercase;">JOBS</h3>
+            <button onclick="showDash()" style="color:var(--blue); border:none; background:none; font-weight:700;">Home</button>
         </div>
         <div id="list"></div>
-        <div id="load-more" class="loading-text hidden">Loading more jobs...</div>
+        <div id="load-more" style="text-align:center; padding:20px; font-weight:800; color:var(--blue);">Loading...</div>
     </div>
 </div>
 
 <script>
-    let currentCat = 'govt';
+    let userData = {};
     let page = 1;
-    let loading = false;
-    let endOfData = false;
+    let currentCategory = '';
 
-    function setCat(cat, btn) {
-        currentCat = cat;
-        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        document.getElementById('result-search').className = (cat === 'result') ? '' : 'hidden';
+    // Check if user is already logged in
+    window.onload = () => {
+        const saved = localStorage.getItem('rozgarUser');
+        if(saved) {
+            userData = JSON.parse(saved);
+            showDash();
+        } else {
+            document.getElementById('login-section').classList.remove('hidden');
+        }
+    };
+
+    function saveAndLogin() {
+        const name = document.getElementById('u-name').value;
+        const dob = document.getElementById('u-dob').value;
+        const state = document.getElementById('u-state').value;
+        const edu = document.getElementById('u-edu').value;
+
+        if(!name || !state || !dob) { alert("Details bhariye!"); return; }
+
+        userData = { name, dob, state, edu };
+        localStorage.setItem('rozgarUser', JSON.stringify(userData));
+        showDash();
     }
 
-    async function startSearch() {
-        const name = document.getElementById('name').value;
-        const state = document.getElementById('state').value;
-        if(!name || !state) { alert("Details fill karein!"); return; }
-
-        document.getElementById('form-section').classList.add('hidden');
-        document.getElementById('feed-section').classList.remove('hidden');
+    function showDash() {
+        document.getElementById('login-section').className = 'hidden';
+        document.getElementById('result-menu').className = 'hidden';
+        document.getElementById('feed-section').className = 'hidden';
+        document.getElementById('dashboard-section').className = '';
         
+        document.getElementById('display-name').innerText = userData.name;
+        document.getElementById('display-info').innerText = `${userData.edu} Pass | ${userData.state}`;
+    }
+
+    function openResultMenu() {
+        document.getElementById('dashboard-section').className = 'hidden';
+        document.getElementById('result-menu').className = '';
+    }
+
+    async function openJobs(cat) {
+        currentCategory = cat;
         page = 1;
-        endOfData = false;
+        document.getElementById('dashboard-section').className = 'hidden';
+        document.getElementById('result-menu').className = 'hidden';
+        document.getElementById('feed-section').className = '';
+        document.getElementById('feed-title').innerText = cat;
         document.getElementById('list').innerHTML = '';
-        fetchItems();
+        fetchData();
     }
 
-    async function fetchItems() {
-        if(loading || endOfData) return;
-        loading = true;
-        document.getElementById('load-more').classList.remove('hidden');
-
-        const state = document.getElementById('state').value;
-        const search_query = document.getElementById('custom-search').value;
-
-        try {
-            const res = await fetch('/fetch_jobs', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ category: currentCat, state, search_query, page: page })
-            });
-            const data = await res.json();
-            
-            if(data.length === 0) {
-                endOfData = true;
-                document.getElementById('load-more').innerHTML = "Bas bhai, aur data nahi hai!";
-            } else {
-                renderJobs(data);
-                page++;
-                document.getElementById('load-more').classList.add('hidden');
-            }
-        } catch (e) { console.log(e); }
-        loading = false;
+    function searchManualResult() {
+        const q = document.getElementById('res-search').value;
+        if(!q) return;
+        openJobs(q + " Result");
     }
 
-    function renderJobs(data) {
+    async function fetchData() {
+        const res = await fetch('/fetch_jobs', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ category: currentCategory, state: userData.state, edu: userData.edu, page: page })
+        });
+        const data = await res.json();
         const list = document.getElementById('list');
-        data.forEach(job => {
-            const isResult = currentCat === 'result' || job.title.toLowerCase().includes('result');
+        
+        data.forEach(item => {
+            const isResult = currentCategory.toLowerCase().includes('result');
             list.innerHTML += `
-                <div class="job-card">
-                    <div style="display:flex; justify-content:space-between;">
-                        <span style="font-size:10px; font-weight:900; color:gray;">2026 UPDATE</span>
-                        <span style="font-size:10px; font-weight:900; color:var(--green);">● ACTIVE</span>
-                    </div>
-                    <h2 class="job-title" style="font-size:18px; font-weight:900; margin:10px 0;">${job.title}</h2>
-                    <p style="font-size:13px; color:#64748b; line-height:1.5;">${job.snippet}</p>
-                    <a href="${job.link}" target="_blank" class="apply-btn ${isResult ? 'result-btn' : ''}">
+                <div style="background:white; padding:20px; border-radius:25px; margin-bottom:15px; border-left:5px solid ${isResult ? 'var(--green)' : 'var(--blue)'}; shadow:sm;">
+                    <h3 style="margin:0; font-size:16px;">${item.title}</h3>
+                    <p style="font-size:12px; color:gray;">${item.snippet}</p>
+                    <a href="${item.link}" target="_blank" style="display:block; text-align:center; padding:12px; background:${isResult ? 'var(--green)' : 'var(--blue)'}; color:white; text-decoration:none; border-radius:12px; font-weight:800; margin-top:10px;">
                         ${isResult ? 'CHECK RESULT 📄' : 'APPLY NOW 🚀'}
                     </a>
-                </div>
-            `;
+                </div>`;
         });
     }
 
-    // Infinite Scroll Logic
-    window.onscroll = function() {
-        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 800) {
-            fetchItems();
-        }
-    };
+    function logout() {
+        localStorage.removeItem('rozgarUser');
+        location.reload();
+    }
 </script>
-
 </body>
 </html>
