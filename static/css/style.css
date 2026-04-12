@@ -1,0 +1,57 @@
+/* ROZGAR APP CUSTOM STYLES - R YADAV PRODUCTION */
+
+:root {
+    --primary-blue: #172554;
+    --accent-blue: #1e3a8a;
+    --success-green: #059669;
+    --warning-yellow: #facc15;
+}
+
+/* Smooth Scrolling */
+html { scroll-behavior: smooth; }
+
+/* Custom Scrollbar hatao */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+/* Marquee Speed aur Style */
+.marquee-live {
+    animation: scroll 20s linear infinite;
+    display: flex;
+    white-space: nowrap;
+    font-weight: 900;
+}
+
+@keyframes scroll {
+    from { transform: translateX(100%); }
+    to { transform: translateX(-100%); }
+}
+
+/* Card Hover Effect */
+.job-card {
+    transition: all 0.3s ease;
+}
+
+.job-card:active {
+    transform: scale(0.96);
+}
+
+/* Gradient Backgrounds */
+.bg-gradient-blue {
+    background: linear-gradient(135deg, #172554 0%, #1e3a8a 100%);
+}
+
+/* Result Button Glow */
+.result-btn {
+    background-color: var(--success-green);
+    box-shadow: 0 4px 14px 0 rgba(5, 150, 105, 0.39);
+}
+
+/* Profile Image Glow */
+#nav-pfp, #setting-pfp {
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+    transition: transform 0.3s ease;
+}
+
+#nav-pfp:hover {
+    transform: rotate(5deg) scale(1.1);
+}
