@@ -13,6 +13,8 @@
         @keyframes scroll { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
         .job-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 2rem !important; }
         .job-card:hover { transform: translateY(-8px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+        .live-tag { animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
     </style>
 </head>
 <body class="bg-slate-100 font-sans">
@@ -46,8 +48,7 @@
                 </button>
             </div>
 
-            <div id="filter-tabs" class="bg-slate-50 p-3 flex gap-2 overflow-x-auto no-scrollbar border-b">
-                </div>
+            <div id="filter-tabs" class="bg-slate-50 p-3 flex gap-2 overflow-x-auto no-scrollbar border-b"></div>
 
             <div id="results-box" class="p-4 space-y-6 bg-slate-50 flex-1"></div>
             
@@ -55,47 +56,31 @@
                 <button onclick="loadMore()" class="bg-blue-950 text-white px-10 py-4 rounded-2xl font-black text-[10px] uppercase shadow-2xl">Load More Data ⬇️</button>
             </div>
             
-            <div id="loader" class="hidden text-center py-10 font-black text-blue-900 text-[10px] animate-pulse">FETCHING UPDATES...</div>
+            <div id="loader" class="hidden text-center py-10 font-black text-blue-900 text-[10px] animate-pulse">FETCHING LIVE DATA...</div>
         </div>
 
         <div id="login-view" class="p-8 flex-1 flex flex-col justify-center bg-white hidden">
             <h2 class="text-3xl font-black mb-2 italic uppercase">Welcome ✍️</h2>
-            <p class="text-[10px] text-slate-400 font-bold mb-8 uppercase tracking-widest border-b pb-4">Arwal's Digital Job Portal</p>
             <div class="space-y-4">
                 <input id="un" type="text" placeholder="Full Name" class="w-full p-4 rounded-xl border-2 font-bold outline-none bg-slate-50">
                 <input id="ue" type="email" placeholder="Email Address" class="w-full p-4 rounded-xl border-2 font-bold outline-none bg-slate-50">
-                <button onclick="doLogin()" class="w-full bg-blue-950 text-white p-5 rounded-xl font-black text-lg shadow-xl uppercase active:scale-95 transition">Start Now 🚀</button>
+                <button onclick="doLogin()" class="w-full bg-blue-950 text-white p-5 rounded-xl font-black text-lg shadow-xl uppercase transition">Start Now 🚀</button>
             </div>
         </div>
 
         <div id="profile-ui" class="fixed inset-0 bg-white z-[3000] hidden flex-col">
-            <div class="p-5 bg-blue-950 text-white flex items-center justify-between">
-                <h2 class="font-black italic text-xl">PROFILE</h2>
-                <button onclick="hideProfile()" class="text-[10px] font-black bg-red-600 px-5 py-2 rounded-xl uppercase">Back</button>
-            </div>
+            <div class="p-5 bg-blue-950 text-white flex items-center justify-between"><h2 class="font-black italic text-xl">PROFILE</h2><button onclick="hideProfile()" class="text-[10px] font-black bg-red-600 px-5 py-2 rounded-xl uppercase">Back</button></div>
             <div class="p-8 flex-1 space-y-4">
                 <div id="setting-pfp" class="w-24 h-24 rounded-full bg-slate-200 border-4 border-blue-950 mx-auto overflow-hidden flex items-center justify-center text-3xl">👤</div>
-                <input id="upfp" type="text" placeholder="Profile Image URL" class="w-full p-3 border-2 rounded-xl text-xs" onchange="updatePFPPreview()">
-                <div class="pt-4 border-t">
-                    <p class="text-xs font-bold text-slate-400 uppercase">Name</p>
-                    <p id="p-name" class="font-black text-lg text-slate-800"></p>
-                    <p class="text-xs font-bold text-slate-400 uppercase mt-4">Email</p>
-                    <p id="p-email" class="font-black text-lg text-slate-800"></p>
-                </div>
+                <div class="pt-4 border-t"><p id="p-name" class="font-black text-lg text-slate-800"></p><p id="p-email" class="font-black text-lg text-slate-800"></p></div>
                 <button onclick="clearData()" class="w-full bg-red-600 text-white p-4 rounded-xl font-black text-[10px] mt-10 uppercase">Logout / Reset</button>
             </div>
         </div>
 
         <div id="chat-ui" class="fixed inset-0 bg-white z-[2000] hidden flex-col">
-            <div class="p-5 bg-blue-950 text-white flex justify-between items-center">
-                <h2 class="font-black italic text-xl">ROZGAR AI</h2>
-                <button onclick="hideChat()" class="text-[10px] bg-red-600 px-5 py-2 rounded-xl font-black uppercase">Close</button>
-            </div>
+            <div class="p-5 bg-blue-950 text-white flex justify-between items-center"><h2 class="font-black italic text-xl">ROZGAR AI</h2><button onclick="hideChat()" class="text-[10px] bg-red-600 px-5 py-2 rounded-xl font-black uppercase">Close</button></div>
             <div id="msg-box" class="flex-1 p-5 overflow-y-auto space-y-4 bg-slate-50"></div>
-            <div class="p-4 border-t flex gap-2 bg-white">
-                <input id="chat-in" type="text" placeholder="Pucho kuch bhi..." class="flex-1 p-4 bg-slate-100 rounded-2xl outline-none font-bold text-sm">
-                <button onclick="sendChat()" class="bg-blue-950 text-white px-6 rounded-2xl font-black text-[10px]">ASK</button>
-            </div>
+            <div class="p-4 border-t flex gap-2 bg-white"><input id="chat-in" type="text" placeholder="Pucho kuch bhi..." class="flex-1 p-4 bg-slate-100 rounded-2xl outline-none font-bold text-sm"><button onclick="sendChat()" class="bg-blue-950 text-white px-6 rounded-2xl font-black text-[10px]">ASK</button></div>
         </div>
     </div>
 
@@ -106,16 +91,17 @@
 
         const filters = {
             govt: [
-                { id: 'all', label: 'All India 🇮🇳', q: 'central govt jobs 2026' },
-                { id: 'state', label: 'Bihar Special 🚩', q: 'bihar govt vacancy 2026' },
-                { id: 'iti', label: 'ITI/Technical 🛠️', q: 'railway ITI apprentice 2026' },
-                { id: 'results', label: 'Sarkari Result ✅', q: 'latest sarkari result 2026' }
+                { id: 'g-all', label: 'All India Jobs 🇮🇳', q: 'latest central govt jobs notification 2026' },
+                { id: 'g-bihar', label: 'Bihar Jobs 🚩', q: 'bihar police bssc ssc vacancy notification 2026' },
+                { id: 'r-ssc', label: 'SSC Results ✅', q: 'SSC GD CGL MTS result marksheet 2025 2026' },
+                { id: 'r-police', label: 'Police Results 👮', q: 'Bihar Police UP Police Constable result list 2025 2026' },
+                { id: 'r-board', label: 'Board Results 📝', q: 'Bihar Board 10th 12th result indiaresults 2026' }
             ],
             private: [
-                { id: 'remote', label: 'Work From Home 🏠', q: 'remote work from home jobs india 2026' },
-                { id: 'full', label: 'Full Time 🏢', q: 'private company jobs in india 2026' },
-                { id: 'part', label: 'Part Time ⏰', q: 'part time student jobs india 2026' },
-                { id: 'intern', label: 'Internships 🎓', q: 'internshala student internships 2026' }
+                { id: 'p-wfh', label: 'Work From Home 🏠', q: 'remote work from home jobs india 2026 internshala' },
+                { id: 'p-intern', label: 'Internships 🎓', q: 'internshala student internship for freshers 2026' },
+                { id: 'p-apna', label: 'Apna App Jobs 📱', q: 'site:apna.co latest job openings 2026' },
+                { id: 'p-pt', label: 'Part Time ⏰', q: 'part time evening jobs for students india' }
             ]
         };
 
@@ -141,7 +127,7 @@
                 };
                 container.appendChild(btn);
             });
-            loadData(filters[currentMaster][0].q); // Default pehli filter load karo
+            loadData(filters[currentMaster][0].q);
         }
 
         async function loadData(q, isMore = false) {
@@ -155,30 +141,39 @@
             lm.classList.add('hidden');
             
             try {
+                // Caching bypass using timestamp
                 const res = await fetch('/search', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ interest: q + " " + (isMore ? pageNum : "") })
+                    body: JSON.stringify({ interest: q + " " + (isMore ? pageNum : ""), ts: Date.now() })
                 });
                 const data = await res.json();
                 ldr.classList.add('hidden');
                 
-                const btnColor = currentMaster === 'govt' ? "bg-blue-950" : "bg-indigo-600";
+                const isResult = q.toLowerCase().includes('result');
+                const themeColor = isResult ? 'emerald-600' : (currentMaster === 'govt' ? 'blue-950' : 'indigo-600');
+                const btnText = isResult ? 'CHECK RESULT ✅' : 'DETAILS & APPLY 🚀';
 
                 data.forEach(item => {
+                    const sourceTag = item.source || 'Official Update';
+                    const liveBadge = item.is_live ? `<span class="live-tag bg-red-600 text-white px-2 py-0.5 rounded text-[7px] font-bold">LIVE FORM</span>` : '';
+                    
                     box.innerHTML += `
-                    <div class="job-card p-6 bg-white border-2 border-slate-100 shadow-xl border-l-[10px] ${currentMaster === 'govt' ? 'border-blue-950' : 'border-indigo-600'}">
-                        <span class="text-[8px] font-black text-slate-300 uppercase tracking-widest">${currentMaster} Update • 2026</span>
+                    <div class="job-card p-6 bg-white border-2 border-slate-100 shadow-xl border-l-[10px] border-${themeColor}">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-[8px] font-black text-slate-400 uppercase tracking-widest">${sourceTag} • 2026</span>
+                            ${liveBadge}
+                        </div>
                         <h3 class="font-black text-sm uppercase mb-3 mt-1 text-slate-900 leading-tight">${item.title}</h3>
                         <p class="text-[10px] text-slate-500 mb-6 line-clamp-2 italic">${item.snippet}</p>
-                        <a href="${item.link}" target="_blank" class="block w-full text-center ${btnColor} text-white py-4 rounded-2xl font-black text-[10px] shadow-lg uppercase tracking-wider">Details & Apply 🚀</a>
+                        <a href="${item.link}" target="_blank" class="block w-full text-center bg-${themeColor} text-white py-4 rounded-2xl font-black text-[10px] shadow-lg uppercase tracking-wider">${btnText}</a>
                     </div>`;
                 });
                 if(data.length > 0) lm.classList.remove('hidden');
             } catch(e) { ldr.classList.add('hidden'); }
         }
 
-        // Baki functions (Profile, Chat, Login) jo pehle the
+        // --- Core App Functions ---
         function showProfile() {
             document.getElementById('p-name').innerText = localStorage.getItem('user_n');
             document.getElementById('p-email').innerText = localStorage.getItem('user_e');
