@@ -1,6 +1,7 @@
 import requests
 from flask import Flask, render_template, request, jsonify
 import os
+import json
 
 app = Flask(__name__)
 
@@ -20,9 +21,7 @@ def search():
         state = data.get('state', 'India')
         job_type = data.get('type', 'all')
         
-        # STRICT FILTER: Third-party sites ko poora block kar diya
-        exclude = "-site:facebook.com -site:instagram.com -site:twitter.com -site:youtube.com -site:shiksha.com -site:indiatoday.in -site:jagranjosh.com -site:testbook.com"
-        # OFFICIAL ONLY: Sirf govt aur official domains ko force karega
+        exclude = "-site:facebook.com -site:instagram.com -site:twitter.com -site:youtube.com -site:shiksha.com -site:testbook.com"
         official_filter = "(site:.gov.in OR site:.nic.in OR site:.edu OR site:.res.in OR site:org.in)"
 
         if job_type == 'results':
@@ -30,7 +29,7 @@ def search():
         elif job_type == 'central':
             query = f"central government {interest} vacancy official notification 2026 {official_filter} {exclude}"
         else:
-            query = f"{state} government {interest} vacancy official portal 2026 {official_filter} {exclude}"
+            query = f"{interest} latest vacancy {state} 2026 {official_filter} {exclude}"
             
         headers = {'X-API-KEY': SERPER_API_KEY, 'Content-Type': 'application/json'}
         payload = {'q': query, 'num': 10}
@@ -47,20 +46,33 @@ def chat():
         user_msg = data.get('message', '')
         u_name = data.get('name', 'Bhai')
         
+        # Gemini API URL
         url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
-        prompt = {
+        
+        # Proper JSON payload for Gemini
+        payload = {
             "contents": [{
                 "parts": [{
-                    "text": f"You are Rozgar AI, a helpful elder brother to {u_name}. Answer career and job questions accurately in Hindi/English mix. Question: {user_msg}"
+                    "text": f"You are Rozgar AI, a helpful elder brother to {u_name}. Answer career and job questions accurately in a mix of Hindi and English. Be friendly. Question: {user_msg}"
                 }]
             }]
         }
         
-        res = requests.post(url, json=prompt)
-        ai_reply = res.json()['candidates'][0]['content']['parts'][0]['text']
-        return jsonify({"reply": ai_reply})
-    except:
-        return jsonify({"reply": "Bhai, network issue hai. Thodi der baad puchho!"})
+        headers = {'Content-Type': 'application/json'}
+        response = requests.post(url, headers=headers, data=json.dumps(payload))
+        
+        if response.status_code == 200:
+            result = response.json()
+            ai_reply = result['candidates'][0]['content']['parts'][0]['text']
+            return jsonify({"reply": ai_reply})
+        else:
+            # Render error logs ke liye
+            print(f"Gemini Error: {response.text}")
+            return jsonify({"reply": "Bhai, API side se dikkat hai. Key check karo ya thoda wait karo."})
+            
+    except Exception as e:
+        print(f"Server Error: {str(e)}")
+        return jsonify({"reply": "Bhai, server thoda busy hai. Ek baar refresh karke try karo!"})
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 8080))
