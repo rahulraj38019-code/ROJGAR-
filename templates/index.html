@@ -1,13 +1,145 @@
-<div class="p-3 bg-white">
-    <div class="relative">
-        <input type="text" id="job-search" onkeyup="filterJobs()" placeholder="Search Jobs, Results, Year..." 
-        class="w-full p-4 pl-12 rounded-2xl border-2 border-slate-100 font-bold outline-none focus:border-blue-500 transition">
-        <span class="absolute left-4 top-4 text-slate-400">🔍</span>
-    </div>
-</div>
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROZGAR AI - R YADAV PRODUCTION</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .active-btn { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%) !important; color: white !important; transform: scale(1.05); }
+        .job-card { transition: all 0.3s ease; border-radius: 24px !important; overflow: hidden; }
+        .job-card:hover { transform: translateY(-5px); shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+        .marquee-live { animation: scroll 25s linear infinite; }
+        @keyframes scroll { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
+    </style>
+</head>
+<body class="bg-slate-50 font-sans transition-all duration-300">
 
-<div id="sub-filters" class="p-3 flex gap-2 overflow-x-auto no-scrollbar bg-white shadow-sm sticky top-[72px] z-40">
+    <div id="app-container" class="max-w-md mx-auto min-h-screen bg-white shadow-2xl flex flex-col relative">
+        
+        <div class="p-4 bg-blue-950 text-white flex justify-between items-center sticky top-0 z-50">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-blue-800 border-2 border-blue-400 flex items-center justify-center font-black text-[10px] uppercase">PFP</div>
+                <div>
+                    <h1 class="text-lg font-black italic uppercase leading-none">ROZGAR</h1>
+                    <p class="text-[7px] font-bold text-blue-400 uppercase tracking-widest">R YADAV PRODUCTION</p>
+                </div>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="toggleDarkMode()" id="dark-btn" class="bg-red-600 p-2.5 rounded-full shadow-lg">🌙</button>
+            </div>
+        </div>
+
+        <div class="p-4 bg-white sticky top-[64px] z-40 border-b">
+            <div class="relative">
+                <input type="text" id="main-search" onkeyup="searchEverything()" placeholder="Search Bihar Board, SSC, Jobs..." 
+                class="w-full p-4 pl-12 rounded-2xl bg-slate-100 border-none font-bold text-xs focus:ring-2 focus:ring-blue-500 outline-none">
+                <span class="absolute left-4 top-4 text-lg">🔍</span>
+            </div>
+        </div>
+
+        <div class="bg-yellow-400 text-black py-2 overflow-hidden border-b border-yellow-500">
+            <div class="marquee-live flex whitespace-nowrap uppercase italic font-black text-[10px]">
+                <span>🔥 Bihar Board 10th Result Out • SSC GD 2026 • Railway New Vacancy • R YADAV VIP UPDATES 🔥</span>
+            </div>
+        </div>
+
+        <div class="p-3 grid grid-cols-3 gap-2 bg-white border-b shadow-sm">
+            <button id="tab-govt" onclick="switchTab('govt')" class="py-3 border rounded-xl text-[9px] font-black uppercase active-btn">🏛️ Govt</button>
+            <button id="tab-result" onclick="switchTab('result')" class="py-3 border rounded-xl text-[9px] font-black uppercase">📄 Result</button>
+            <button id="tab-private" onclick="switchTab('private')" class="py-3 border rounded-xl text-[9px] font-black uppercase">🏢 Private</button>
+        </div>
+
+        <div id="results-box" class="p-4 space-y-6 bg-slate-50 flex-1 pb-32">
+            </div>
+
+        <div class="fixed bottom-6 right-6 flex flex-col gap-3 z-50">
+            <a href="https://www.instagram.com/___rahul_yadav_._" class="flex items-center gap-2 bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-600 text-white pl-4 pr-2 py-2 rounded-full shadow-2xl">
+                <span class="text-[8px] font-black uppercase">Insta</span>
+                <img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg" class="w-6 h-6 bg-white rounded-full p-1">
+            </a>
+            <a href="#" class="flex items-center gap-2 bg-blue-600 text-white pl-4 pr-2 py-2 rounded-full shadow-2xl">
+                <span class="text-[8px] font-black uppercase">Join VIP</span>
+                <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" class="w-6 h-6 bg-white rounded-full p-1">
+            </a>
+        </div>
     </div>
 
-<div id="results-box" class="p-4 space-y-6 bg-slate-50 flex-1 pb-32">
-    </div>
+    <script>
+        const database = {
+            govt: [
+                { title: "Bihar Police Constable", info: "Home Dept. Bihar", year: "2024", vacancy: "21,391", post: "Constable", btn: "Apply Now 🚀" },
+                { title: "Railway RRB ALP", info: "Indian Railways", year: "2025", vacancy: "5,696", post: "Loco Pilot", btn: "Apply Now 🚀" },
+                { title: "SSC GD Constable", info: "Staff Selection Commission", year: "2026", vacancy: "45,000+", post: "GD Constable", btn: "View Details 🔍" }
+            ],
+            result: [
+                { title: "Bihar Board 10th (Matric)", info: "BSEB Patna", year: "2025", vacancy: "16.5 Lakh Students", post: "Annual Result", btn: "Check Result 📄" },
+                { title: "Bihar Board 12th (Inter)", info: "BSEB Patna", year: "2025", vacancy: "13.2 Lakh Students", post: "Annual Result", btn: "Check Result 📄" },
+                { title: "SSC CGL Tier-1", info: "SSC Official", year: "2024", vacancy: "17,727", post: "Group B & C", btn: "Download PDF 📥" }
+            ],
+            private: [
+                { title: "Amazon: Customer Support", info: "Internshala Listed", year: "2026", vacancy: "50+", post: "WFH Executive", btn: "Apply via Internshala 🏢" },
+                { title: "Zomato Delivery Partner", info: "Naukri App", year: "2026", vacancy: "Bulk", post: "Delivery Boy", btn: "Apply Now 🚀" }
+            ]
+        };
+
+        function switchTab(type) {
+            document.getElementById('tab-govt').classList.remove('active-btn');
+            document.getElementById('tab-result').classList.remove('active-btn');
+            document.getElementById('tab-private').classList.remove('active-btn');
+            document.getElementById('tab-' + type).classList.add('active-btn');
+
+            renderCards(database[type]);
+        }
+
+        function renderCards(data) {
+            const box = document.getElementById('results-box');
+            box.innerHTML = '';
+            
+            data.forEach(item => {
+                box.innerHTML += `
+                    <div class="job-card bg-white p-5 border shadow-sm relative">
+                        <div class="absolute top-0 right-0 bg-blue-100 text-blue-800 text-[7px] px-3 py-1 rounded-bl-xl font-black">YEAR: ${item.year}</div>
+                        <h3 class="font-black text-blue-950 uppercase text-xs mb-1">${item.title}</h3>
+                        <p class="text-[9px] text-slate-400 font-bold italic mb-4">${item.info}</p>
+                        
+                        <div class="grid grid-cols-2 gap-3 mb-5">
+                            <div class="bg-slate-50 p-2 rounded-xl border border-dashed">
+                                <p class="text-[6px] text-slate-400 uppercase">Vacancy/Students</p>
+                                <p class="text-[9px] font-black text-blue-900">${item.vacancy}</p>
+                            </div>
+                            <div class="bg-slate-50 p-2 rounded-xl border border-dashed">
+                                <p class="text-[6px] text-slate-400 uppercase">Post Name</p>
+                                <p class="text-[9px] font-black text-green-600">${item.post}</p>
+                            </div>
+                        </div>
+
+                        <button class="w-full bg-blue-950 text-white py-3 rounded-2xl font-black text-[9px] uppercase shadow-lg active:scale-95 transition-all">
+                            ${item.btn}
+                        </button>
+                    </div>`;
+            });
+        }
+
+        function searchEverything() {
+            let query = document.getElementById('main-search').value.toLowerCase();
+            let combined = [...database.govt, ...database.result, ...database.private];
+            let filtered = combined.filter(i => i.title.toLowerCase().includes(query) || i.post.toLowerCase().includes(query) || i.year.includes(query));
+            renderCards(filtered);
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            if(document.body.classList.contains('dark-mode')) {
+                document.body.style.backgroundColor = "#020617";
+            } else {
+                document.body.style.backgroundColor = "#f8fafc";
+            }
+        }
+
+        window.onload = () => switchTab('govt');
+    </script>
+</body>
+</html>
