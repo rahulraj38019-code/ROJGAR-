@@ -3,45 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ROZGAR AI - Smart Dashboard</title>
+    <title>ROZGAR AI - Professional Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { --blue: #2563eb; --dark: #1e3a8a; --bg: #f8fafc; --green: #059669; }
-        body { background: var(--bg); font-family: 'Inter', sans-serif; margin: 0; }
-        .container { max-width: 500px; margin: 0 auto; padding: 20px; }
-        .card { background: white; padding: 30px; border-radius: 35px; box-shadow: 0 20px 40px rgba(0,0,0,0.05); }
+        body { background: var(--bg); font-family: 'Inter', sans-serif; margin: 0; color: #1e293b; }
+        .container { max-width: 500px; margin: 0 auto; padding: 15px; }
         
-        /* Input Styles */
+        /* Glass Cards */
+        .card { background: white; padding: 25px; border-radius: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.05); border: 1px solid #fff; }
+        
+        /* Inputs */
         .input-group { margin-bottom: 15px; }
         label { display: block; font-size: 11px; font-weight: 800; color: var(--dark); margin-bottom: 5px; text-transform: uppercase; }
-        input, select { width: 100%; padding: 16px; border-radius: 15px; border: 2px solid #e2e8f0; font-weight: 600; box-sizing: border-box; }
+        input, select { width: 100%; padding: 16px; border-radius: 15px; border: 2px solid #e2e8f0; font-weight: 600; box-sizing: border-box; outline: none; transition: 0.3s; }
+        input:focus { border-color: var(--blue); }
 
         /* Dashboard Buttons */
-        .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
         .dash-card { 
             background: white; padding: 20px; border-radius: 25px; text-align: center;
-            box-shadow: 0 10px 15px rgba(0,0,0,0.05); cursor: pointer; border: 2px solid transparent; transition: 0.3s;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.04); cursor: pointer; border: 2px solid transparent; transition: 0.3s;
         }
         .dash-card:hover { border-color: var(--blue); transform: translateY(-5px); }
-        .dash-card i { font-size: 30px; display: block; margin-bottom: 10px; }
-        .dash-card span { font-weight: 800; font-size: 14px; color: var(--dark); }
+        .dash-card i { font-size: 28px; display: block; margin-bottom: 8px; }
+        .dash-card span { font-weight: 800; font-size: 13px; color: var(--dark); }
 
         /* Result Tiles */
-        .result-tile { background: #f1f5f9; padding: 12px; border-radius: 12px; font-weight: 700; font-size: 13px; cursor: pointer; text-align: center; }
+        .result-tile { background: #f1f5f9; padding: 12px; border-radius: 15px; font-weight: 700; font-size: 12px; cursor: pointer; text-align: center; transition: 0.2s; }
         .result-tile:hover { background: var(--green); color: white; }
 
-        .btn-primary { width: 100%; background: var(--blue); color: white; padding: 18px; border: none; border-radius: 20px; font-size: 16px; font-weight: 900; cursor: pointer; }
+        .btn-primary { width: 100%; background: var(--blue); color: white; padding: 18px; border: none; border-radius: 20px; font-size: 16px; font-weight: 900; cursor: pointer; transition: 0.3s; }
+        .btn-primary:active { transform: scale(0.98); }
+
+        .job-card { 
+            background: white; padding: 20px; border-radius: 25px; margin-bottom: 15px; 
+            border-left: 6px solid var(--blue); box-shadow: 0 4px 6px rgba(0,0,0,0.03); 
+            animation: fadeInUp 0.4s ease;
+        }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
         .hidden { display: none; }
-        .nav-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 20px; }
+        .nav-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 0 20px 0; }
+        
+        .loading-indicator { text-align: center; padding: 20px; font-weight: 800; color: var(--blue); }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div id="login-section" class="hidden">
-        <div style="text-align:center; padding: 40px 0;">
-            <h1 style="font-size:40px; font-weight:900; color:var(--dark); font-style:italic;">ROZGAR AI</h1>
-            <p style="font-weight:700; color:gray;">CREATE YOUR ACCOUNT</p>
+        <div style="text-align:center; padding: 30px 0;">
+            <h1 style="font-size:42px; font-weight:900; color:var(--dark); font-style:italic; letter-spacing:-2px;">ROZGAR AI</h1>
+            <p style="font-weight:700; color:gray; font-size:10px; letter-spacing:2px;">CREATE YOUR ACCOUNT</p>
         </div>
         <div class="card">
             <div class="input-group"><label>Pura Naam</label><input type="text" id="u-name" placeholder="Rahul Raj"></div>
@@ -50,9 +64,9 @@
             <div class="input-group">
                 <label>Education</label>
                 <select id="u-edu">
-                    <option value="10th">10th</option>
-                    <option value="12th">12th</option>
-                    <option value="ITI">ITI</option>
+                    <option value="10th">10th Pass</option>
+                    <option value="12th" selected>12th Pass</option>
+                    <option value="ITI">ITI Pass</option>
                     <option value="Graduate">Graduation</option>
                 </select>
             </div>
@@ -63,10 +77,10 @@
     <div id="dashboard-section" class="hidden">
         <div class="nav-header">
             <div>
-                <h2 style="margin:0; font-weight:900;">Namaste, <span id="display-name" style="color:var(--blue);">User</span></h2>
-                <p id="display-info" style="font-size:12px; color:gray; margin:0;"></p>
+                <h2 style="margin:0; font-weight:900; font-size:22px;">Namaste, <span id="display-name" style="color:var(--blue);">User</span></h2>
+                <p id="display-info" style="font-size:12px; color:gray; margin:0; font-weight:600;"></p>
             </div>
-            <button onclick="logout()" style="background:none; border:none; color:red; font-weight:700;">Logout</button>
+            <button onclick="logout()" style="background:#fee2e2; border:none; color:#ef4444; font-weight:800; padding:8px 15px; border-radius:12px; font-size:12px;">Logout</button>
         </div>
 
         <div class="dash-grid">
@@ -82,31 +96,36 @@
     <div id="result-menu" class="hidden">
         <div class="nav-header">
             <h2 style="font-weight:900;">Exam Results</h2>
-            <button onclick="showDash()" style="color:var(--blue); border:none; background:none; font-weight:700;">Back</button>
+            <button onclick="showDash()" style="color:var(--blue); border:none; background:none; font-weight:800;">Home</button>
         </div>
         <div class="card">
-            <input type="text" id="res-search" placeholder="Type Result Name (e.g. SSC GD)" style="margin-bottom:15px;">
-            <button onclick="searchManualResult()" class="btn-primary" style="padding:10px; margin-bottom:20px;">Search Result 🔍</button>
+            <div class="input-group">
+                <label>Search Specific Result</label>
+                <div style="display:flex; gap:8px;">
+                    <input type="text" id="res-search" placeholder="E.g. SSC GD Result" style="padding:12px;">
+                    <button onclick="searchManualResult()" style="background:var(--dark); color:white; border:none; border-radius:12px; padding:0 15px;">🔍</button>
+                </div>
+            </div>
             
-            <label>Categories ↓</label>
-            <div class="dash-grid" style="grid-template-columns: 1fr 1fr 1fr; gap:8px;">
-                <div class="result-tile" onclick="openJobs('SSC Result')">SSC</div>
-                <div class="result-tile" onclick="openJobs('Railway Result')">Railway</div>
+            <label style="margin-top:10px;">Quick Access ↓</label>
+            <div class="dash-grid" style="grid-template-columns: 1fr 1fr; gap:10px;">
+                <div class="result-tile" onclick="openJobs('SSC Result')">SSC Result</div>
+                <div class="result-tile" onclick="openJobs('Railway Result')">Railway Result</div>
                 <div class="result-tile" onclick="openJobs('Bihar Police Result')">Bihar Police</div>
                 <div class="result-tile" onclick="openJobs('UP Police Result')">UP Police</div>
-                <div class="result-tile" onclick="openJobs('10th 12th Board Result')">Board Exam</div>
-                <div class="result-tile" onclick="openJobs('ITI Result')">ITI</div>
+                <div class="result-tile" onclick="openJobs('Board Result')">10th/12th Board</div>
+                <div class="result-tile" onclick="openJobs('ITI Result')">ITI Results</div>
             </div>
         </div>
     </div>
 
     <div id="feed-section" class="hidden">
         <div class="nav-header">
-            <h3 id="feed-title" style="font-weight:900; text-transform:uppercase;">JOBS</h3>
-            <button onclick="showDash()" style="color:var(--blue); border:none; background:none; font-weight:700;">Home</button>
+            <h3 id="feed-title" style="font-weight:900; text-transform:uppercase; color:var(--dark);">JOBS</h3>
+            <button onclick="showDash()" style="color:var(--blue); border:none; background:none; font-weight:800;">Back</button>
         </div>
         <div id="list"></div>
-        <div id="load-more" style="text-align:center; padding:20px; font-weight:800; color:var(--blue);">Loading...</div>
+        <div id="load-more-text" class="loading-indicator">Scrolling for more...</div>
     </div>
 </div>
 
@@ -114,8 +133,10 @@
     let userData = {};
     let page = 1;
     let currentCategory = '';
+    let isLoading = false;
+    let endOfData = false;
 
-    // Check if user is already logged in
+    // Load saved session
     window.onload = () => {
         const saved = localStorage.getItem('rozgarUser');
         if(saved) {
@@ -132,7 +153,7 @@
         const state = document.getElementById('u-state').value;
         const edu = document.getElementById('u-edu').value;
 
-        if(!name || !state || !dob) { alert("Details bhariye!"); return; }
+        if(!name || !state || !dob) { alert("Please fill all details!"); return; }
 
         userData = { name, dob, state, edu };
         localStorage.setItem('rozgarUser', JSON.stringify(userData));
@@ -146,7 +167,7 @@
         document.getElementById('dashboard-section').className = '';
         
         document.getElementById('display-name').innerText = userData.name;
-        document.getElementById('display-info').innerText = `${userData.edu} Pass | ${userData.state}`;
+        document.getElementById('display-info').innerText = `${userData.edu} | ${userData.state}`;
     }
 
     function openResultMenu() {
@@ -154,9 +175,10 @@
         document.getElementById('result-menu').className = '';
     }
 
-    async function openJobs(cat) {
+    function openJobs(cat) {
         currentCategory = cat;
         page = 1;
+        endOfData = false;
         document.getElementById('dashboard-section').className = 'hidden';
         document.getElementById('result-menu').className = 'hidden';
         document.getElementById('feed-section').className = '';
@@ -168,30 +190,65 @@
     function searchManualResult() {
         const q = document.getElementById('res-search').value;
         if(!q) return;
-        openJobs(q + " Result");
+        openJobs(q);
     }
 
     async function fetchData() {
-        const res = await fetch('/fetch_jobs', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ category: currentCategory, state: userData.state, edu: userData.edu, page: page })
-        });
-        const data = await res.json();
+        if(isLoading || endOfData) return;
+        isLoading = true;
+        document.getElementById('load-more-text').classList.remove('hidden');
+
+        try {
+            const res = await fetch('/fetch_jobs', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ 
+                    category: currentCategory, 
+                    state: userData.state, 
+                    edu: userData.edu, 
+                    page: page,
+                    dob: userData.dob 
+                })
+            });
+            const data = await res.json();
+            
+            if(data.length === 0) {
+                endOfData = true;
+                document.getElementById('load-more-text').innerText = "End of Results.";
+            } else {
+                renderItems(data);
+                page++;
+                document.getElementById('load-more-text').classList.add('hidden');
+            }
+        } catch (e) { console.error(e); }
+        isLoading = false;
+    }
+
+    function renderItems(data) {
         const list = document.getElementById('list');
-        
         data.forEach(item => {
-            const isResult = currentCategory.toLowerCase().includes('result');
+            const isResult = currentCategory.toLowerCase().includes('result') || item.title.toLowerCase().includes('result');
             list.innerHTML += `
-                <div style="background:white; padding:20px; border-radius:25px; margin-bottom:15px; border-left:5px solid ${isResult ? 'var(--green)' : 'var(--blue)'}; shadow:sm;">
-                    <h3 style="margin:0; font-size:16px;">${item.title}</h3>
-                    <p style="font-size:12px; color:gray;">${item.snippet}</p>
-                    <a href="${item.link}" target="_blank" style="display:block; text-align:center; padding:12px; background:${isResult ? 'var(--green)' : 'var(--blue)'}; color:white; text-decoration:none; border-radius:12px; font-weight:800; margin-top:10px;">
+                <div class="job-card" style="border-left-color: ${isResult ? 'var(--green)' : 'var(--blue)'};">
+                    <div style="display:flex; justify-content:space-between; font-size:10px; font-weight:900; color:gray; margin-bottom:10px;">
+                        <span>2026 UPDATE</span>
+                        <span style="color:${isResult ? 'var(--green)' : 'var(--blue)'};">● ACTIVE</span>
+                    </div>
+                    <h3 style="margin:0; font-size:17px; font-weight:900;">${item.title}</h3>
+                    <p style="font-size:13px; color:#64748b; margin:10px 0;">${item.snippet}</p>
+                    <a href="${item.link}" target="_blank" style="display:block; text-align:center; padding:14px; background:${isResult ? 'var(--green)' : 'var(--blue)'}; color:white; text-decoration:none; border-radius:15px; font-weight:800; font-size:14px;">
                         ${isResult ? 'CHECK RESULT 📄' : 'APPLY NOW 🚀'}
                     </a>
                 </div>`;
         });
     }
+
+    // Infinite Scroll Logic
+    window.onscroll = function() {
+        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 800) {
+            fetchData();
+        }
+    };
 
     function logout() {
         localStorage.removeItem('rozgarUser');
