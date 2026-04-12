@@ -6,15 +6,15 @@
     --primary-gradient: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
     --accent-gold: #fbbf24;
     --text-dark: #0f172a;
-    --card-bg: rgba(255, 255, 255, 0.9);
+    --card-shadow: rgba(31, 38, 135, 0.07);
 }
 
-/* DARK MODE VARIABLES - Switch when .dark-mode is active */
+/* --- DARK MODE OVERRIDE --- */
 .dark-mode {
-    --bg-main: #0f172a;
-    --glass: rgba(30, 41, 59, 0.8);
+    --bg-main: #020617;
+    --glass: rgba(15, 23, 42, 0.8); /* Dark Glass Look */
     --text-dark: #f8fafc;
-    --card-bg: #1e293b;
+    --card-shadow: rgba(0, 0, 0, 0.4);
 }
 
 /* Background Animation */
@@ -23,7 +23,7 @@ body {
     background-size: 400% 400%;
     animation: gradientBG 15s ease infinite;
     font-family: 'Inter', sans-serif;
-    transition: background 0.5s ease;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Dark Mode Background */
@@ -37,68 +37,93 @@ body.dark-mode {
     100% { background-position: 0% 50%; }
 }
 
-/* Glassmorphism Card - Ab ye dark mode me bhi chamkega */
+/* Glassmorphism Card */
 .job-card {
-    background: var(--card-bg);
+    background: var(--glass);
     backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 8px 32px 0 var(--card-shadow);
     border-radius: 28px !important;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    color: var(--text-dark);
 }
 
 .dark-mode .job-card {
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .job-card:hover {
     transform: translateY(-10px) scale(1.01);
     box-shadow: 0 15px 45px rgba(30, 58, 138, 0.15);
+    border: 1px solid rgba(59, 130, 246, 0.5);
 }
 
-/* Text Colors for Dark Mode */
-.dark-mode h1, .dark-mode h2, .dark-mode h3, .dark-mode p {
-    color: var(--text-dark) !important;
-}
-
-/* Floating Buttons */
+/* Floating Buttons & Tabs */
 .active-btn {
     background: var(--primary-gradient) !important;
     color: white !important;
     box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.5);
     border: none !important;
+    transform: translateY(-2px);
 }
 
 .active-sub-btn {
     background: linear-gradient(90deg, #f59e0b, #fbbf24) !important;
     color: #000 !important;
     font-weight: 800 !important;
+    border: none !important;
     box-shadow: 0 5px 15px rgba(245, 158, 11, 0.3);
+}
+
+/* Dashboard & App Container Dark Fix */
+.dark-mode #app-container, 
+.dark-mode #dash-view, 
+.dark-mode #chat-ui, 
+.dark-mode #profile-ui {
+    background: var(--bg-main) !important;
+    color: var(--text-dark);
+}
+
+.dark-mode .bg-white, 
+.dark-mode .bg-slate-50 {
+    background-color: transparent !important;
 }
 
 /* Apply Now Button */
 button.bg-blue-950, a.bg-blue-950 {
     background: var(--primary-gradient);
     border-radius: 20px;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
 }
 
-/* Profile & Chat UI in Dark Mode */
-.dark-mode #profile-ui, .dark-mode #chat-ui, .dark-mode #app-container {
-    background: #0f172a !important;
+/* Mobile Friendly Inputs */
+input {
+    background: #f8fafc !important;
+    border-radius: 16px !important;
+    border: 2px solid transparent !important;
+    transition: 0.3s;
 }
 
-/* Mobile Friendly Inputs in Dark Mode */
 .dark-mode input {
     background: #1e293b !important;
     color: white !important;
     border: 2px solid #334155 !important;
 }
 
-.dark-mode input:focus {
+input:focus {
     border-color: #3b82f6 !important;
+    background: white !important;
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.1);
 }
 
-/* Filter Tab adjustment for Dark Mode */
-.dark-mode #filter-tabs, .dark-mode #results-box {
-    background-color: #020617 !important;
+/* Custom Nav/PFP */
+#nav-pfp, #setting-pfp {
+    border: 3px solid white !important;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* Extra Tweaks for Dark Mode Visibility */
+.dark-mode .text-slate-500, .dark-mode .text-slate-400 {
+    color: #94a3b8 !important;
 }
