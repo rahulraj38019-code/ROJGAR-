@@ -197,12 +197,12 @@
         window.open(`https://www.google.com/search?q=${encodeURIComponent(finalSearch)}`, '_blank');
     }
 
+    // UPDATED: Ab ye Google par nahi jayega balki app ke andar open hoga
     function getOfficialResult() {
         const query = document.getElementById('official-res-query').value;
         if(!query) return alert("Exam ya Board ka naam likhein!");
-        // Isme official keywords add kar diye hain taaki Google sirf official link dikhaye
-        const finalSearch = query + " official website result 2026 gov.in nic.in";
-        window.open(`https://www.google.com/search?q=${encodeURIComponent(finalSearch)}`, '_blank');
+        // Result search query ko openJobs me pass kar rahe hain
+        openJobs(query + " Result"); 
     }
 
     function showDash() {
@@ -229,11 +229,18 @@
         fetchData();
     }
 
-    function searchRes() { const v = document.getElementById('res-inp').value; if(v) openJobs(v); }
+    function searchRes() { const v = document.getElementById('res-inp').value; if(v) openJobs(v + " Result"); }
 
     async function fetchData() {
         if(loading) return; loading = true;
         document.getElementById('loading').classList.remove('hidden');
+        
+        // Button text logic: Result wali category ke liye Check Result dikhao
+        let btnText = "View Details & Apply";
+        if (currentCat.toLowerCase().includes('result')) {
+            btnText = "Check Result ✅";
+        }
+
         try {
             const res = await fetch('/fetch_jobs', {
                 method: 'POST',
@@ -252,7 +259,7 @@
                         <div class="meta-item">📅 2026</div>
                         <div class="meta-item">🎓 ${user.edu}</div>
                     </div>
-                    <a href="${i.link}" target="_blank" class="btn-apply">View Details & Apply</a>
+                    <a href="${i.link}" target="_blank" class="btn-apply">${btnText}</a>
                 </div>`;
             });
             page++;
