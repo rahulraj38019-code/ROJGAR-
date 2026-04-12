@@ -6,14 +6,29 @@
     --primary-gradient: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
     --accent-gold: #fbbf24;
     --text-dark: #0f172a;
+    --card-bg: rgba(255, 255, 255, 0.9);
 }
 
-/* Background Animation: Halka sa movement jo premium lage */
+/* DARK MODE VARIABLES - Switch when .dark-mode is active */
+.dark-mode {
+    --bg-main: #0f172a;
+    --glass: rgba(30, 41, 59, 0.8);
+    --text-dark: #f8fafc;
+    --card-bg: #1e293b;
+}
+
+/* Background Animation */
 body {
     background: linear-gradient(-45deg, #e2e8f0, #f1f5f9, #dee2e6, #f8fafc);
     background-size: 400% 400%;
     animation: gradientBG 15s ease infinite;
     font-family: 'Inter', sans-serif;
+    transition: background 0.5s ease;
+}
+
+/* Dark Mode Background */
+body.dark-mode {
+    background: linear-gradient(-45deg, #020617, #0f172a, #1e1b4b, #020617);
 }
 
 @keyframes gradientBG {
@@ -22,74 +37,68 @@ body {
     100% { background-position: 0% 50%; }
 }
 
-/* Glassmorphism Card: Ye sabse zyada attractive lagta hai */
+/* Glassmorphism Card - Ab ye dark mode me bhi chamkega */
 .job-card {
-    background: var(--glass);
+    background: var(--card-bg);
     backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
     border-radius: 28px !important;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dark-mode .job-card {
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .job-card:hover {
     transform: translateY(-10px) scale(1.01);
     box-shadow: 0 15px 45px rgba(30, 58, 138, 0.15);
-    border: 1px solid rgba(59, 130, 246, 0.5);
 }
 
-/* Floating Buttons: Inka look ekdum soft aur premium hai */
+/* Text Colors for Dark Mode */
+.dark-mode h1, .dark-mode h2, .dark-mode h3, .dark-mode p {
+    color: var(--text-dark) !important;
+}
+
+/* Floating Buttons */
 .active-btn {
     background: var(--primary-gradient) !important;
     color: white !important;
     box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.5);
     border: none !important;
-    transform: translateY(-2px);
 }
 
-/* Sub-tabs (Aggregator) colors */
 .active-sub-btn {
     background: linear-gradient(90deg, #f59e0b, #fbbf24) !important;
     color: #000 !important;
     font-weight: 800 !important;
-    border: none !important;
     box-shadow: 0 5px 15px rgba(245, 158, 11, 0.3);
 }
 
-/* Apply Now Button: Vibrant energy */
+/* Apply Now Button */
 button.bg-blue-950, a.bg-blue-950 {
     background: var(--primary-gradient);
     border-radius: 20px;
-    letter-spacing: 1px;
-    transition: all 0.3s ease;
 }
 
-button.bg-blue-950:hover {
-    filter: brightness(1.1);
-    box-shadow: 0 8px 25px rgba(30, 58, 138, 0.3);
+/* Profile & Chat UI in Dark Mode */
+.dark-mode #profile-ui, .dark-mode #chat-ui, .dark-mode #app-container {
+    background: #0f172a !important;
 }
 
-/* Custom UI Elements */
-#nav-pfp, #setting-pfp {
-    border: 3px solid white !important;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+/* Mobile Friendly Inputs in Dark Mode */
+.dark-mode input {
+    background: #1e293b !important;
+    color: white !important;
+    border: 2px solid #334155 !important;
 }
 
-/* Profile Section ka colour soft rakha hai */
-#profile-ui {
-    background: radial-gradient(circle at top, #ffffff, #f1f5f9);
-}
-
-/* Mobile Friendly Inputs */
-input {
-    background: #f8fafc !important;
-    border-radius: 16px !important;
-    border: 2px solid transparent !important;
-    transition: 0.3s;
-}
-
-input:focus {
+.dark-mode input:focus {
     border-color: #3b82f6 !important;
-    background: white !important;
-    box-shadow: 0 0 15px rgba(59, 130, 246, 0.1);
+}
+
+/* Filter Tab adjustment for Dark Mode */
+.dark-mode #filter-tabs, .dark-mode #results-box {
+    background-color: #020617 !important;
 }
