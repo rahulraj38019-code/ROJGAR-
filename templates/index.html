@@ -9,41 +9,31 @@
     <style>
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .active-tab { background: #1e3a8a !important; color: white !important; transform: scale(1.05); }
-        .filter-chip { transition: 0.3s; white-space: nowrap; border: 1px solid #e2e8f0; }
         .active-chip { background: #ef4444 !important; color: white !important; border-color: #ef4444; }
-        
-        /* LIVE BLINKING EFFECT */
-        .live-tag {
-            animation: blink 1.2s infinite;
-            background: #ef4444;
-            color: white;
-            font-size: 7px;
-            padding: 2px 8px;
-            border-radius: 99px;
-            font-weight: 900;
-            text-transform: uppercase;
-        }
+        .live-tag { animation: blink 1.2s infinite; background: #ef4444; color: white; font-size: 7px; padding: 2px 8px; border-radius: 99px; font-weight: 900; }
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
-
         .job-card { border-radius: 28px !important; background: white; transition: 0.3s; border: 1px solid #f1f5f9; }
-        .job-card:hover { transform: translateY(-5px); box-shadow: 0 12px 20px rgba(0,0,0,0.08); }
-        #profile-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; backdrop-filter: blur(10px); }
+        #profile-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; backdrop-filter: blur(12px); overflow-y: auto; }
     </style>
 </head>
 <body class="bg-slate-50 font-sans">
 
     <div id="profile-overlay" class="p-6 flex items-center justify-center">
-        <div class="bg-white w-full max-w-sm rounded-[32px] p-6 shadow-2xl">
+        <div class="bg-white w-full max-w-sm rounded-[32px] p-6 shadow-2xl my-10">
             <h2 class="text-xl font-black text-blue-950 mb-4 uppercase">User Profile</h2>
-            <div class="space-y-3">
-                <input type="text" id="u-name" placeholder="Apna Naam" class="w-full p-3 bg-slate-100 rounded-xl text-xs outline-none font-bold">
-                <select id="u-edu" class="w-full p-3 bg-slate-100 rounded-xl text-xs outline-none font-bold">
+            <div class="space-y-3 text-left">
+                <input type="text" id="u-name" placeholder="Naam (e.g. Rahul)" class="w-full p-3 bg-slate-100 rounded-xl text-xs outline-none font-bold">
+                <input type="text" id="u-state" placeholder="State (e.g. Bihar)" class="w-full p-3 bg-slate-100 rounded-xl text-xs outline-none font-bold">
+                <input type="date" id="u-dob" class="w-full p-3 bg-slate-100 rounded-xl text-xs outline-none font-bold">
+                <input type="email" id="u-email" placeholder="Email" class="w-full p-3 bg-slate-100 rounded-xl text-xs outline-none font-bold">
+                <input type="tel" id="u-phone" placeholder="Mobile Number" class="w-full p-3 bg-slate-100 rounded-xl text-xs outline-none font-bold">
+                <select id="u-edu" class="w-full p-3 bg-slate-100 rounded-xl text-xs outline-none font-bold border-2 border-blue-100">
                     <option value="10TH">10th Level</option>
                     <option value="12TH">12th Level</option>
-                    <option value="GRADUATION">Graduation</option>
+                    <option value="GRADUATION">Graduation Level</option>
                 </select>
-                <button onclick="saveUser()" class="w-full bg-blue-900 text-white py-3 rounded-xl font-black text-[10px] uppercase shadow-lg">Save & Filter 💾</button>
-                <button onclick="closeProfile()" class="w-full py-2 text-slate-400 font-bold text-[10px]">CLOSE</button>
+                <button onclick="saveUser()" class="w-full bg-blue-900 text-white py-4 rounded-2xl font-black text-[10px] uppercase shadow-lg mt-2">Save & Update Jobs ⚡</button>
+                <button onclick="closeProfile()" class="w-full py-2 text-slate-400 font-bold text-[10px]">CANCEL</button>
             </div>
         </div>
     </div>
@@ -51,44 +41,65 @@
     <div class="max-w-md mx-auto min-h-screen flex flex-col bg-white relative shadow-2xl">
         <div class="p-4 bg-blue-950 text-white flex justify-between items-center sticky top-0 z-50">
             <div class="flex items-center gap-3">
-                <div onclick="showProfile()" class="w-10 h-10 rounded-full bg-blue-800 border-2 border-blue-400 flex items-center justify-center font-black text-[10px] cursor-pointer">PFP</div>
-                <h1 class="text-lg font-black italic uppercase leading-none">ROZGAR <br><span class="text-[7px] text-blue-400 tracking-widest uppercase">R Yadav Production</span></h1>
+                <button onclick="smartBack()" class="w-10 h-10 flex items-center justify-center bg-blue-800 rounded-full text-xl active:scale-90 transition">←</button>
+                <h1 class="text-sm font-black italic uppercase leading-none">ROZGAR <br><span class="text-[7px] text-blue-400">R YADAV PRODUCTION</span></h1>
             </div>
-            <button onclick="toggleDarkMode()" class="bg-red-600 p-2.5 rounded-full shadow-lg">🌙</button>
+            <div onclick="showProfile()" class="w-10 h-10 rounded-full bg-blue-800 border-2 border-blue-400 flex items-center justify-center font-black text-[10px] cursor-pointer">PFP</div>
         </div>
 
-        <div class="p-3 grid grid-cols-3 gap-2 bg-white border-b sticky top-[64px] z-40">
+        <div class="p-4 bg-white sticky top-[64px] z-40 border-b">
+            <input type="text" id="main-search" onkeyup="filterCards()" placeholder="Search Unlimited Jobs..." class="w-full p-4 rounded-2xl bg-slate-100 font-bold text-xs outline-none border-2 border-transparent focus:border-blue-500">
+        </div>
+
+        <div class="p-3 grid grid-cols-3 gap-2 bg-white border-b sticky top-[135px] z-30 shadow-sm">
             <button id="tab-govt" onclick="switchMainTab('govt')" class="py-3 border rounded-xl text-[9px] font-black active-tab uppercase">🏛️ Govt</button>
             <button id="tab-result" onclick="switchMainTab('result')" class="py-3 border rounded-xl text-[9px] font-black uppercase">📄 Result</button>
             <button id="tab-private" onclick="switchMainTab('private')" class="py-3 border rounded-xl text-[9px] font-black uppercase">🏢 Private</button>
         </div>
 
-        <div id="chip-container" class="p-3 flex gap-2 overflow-x-auto no-scrollbar bg-slate-50 border-b"></div>
+        <div id="chip-container" class="p-3 flex gap-2 overflow-x-auto no-scrollbar bg-slate-50 border-b sticky top-[204px] z-20">
+            </div>
 
-        <div id="content-box" class="p-4 space-y-4 flex-1 pb-32"></div>
+        <div id="content-box" class="p-4 space-y-4 flex-1"></div>
+
+        <div id="load-more-div" class="p-4 text-center pb-32">
+            <button onclick="loadMore()" class="px-8 py-3 bg-blue-50 text-blue-900 rounded-full font-black text-[10px] uppercase border border-blue-200">
+                Load More Jobs ↓
+            </button>
+        </div>
     </div>
 
     <script>
+        // SMART BACK BUTTON: Previous page par jayega naki direct home
+        function smartBack() {
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                switchMainTab('govt');
+            }
+        }
+
         const database = {
             govt: [
-                { title: "Bihar Police Constable", cat: "BIHAR_POLICE", edu: "12TH", isLive: true, info: "21,391 Vacancy", year: "2024", url: "https://csbc.bih.nic.in" },
-                { title: "Railway ALP Recruitment", cat: "RAILWAY", edu: "10TH", isLive: true, info: "Last Date Near!", year: "2025", url: "https://rrb.gov.in" },
-                { title: "SSC GD Constable", cat: "SSC", edu: "10TH", isLive: false, info: "Upcoming in June", year: "2026", url: "https://ssc.gov.in" },
-                { title: "BPSC 70th Civil Services", cat: "BPSC", edu: "GRADUATION", isLive: true, info: "Form Live Now", year: "2024", url: "https://bpsc.bih.nic.in" }
+                { title: "Bihar Police Constable", cat: "BIHAR_POLICE", edu: "12TH", isLive: true, info: "21,391 Posts", url: "https://csbc.bih.nic.in" },
+                { title: "Railway ALP 2025", cat: "RAILWAY", edu: "10TH", isLive: true, info: "Technician/Loco Pilot", url: "https://rrb.gov.in" },
+                { title: "SSC GD Constable", cat: "SSC", edu: "10TH", isLive: false, info: "Coming in July", url: "https://ssc.gov.in" },
+                { title: "BPSC 70th Exam", cat: "BPSC", edu: "GRADUATION", isLive: true, info: "Apply Now", url: "https://bpsc.bih.nic.in" }
             ],
             result: [
-                { title: "BSEB Matric Result", cat: "10TH", edu: "10TH", isLive: true, info: "Check Now", year: "2025", url: "#" },
-                { title: "BSEB Inter Result", cat: "12TH", edu: "12TH", isLive: true, info: "Check Now", year: "2025", url: "#" },
-                { title: "SSC CGL Result", cat: "SSC", edu: "GRADUATION", isLive: false, info: "Coming Soon", year: "2024", url: "#" }
+                { title: "Bihar Board 10th Result", cat: "10TH", edu: "10TH", isLive: true, info: "Matric Annual 2025", url: "#" },
+                { title: "Bihar Board 12th Result", cat: "12TH", edu: "12TH", isLive: true, info: "Inter Annual 2025", url: "#" },
+                { title: "SSC CGL Result", cat: "SSC", edu: "GRADUATION", isLive: false, info: "Available Soon", url: "#" }
             ],
             private: [
-                { title: "Amazon WFH Executive", cat: "WFH", edu: "12TH", isLive: true, info: "Internshala Listing", year: "2026", url: "https://internshala.com", source: "Internshala" },
-                { title: "Google Tech Intern", cat: "GRADUATION", edu: "GRADUATION", isLive: true, info: "Naukri Listing", year: "2026", url: "https://naukri.com", source: "Naukri" },
-                { title: "Zomato Delivery Boy", cat: "10TH", edu: "10TH", isLive: true, info: "Apna App Listing", year: "2026", url: "https://apna.co", source: "Apna App" }
+                { title: "Amazon WFH Executive", cat: "WFH", edu: "12TH", isLive: true, source: "Internshala", url: "https://internshala.com" },
+                { title: "Google Tech Intern", cat: "GRADUATION", edu: "GRADUATION", isLive: true, source: "Naukri", url: "https://naukri.com" },
+                { title: "Flipkart Delivery Partner", cat: "10TH", edu: "10TH", isLive: true, source: "Apna App", url: "https://apna.co" },
+                { title: "Remote Data Entry", cat: "WFH", edu: "12TH", isLive: true, source: "LinkedIn", url: "https://linkedin.com" }
             ]
         };
 
-        const chipConfig = {
+        const chips = {
             govt: ["ALL", "SSC", "RAILWAY", "BIHAR_POLICE", "BPSC"],
             result: ["ALL", "10TH", "12TH", "SSC", "BPSC"],
             private: ["ALL", "WFH", "10TH", "12TH", "GRADUATION"]
@@ -96,21 +107,21 @@
 
         let currentTab = 'govt';
         let currentChip = 'ALL';
+        let itemsLimit = 3;
 
         function showProfile() { document.getElementById('profile-overlay').style.display = 'flex'; }
         function closeProfile() { document.getElementById('profile-overlay').style.display = 'none'; }
         
         function saveUser() {
-            const edu = document.getElementById('u-edu').value;
-            localStorage.setItem('userEdu', edu);
-            alert("Profile Updated: " + edu);
+            localStorage.setItem('userEdu', document.getElementById('u-edu').value);
+            alert("Profile Updated!");
             closeProfile();
+            itemsLimit = 3;
             filterCards();
         }
 
         function switchMainTab(tab) {
-            currentTab = tab;
-            currentChip = 'ALL';
+            currentTab = tab; currentChip = 'ALL'; itemsLimit = 3;
             document.querySelectorAll('.grid button').forEach(b => b.classList.remove('active-tab'));
             document.getElementById('tab-' + tab).classList.add('active-tab');
             loadChips();
@@ -120,49 +131,41 @@
         function loadChips() {
             const container = document.getElementById('chip-container');
             container.innerHTML = '';
-            chipConfig[currentTab].forEach(chip => {
-                const btn = document.createElement('button');
-                btn.className = `filter-chip px-5 py-2 rounded-full text-[8px] font-black uppercase ${currentChip === chip ? 'active-chip' : 'bg-white'}`;
-                btn.innerText = chip;
-                btn.onclick = () => { currentChip = chip; loadChips(); filterCards(); };
-                container.appendChild(btn);
+            chips[currentTab].forEach(c => {
+                container.innerHTML += `<button onclick="setChip('${c}')" class="filter-chip px-5 py-2 rounded-full text-[8px] font-black uppercase ${currentChip===c?'active-chip':'bg-white'}">${c}</button>`;
             });
         }
 
+        function setChip(c) { currentChip = c; itemsLimit = 3; loadChips(); filterCards(); }
+        function loadMore() { itemsLimit += 5; filterCards(); }
+
         function filterCards() {
             const box = document.getElementById('content-box');
-            const userEdu = localStorage.getItem('userEdu') || "10TH";
+            const userEdu = localStorage.getItem('userEdu') || "12TH";
+            const q = document.getElementById('main-search').value.toLowerCase();
             box.innerHTML = '';
 
-            let data = database[currentTab].filter(item => {
-                const matchChip = currentChip === 'ALL' || item.cat === currentChip;
-                const matchEdu = item.edu === userEdu;
-                return matchChip && matchEdu;
+            let data = database[currentTab].filter(i => {
+                const mEdu = i.edu === userEdu;
+                const mChip = currentChip === 'ALL' || i.cat === currentChip;
+                const mSearch = i.title.toLowerCase().includes(q);
+                return mEdu && mChip && mSearch;
             });
 
-            if(data.length === 0) {
-                box.innerHTML = `<p class="text-center py-10 text-slate-400 font-bold text-xs uppercase">No ${userEdu} Level ${currentChip} found!</p>`;
-                return;
-            }
-
-            data.forEach(item => {
+            data.slice(0, itemsLimit).forEach(item => {
                 box.innerHTML += `
                     <div class="job-card p-5 relative shadow-sm">
-                        <div class="flex justify-between items-start mb-2">
+                        <div class="flex justify-between mb-2">
                             <span class="text-[6px] font-black uppercase text-blue-600">${item.source || 'Official Update'}</span>
-                            ${item.isLive ? '<span class="live-tag">● FORM LIVE</span>' : '<span class="text-[6px] font-bold text-slate-300">UPCOMING</span>'}
+                            ${item.isLive ? '<span class="live-tag">● FORM LIVE</span>' : ''}
                         </div>
                         <h3 class="font-black text-blue-950 uppercase text-xs mb-1">${item.title}</h3>
-                        <p class="text-[9px] text-slate-400 font-bold mb-4 italic">${item.info} (${item.year})</p>
-                        
-                        <div class="flex items-center justify-between gap-2">
-                             <div class="bg-slate-50 px-3 py-1 rounded-lg border border-dashed text-[7px] font-bold text-slate-500 uppercase">${item.edu} Level</div>
-                             <button onclick="window.open('${item.url}', '_blank')" class="flex-1 bg-blue-950 text-white py-3 rounded-2xl font-black text-[9px] uppercase shadow-lg active:scale-95 transition-all">
-                                Apply / Check 🚀
-                             </button>
-                        </div>
+                        <p class="text-[9px] text-slate-400 font-bold mb-4 italic">${item.info}</p>
+                        <button onclick="window.open('${item.url}', '_blank')" class="w-full bg-blue-950 text-white py-3 rounded-2xl font-black text-[9px] uppercase active:scale-95 transition">Apply / Check Now 🚀</button>
                     </div>`;
             });
+
+            document.getElementById('load-more-div').style.display = itemsLimit >= data.length ? 'none' : 'block';
         }
 
         window.onload = () => switchMainTab('govt');
