@@ -6,7 +6,7 @@
     <title>ROZGAR HUB - Professional Portal</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --main: #121212; --blue: #007bff; --light-blue: #e7f1ff; --bg: #f4f7fe; --white: #ffffff; }
+        :root { --main: #121212; --blue: #007bff; --light-blue: #e7f1ff; --bg: #f8fafc; --white: #ffffff; --text-muted: #64748b; }
         body { background: var(--bg); font-family: 'Inter', sans-serif; margin: 0; padding: 0; padding-bottom: 80px; color: var(--main); }
         .container { max-width: 500px; margin: 0 auto; padding: 15px; }
         
@@ -14,19 +14,28 @@
         header { background: var(--white); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 100; }
         .logo-text { font-weight: 800; font-size: 20px; color: var(--blue); letter-spacing: -0.5px; }
         
-        /* Premium Cards */
+        /* Professional Form UI */
+        .login-card { background: var(--white); padding: 30px 25px; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.04); border: 1px solid #f0f0f0; }
+        .input-box { width: 100%; padding: 16px; border-radius: 14px; border: 1.5px solid #e2e8f0; font-size: 14px; font-weight: 600; box-sizing: border-box; outline: none; transition: 0.3s; margin-bottom: 18px; background: #fbfcfe; }
+        .input-box:focus { border-color: var(--blue); background: #fff; box-shadow: 0 0 0 4px var(--light-blue); }
+        label { display: block; font-size: 12px; font-weight: 800; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* Multi-Select Education Chips */
+        .edu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px; }
+        .edu-chip { border: 1.5px solid #e2e8f0; padding: 12px; border-radius: 12px; text-align: center; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.3s; background: #fff; color: var(--text-muted); }
+        .edu-chip.selected { background: var(--blue); color: #fff; border-color: var(--blue); box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3); }
+
+        /* Existing Styles Retained */
         .card { background: var(--white); padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); margin-bottom: 20px; }
         .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-        .dash-card { background: var(--white); padding: 15px; border-radius: 18px; text-align: center; border: 1px solid #f0f0f0; transition: 0.3s; }
+        .dash-card { background: var(--white); padding: 15px; border-radius: 18px; text-align: center; border: 1px solid #f0f0f0; transition: 0.3s; cursor: pointer; }
         .dash-card i { font-size: 24px; display: block; margin-bottom: 5px; }
         .dash-card span { font-size: 13px; font-weight: 600; }
         
-        /* Filter Pills */
         .pill-row { display: flex; gap: 8px; overflow-x: auto; padding: 10px 0; scrollbar-width: none; }
         .pill { background: #fff; padding: 8px 16px; border-radius: 50px; border: 1px solid #ddd; font-size: 12px; font-weight: 600; white-space: nowrap; cursor: pointer; }
         .pill.active { background: var(--blue); color: #fff; border-color: var(--blue); }
 
-        /* Job Card Internshala Style */
         .job-card { background: var(--white); padding: 18px; border-radius: 16px; margin-bottom: 12px; border: 1px solid #f0f0f0; }
         .job-title { font-size: 15px; font-weight: 700; color: #1e293b; margin: 0; }
         .company-name { font-size: 12px; color: #64748b; font-weight: 600; display: block; margin: 4px 0; }
@@ -34,14 +43,12 @@
         .meta-item { background: var(--light-blue); color: var(--blue); font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 4px; }
         
         .btn-apply { display: block; text-align: center; background: var(--blue); color: white; padding: 12px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 13px; margin-top: 15px; }
-
-        /* Bottom Nav */
+        .btn-primary { width: 100%; background: var(--blue); color: white; padding: 18px; border: none; border-radius: 15px; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3); }
+        
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #eee; box-shadow: 0 -5px 15px rgba(0,0,0,0.03); max-width: 500px; margin: 0 auto; }
         .nav-item { text-align: center; color: #94a3b8; font-size: 10px; font-weight: 700; cursor: pointer; text-decoration: none;}
         .nav-item.active { color: var(--blue); }
         .nav-item i { font-size: 20px; display: block; margin-bottom: 3px; }
-
-        .btn-primary { width: 100%; background: var(--blue); color: white; padding: 16px; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; }
         .hidden { display: none; }
     </style>
 </head>
@@ -49,31 +56,42 @@
 
 <header>
     <div class="logo-text">ROZGAR HUB</div>
-    <div id="user-initial" style="background:var(--light-blue); color:var(--blue); width:35px; height:35px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px;">R</div>
+    <div id="user-initial" style="background:var(--light-blue); color:var(--blue); width:35px; height:35px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px;">U</div>
 </header>
 
 <div class="container">
     <div id="login-sec" class="hidden">
-        <div class="card" style="margin-top:20px;">
-            <h2 style="font-weight:800; text-align:center;">Create Profile</h2>
-            <div style="margin-bottom:15px;"><input type="text" id="u-name" placeholder="Full Name"></div>
-            <div style="margin-bottom:15px;"><input type="date" id="u-dob"></div>
-            <div style="margin-bottom:15px;"><input type="text" id="u-state" placeholder="State (e.g. Bihar)"></div>
-            <div style="margin-bottom:15px;">
-                <select id="u-edu">
-                    <option value="10th">10th Pass</option>
-                    <option value="12th" selected>12th Pass</option>
-                    <option value="ITI">ITI Pass</option>
-                    <option value="Graduate">Graduation</option>
-                </select>
+        <div style="text-align:center; margin: 20px 0 30px;">
+            <h1 style="font-weight:900; font-size: 28px; margin:0;">Welcome! 🚀</h1>
+            <p style="color:var(--text-muted); font-size:14px; font-weight:600;">Let's set up your career profile</p>
+        </div>
+        
+        <div class="login-card">
+            <label>Full Name</label>
+            <input type="text" id="u-name" class="input-box" placeholder="e.g. Rahul Raj">
+            
+            <label>Date of Birth</label>
+            <input type="date" id="u-dob" class="input-box">
+            
+            <label>Current State</label>
+            <input type="text" id="u-state" class="input-box" placeholder="e.g. Bihar">
+            
+            <label>Education Qualifications (Select all that apply)</label>
+            <div class="edu-grid" id="edu-options">
+                <div class="edu-chip" onclick="toggleEdu(this, '10th')">10th Pass</div>
+                <div class="edu-chip" onclick="toggleEdu(this, '12th')">12th Pass</div>
+                <div class="edu-chip" onclick="toggleEdu(this, 'ITI')">ITI Pass</div>
+                <div class="edu-chip" onclick="toggleEdu(this, 'UG')">Undergraduate</div>
+                <div class="edu-chip" onclick="toggleEdu(this, 'Graduate')">Graduation</div>
             </div>
-            <button onclick="saveLogin()" class="btn-primary">Build My Career 🚀</button>
+            
+            <button onclick="saveLogin()" class="btn-primary">Create Professional Profile ⚡</button>
         </div>
     </div>
 
     <div id="dash-sec" class="hidden">
         <h3 style="font-weight:800; margin-bottom:5px;">Top Categories</h3>
-        <p style="color:gray; font-size:12px; margin-bottom:15px;">Based on your education</p>
+        <p style="color:gray; font-size:12px; margin-bottom:15px;">Verified listings for you</p>
         
         <div class="dash-grid">
             <div class="dash-card" onclick="openJobs('govt')"><i>🏛️</i><span>Govt Jobs</span></div>
@@ -82,7 +100,7 @@
             <div class="dash-card" onclick="openJobs('wfh')"><i>🏠</i><span>Remote/WFH</span></div>
         </div>
 
-        <h3 style="margin-top:25px; font-weight:800;">Recently Added</h3>
+        <h3 style="margin-top:25px; font-weight:800;">Trending Search</h3>
         <div class="pill-row">
             <div class="pill active" onclick="openJobs('latest jobs')">All Jobs</div>
             <div class="pill" onclick="openJobs('BPSC')">BPSC</div>
@@ -91,9 +109,9 @@
         </div>
 
         <div style="background:linear-gradient(135deg, #1e3a8a, #2563eb); padding:20px; border-radius:20px; color:white; margin-top:20px; position:relative;">
-            <h4 style="margin:0;">Share with Friends</h4>
-            <p style="font-size:11px; opacity:0.8;">Help others find their dream job</p>
-            <a href="https://whatsapp.com/channel/0029VbCL3cTElagwBiU2aJ2N" target="_blank" style="background:white; color:var(--blue); padding:8px 15px; border-radius:8px; font-size:12px; font-weight:800; text-decoration:none; display:inline-block; margin-top:10px;">Invite Now</a>
+            <h4 style="margin:0;">Career Support</h4>
+            <p style="font-size:11px; opacity:0.8;">Join our WhatsApp channel for alerts</p>
+            <a href="https://whatsapp.com/channel/0029VbCL3cTElagwBiU2aJ2N" target="_blank" style="background:white; color:var(--blue); padding:8px 15px; border-radius:8px; font-size:12px; font-weight:800; text-decoration:none; display:inline-block; margin-top:10px;">Join Channel</a>
         </div>
     </div>
 
@@ -107,11 +125,11 @@
 
     <div id="feed-sec" class="hidden">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-            <h3 id="f-title" style="margin:0; text-transform:uppercase; font-size:16px;">Listing</h3>
-            <button onclick="showDash()" style="color:var(--blue); border:none; background:none; font-weight:800;">Back</button>
+            <h3 id="f-title" style="margin:0; text-transform:uppercase; font-size:16px; font-weight:800;">Listing</h3>
+            <button onclick="showDash()" style="color:var(--blue); border:none; background:none; font-weight:800;">Home</button>
         </div>
         <div id="list"></div>
-        <div id="loading" class="hidden" style="text-align:center; font-weight:700; color:var(--blue);">Loading...</div>
+        <div id="loading" class="hidden" style="text-align:center; font-weight:700; color:var(--blue); padding:20px;">Fetching latest jobs...</div>
     </div>
 </div>
 
@@ -124,6 +142,7 @@
 
 <script>
     let user = {}; let page = 1; let currentCat = ''; let loading = false;
+    let selectedEdu = [];
 
     window.onload = () => {
         const saved = localStorage.getItem('rozgarUser');
@@ -131,13 +150,23 @@
         else { document.getElementById('login-sec').classList.remove('hidden'); }
     };
 
+    function toggleEdu(el, val) {
+        if(selectedEdu.includes(val)) {
+            selectedEdu = selectedEdu.filter(item => item !== val);
+            el.classList.remove('selected');
+        } else {
+            selectedEdu.push(val);
+            el.classList.add('selected');
+        }
+    }
+
     function saveLogin() {
         const n = document.getElementById('u-name').value;
         const s = document.getElementById('u-state').value;
         const d = document.getElementById('u-dob').value;
-        const e = document.getElementById('u-edu').value;
-        if(!n || !s) return alert("Fill your name and state!");
-        user = {name:n, state:s, dob:d, edu:e};
+        if(!n || !s || selectedEdu.length === 0) return alert("Please fill all details and select education!");
+        
+        user = {name:n, state:s, dob:d, edu: selectedEdu.join(', ')};
         localStorage.setItem('rozgarUser', JSON.stringify(user));
         showDash();
     }
@@ -181,9 +210,9 @@
             data.forEach(i => {
                 document.getElementById('list').innerHTML += `
                 <div class="job-card">
-                    <p style="color:var(--blue); font-size:10px; font-weight:800; text-transform:uppercase;">Hiring Now</p>
+                    <p style="color:var(--blue); font-size:10px; font-weight:800; text-transform:uppercase;">Verified Listing</p>
                     <h3 class="job-title">${i.title}</h3>
-                    <span class="company-name">Official Source</span>
+                    <span class="company-name">Posted on Official Portal</span>
                     <div class="job-meta">
                         <div class="meta-item">📍 ${user.state}</div>
                         <div class="meta-item">📅 2026</div>
