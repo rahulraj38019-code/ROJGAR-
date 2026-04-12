@@ -14,12 +14,24 @@ def index():
 def search():
     try:
         data = request.get_json()
-        interest = data.get('interest', 'jobs')
+        interest = data.get('interest', 'latest jobs')
         state = data.get('state', 'India')
+        job_type = data.get('type', 'all')
         page = data.get('page', 1)
-        query = f"{interest} latest vacancy in {state} 2026"
+        
+        # FIX: Social media sites ko block karne ke liye filter
+        exclude_sites = "-site:facebook.com -site:instagram.com -site:twitter.com -site:linkedin.com -site:youtube.com"
+        
+        if job_type == 'central':
+            query = f"central government {interest} vacancy India 2026 {exclude_sites}"
+        elif job_type == 'state':
+            query = f"{state} government {interest} vacancy 2026 {exclude_sites}"
+        else:
+            query = f"{interest} latest sarkari vacancy {state} 2026 {exclude_sites}"
+            
         headers = {'X-API-KEY': API_KEY, 'Content-Type': 'application/json'}
         payload = {'q': query, 'num': 10, 'page': page}
+        
         response = requests.post('https://google.serper.dev/search', headers=headers, json=payload)
         return jsonify(response.json().get('organic', []))
     except Exception as e:
