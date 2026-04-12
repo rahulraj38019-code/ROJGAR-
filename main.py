@@ -13,7 +13,7 @@ cache = Cache(app, config={'CACHE_TYPE': 'SimpleCache', 'CACHE_DEFAULT_TIMEOUT':
 
 # API Keys (Render ke Environment Variables se uthayega)
 SERPER_API_KEY = os.getenv("SERPER_API_KEY", "268aa2e751d03f3d61ffa0fe6b46cd80bf6ec73d")
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "AIzaSyDxIVi8NxFf5QEGoXb2wT1FRbzyKqfHKf0") 
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "AIzaSyDxIVi8NxFf5QEGoXb2wT1FRbzyKqfHKf0")
 CURRENT_APP_VERSION = "3.5 PRO"
 
 @app.route('/')
