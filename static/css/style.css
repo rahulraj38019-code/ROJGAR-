@@ -1,57 +1,95 @@
-/* ROZGAR APP CUSTOM STYLES - R YADAV PRODUCTION */
+/* ROZGAR APP UNIVERSAL PREMIUM THEME - R YADAV PRODUCTION */
 
 :root {
-    --primary-blue: #172554;
-    --accent-blue: #1e3a8a;
-    --success-green: #059669;
-    --warning-yellow: #facc15;
+    --bg-main: #f0f4f8;
+    --glass: rgba(255, 255, 255, 0.9);
+    --primary-gradient: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+    --accent-gold: #fbbf24;
+    --text-dark: #0f172a;
 }
 
-/* Smooth Scrolling */
-html { scroll-behavior: smooth; }
-
-/* Custom Scrollbar hatao */
-.no-scrollbar::-webkit-scrollbar { display: none; }
-
-/* Marquee Speed aur Style */
-.marquee-live {
-    animation: scroll 20s linear infinite;
-    display: flex;
-    white-space: nowrap;
-    font-weight: 900;
+/* Background Animation: Halka sa movement jo premium lage */
+body {
+    background: linear-gradient(-45deg, #e2e8f0, #f1f5f9, #dee2e6, #f8fafc);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+    font-family: 'Inter', sans-serif;
 }
 
-@keyframes scroll {
-    from { transform: translateX(100%); }
-    to { transform: translateX(-100%); }
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
-/* Card Hover Effect */
+/* Glassmorphism Card: Ye sabse zyada attractive lagta hai */
 .job-card {
+    background: var(--glass);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+    border-radius: 28px !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.job-card:hover {
+    transform: translateY(-10px) scale(1.01);
+    box-shadow: 0 15px 45px rgba(30, 58, 138, 0.15);
+    border: 1px solid rgba(59, 130, 246, 0.5);
+}
+
+/* Floating Buttons: Inka look ekdum soft aur premium hai */
+.active-btn {
+    background: var(--primary-gradient) !important;
+    color: white !important;
+    box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.5);
+    border: none !important;
+    transform: translateY(-2px);
+}
+
+/* Sub-tabs (Aggregator) colors */
+.active-sub-btn {
+    background: linear-gradient(90deg, #f59e0b, #fbbf24) !important;
+    color: #000 !important;
+    font-weight: 800 !important;
+    border: none !important;
+    box-shadow: 0 5px 15px rgba(245, 158, 11, 0.3);
+}
+
+/* Apply Now Button: Vibrant energy */
+button.bg-blue-950, a.bg-blue-950 {
+    background: var(--primary-gradient);
+    border-radius: 20px;
+    letter-spacing: 1px;
     transition: all 0.3s ease;
 }
 
-.job-card:active {
-    transform: scale(0.96);
+button.bg-blue-950:hover {
+    filter: brightness(1.1);
+    box-shadow: 0 8px 25px rgba(30, 58, 138, 0.3);
 }
 
-/* Gradient Backgrounds */
-.bg-gradient-blue {
-    background: linear-gradient(135deg, #172554 0%, #1e3a8a 100%);
-}
-
-/* Result Button Glow */
-.result-btn {
-    background-color: var(--success-green);
-    box-shadow: 0 4px 14px 0 rgba(5, 150, 105, 0.39);
-}
-
-/* Profile Image Glow */
+/* Custom UI Elements */
 #nav-pfp, #setting-pfp {
-    box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
-    transition: transform 0.3s ease;
+    border: 3px solid white !important;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
-#nav-pfp:hover {
-    transform: rotate(5deg) scale(1.1);
+/* Profile Section ka colour soft rakha hai */
+#profile-ui {
+    background: radial-gradient(circle at top, #ffffff, #f1f5f9);
+}
+
+/* Mobile Friendly Inputs */
+input {
+    background: #f8fafc !important;
+    border-radius: 16px !important;
+    border: 2px solid transparent !important;
+    transition: 0.3s;
+}
+
+input:focus {
+    border-color: #3b82f6 !important;
+    background: white !important;
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.1);
 }
