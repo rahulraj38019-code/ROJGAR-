@@ -3,38 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ROZGAR AI - Smart Portal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <title>ROZGAR HUB - Professional Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --blue: #2563eb; --dark: #1e3a8a; --bg: #f8fafc; --green: #059669; --insta: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
-        body { background: var(--bg); font-family: 'Inter', sans-serif; margin: 0; padding: 0; }
-        .container { max-width: 500px; margin: 0 auto; padding: 20px; box-sizing: border-box; }
-        .card { background: white; padding: 25px; border-radius: 30px; box-shadow: 0 15px 30px rgba(0,0,0,0.05); }
-        .input-group { margin-bottom: 15px; }
-        label { display: block; font-size: 11px; font-weight: 800; color: var(--dark); margin-bottom: 5px; text-transform: uppercase; }
-        input, select { width: 100%; padding: 15px; border-radius: 15px; border: 2px solid #e2e8f0; font-weight: 600; box-sizing: border-box; outline: none; }
-        .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
-        .dash-card { background: white; padding: 20px; border-radius: 25px; text-align: center; box-shadow: 0 8px 15px rgba(0,0,0,0.03); cursor: pointer; transition: 0.3s; border: 2px solid transparent; }
-        .dash-card:hover { border-color: var(--blue); transform: translateY(-3px); }
-        .btn-primary { width: 100%; background: var(--blue); color: white; padding: 18px; border: none; border-radius: 20px; font-size: 16px; font-weight: 900; cursor: pointer; }
+        :root { --main: #121212; --blue: #007bff; --light-blue: #e7f1ff; --bg: #f4f7fe; --white: #ffffff; }
+        body { background: var(--bg); font-family: 'Inter', sans-serif; margin: 0; padding: 0; padding-bottom: 80px; color: var(--main); }
+        .container { max-width: 500px; margin: 0 auto; padding: 15px; }
+        
+        /* Header Style */
+        header { background: var(--white); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 100; }
+        .logo-text { font-weight: 800; font-size: 20px; color: var(--blue); letter-spacing: -0.5px; }
+        
+        /* Premium Cards */
+        .card { background: var(--white); padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); margin-bottom: 20px; }
+        .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .dash-card { background: var(--white); padding: 15px; border-radius: 18px; text-align: center; border: 1px solid #f0f0f0; transition: 0.3s; }
+        .dash-card i { font-size: 24px; display: block; margin-bottom: 5px; }
+        .dash-card span { font-size: 13px; font-weight: 600; }
+        
+        /* Filter Pills */
+        .pill-row { display: flex; gap: 8px; overflow-x: auto; padding: 10px 0; scrollbar-width: none; }
+        .pill { background: #fff; padding: 8px 16px; border-radius: 50px; border: 1px solid #ddd; font-size: 12px; font-weight: 600; white-space: nowrap; cursor: pointer; }
+        .pill.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+
+        /* Job Card Internshala Style */
+        .job-card { background: var(--white); padding: 18px; border-radius: 16px; margin-bottom: 12px; border: 1px solid #f0f0f0; }
+        .job-title { font-size: 15px; font-weight: 700; color: #1e293b; margin: 0; }
+        .company-name { font-size: 12px; color: #64748b; font-weight: 600; display: block; margin: 4px 0; }
+        .job-meta { display: flex; gap: 10px; margin-top: 10px; }
+        .meta-item { background: var(--light-blue); color: var(--blue); font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 4px; }
+        
+        .btn-apply { display: block; text-align: center; background: var(--blue); color: white; padding: 12px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 13px; margin-top: 15px; }
+
+        /* Bottom Nav */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #eee; box-shadow: 0 -5px 15px rgba(0,0,0,0.03); max-width: 500px; margin: 0 auto; }
+        .nav-item { text-align: center; color: #94a3b8; font-size: 10px; font-weight: 700; cursor: pointer; text-decoration: none;}
+        .nav-item.active { color: var(--blue); }
+        .nav-item i { font-size: 20px; display: block; margin-bottom: 3px; }
+
+        .btn-primary { width: 100%; background: var(--blue); color: white; padding: 16px; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; }
         .hidden { display: none; }
-        .nav-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 20px; }
-        .social-btn { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; border-radius: 15px; color: white; text-decoration: none; font-weight: 800; font-size: 13px; flex: 1; transition: 0.3s; }
-        .social-btn:active { transform: scale(0.95); }
-        .job-card { background: white; padding: 20px; border-radius: 20px; margin-bottom: 15px; box-shadow: 0 5px 10px rgba(0,0,0,0.02); border-left: 5px solid var(--blue); }
     </style>
 </head>
 <body>
 
+<header>
+    <div class="logo-text">ROZGAR HUB</div>
+    <div id="user-initial" style="background:var(--light-blue); color:var(--blue); width:35px; height:35px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px;">R</div>
+</header>
+
 <div class="container">
     <div id="login-sec" class="hidden">
-        <h1 style="text-align:center; color:var(--dark); font-weight:900; font-style:italic; font-size: 40px; margin-bottom: 5px;">ROZGAR AI</h1>
-        <p style="text-align:center; color:gray; font-weight:700; font-size:10px; margin-bottom: 25px; letter-spacing: 2px;">BY RAHUL YADAV</p>
-        <div class="card">
-            <div class="input-group"><label>Naam</label><input type="text" id="u-name" placeholder="Rahul Raj"></div>
-            <div class="input-group"><label>Date of Birth</label><input type="date" id="u-dob"></div>
-            <div class="input-group"><label>State</label><input type="text" id="u-state" placeholder="Bihar"></div>
-            <div class="input-group"><label>Education</label>
+        <div class="card" style="margin-top:20px;">
+            <h2 style="font-weight:800; text-align:center;">Create Profile</h2>
+            <div style="margin-bottom:15px;"><input type="text" id="u-name" placeholder="Full Name"></div>
+            <div style="margin-bottom:15px;"><input type="date" id="u-dob"></div>
+            <div style="margin-bottom:15px;"><input type="text" id="u-state" placeholder="State (e.g. Bihar)"></div>
+            <div style="margin-bottom:15px;">
                 <select id="u-edu">
                     <option value="10th">10th Pass</option>
                     <option value="12th" selected>12th Pass</option>
@@ -42,56 +67,59 @@
                     <option value="Graduate">Graduation</option>
                 </select>
             </div>
-            <button onclick="saveLogin()" class="btn-primary">Login & Save 🚀</button>
+            <button onclick="saveLogin()" class="btn-primary">Build My Career 🚀</button>
         </div>
     </div>
 
     <div id="dash-sec" class="hidden">
-        <div class="nav-header">
-            <div><h2 style="margin:0; font-weight:900;">Hi, <span id="p-name" style="color:var(--blue);">User</span></h2></div>
-            <button onclick="logout()" style="border:none; background:none; color:red; font-weight:800; font-size: 12px;">LOGOUT</button>
-        </div>
+        <h3 style="font-weight:800; margin-bottom:5px;">Top Categories</h3>
+        <p style="color:gray; font-size:12px; margin-bottom:15px;">Based on your education</p>
+        
         <div class="dash-grid">
             <div class="dash-card" onclick="openJobs('govt')"><i>🏛️</i><span>Govt Jobs</span></div>
-            <div class="dash-card" onclick="openJobs('wfh')"><i>🏠</i><span>Remote/WFH</span></div>
-            <div class="dash-card" onclick="openJobs('iti')"><i>⚙️</i><span>ITI Jobs</span></div>
             <div class="dash-card" onclick="openJobs('railway')"><i>🚂</i><span>Railway</span></div>
-            <div class="dash-card" onclick="openJobs('bpsc')"><i>✍️</i><span>BPSC/PSC</span></div>
-            <div class="dash-card" onclick="showResults()"><i>📄</i><span>All Results</span></div>
+            <div class="dash-card" onclick="openJobs('iti')"><i>⚙️</i><span>ITI Specialist</span></div>
+            <div class="dash-card" onclick="openJobs('wfh')"><i>🏠</i><span>Remote/WFH</span></div>
         </div>
 
-        <div style="margin-top: 40px; text-align: center;">
-            <p style="font-size: 11px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px;">Connect & Feedback ↓</p>
-            <div style="display: flex; gap: 10px; margin-top: 12px;">
-                <a href="https://www.instagram.com/___rahul_yadav_._?igsh=b3ltc2FwaDd4bzB1" target="_blank" class="social-btn" style="background: var(--insta); box-shadow: 0 4px 15px rgba(220, 39, 67, 0.25);">
-                    📸 Insta
-                </a>
-                <a href="https://whatsapp.com/channel/0029VbCL3cTElagwBiU2aJ2N" target="_blank" class="social-btn" style="background: #25D366; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.25);">
-                    💬 WhatsApp
-                </a>
-            </div>
+        <h3 style="margin-top:25px; font-weight:800;">Recently Added</h3>
+        <div class="pill-row">
+            <div class="pill active" onclick="openJobs('latest jobs')">All Jobs</div>
+            <div class="pill" onclick="openJobs('BPSC')">BPSC</div>
+            <div class="pill" onclick="openJobs('Police Result')">Police Result</div>
+            <div class="pill" onclick="showResults()">Check Results</div>
+        </div>
+
+        <div style="background:linear-gradient(135deg, #1e3a8a, #2563eb); padding:20px; border-radius:20px; color:white; margin-top:20px; position:relative;">
+            <h4 style="margin:0;">Share with Friends</h4>
+            <p style="font-size:11px; opacity:0.8;">Help others find their dream job</p>
+            <a href="https://whatsapp.com/channel/0029VbCL3cTElagwBiU2aJ2N" target="_blank" style="background:white; color:var(--blue); padding:8px 15px; border-radius:8px; font-size:12px; font-weight:800; text-decoration:none; display:inline-block; margin-top:10px;">Invite Now</a>
         </div>
     </div>
 
     <div id="res-sec" class="hidden">
-        <div class="nav-header"><h3>Result Portal</h3><button onclick="showDash()" style="color:var(--blue); border:none; background:none; font-weight:800;">Back</button></div>
+        <h3 style="font-weight:800;">Results Portal</h3>
         <div class="card">
-            <input type="text" id="res-inp" placeholder="SSC GD, Railway, etc." style="margin-bottom:10px;">
-            <button onclick="searchRes()" class="btn-primary" style="padding:10px;">Search 🔍</button>
-            <div class="dash-grid" style="grid-template-columns: 1fr 1fr; margin-top:15px;">
-                <div class="dash-card" style="padding:12px; font-size:12px;" onclick="openJobs('SSC Result')">SSC Result</div>
-                <div class="dash-card" style="padding:12px; font-size:12px;" onclick="openJobs('Bihar Police Result')">Bihar Police</div>
-                <div class="dash-card" style="padding:12px; font-size:12px;" onclick="openJobs('UP Police Result')">UP Police</div>
-                <div class="dash-card" style="padding:12px; font-size:12px;" onclick="openJobs('Board Result')">Board Result</div>
-            </div>
+            <input type="text" id="res-inp" placeholder="Type Exam Name (SSC GD, etc.)" style="width:100%; padding:15px; border-radius:12px; border:1px solid #ddd; box-sizing:border-box;">
+            <button onclick="searchRes()" class="btn-primary" style="margin-top:10px; padding:12px;">Find Result</button>
         </div>
     </div>
 
     <div id="feed-sec" class="hidden">
-        <div class="nav-header"><h3 id="f-title" style="text-transform:uppercase;">JOBS</h3><button onclick="showDash()" style="color:var(--blue); border:none; background:none; font-weight:800;">Home</button></div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h3 id="f-title" style="margin:0; text-transform:uppercase; font-size:16px;">Listing</h3>
+            <button onclick="showDash()" style="color:var(--blue); border:none; background:none; font-weight:800;">Back</button>
+        </div>
         <div id="list"></div>
-        <div id="loading" style="text-align:center; padding:20px; font-weight:800; color:var(--blue);">Loading...</div>
+        <div id="loading" class="hidden" style="text-align:center; font-weight:700; color:var(--blue);">Loading...</div>
     </div>
+</div>
+
+<div class="bottom-nav">
+    <div class="nav-item active" onclick="showDash()"><i>🏠</i>Home</div>
+    <div class="nav-item" onclick="showResults()"><i>📄</i>Results</div>
+    <div class="nav-item" onclick="openJobs('Internship')"><i>🎓</i>Internship</div>
+    <div class="nav-item" onclick="logout()"><i>👤</i>Logout</div>
 </div>
 
 <script>
@@ -105,11 +133,11 @@
 
     function saveLogin() {
         const n = document.getElementById('u-name').value;
-        const d = document.getElementById('u-dob').value;
         const s = document.getElementById('u-state').value;
+        const d = document.getElementById('u-dob').value;
         const e = document.getElementById('u-edu').value;
-        if(!n || !s || !d) return alert("Please fill details!");
-        user = {name:n, dob:d, state:s, edu:e};
+        if(!n || !s) return alert("Fill your name and state!");
+        user = {name:n, state:s, dob:d, edu:e};
         localStorage.setItem('rozgarUser', JSON.stringify(user));
         showDash();
     }
@@ -117,12 +145,16 @@
     function showDash() {
         document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
         document.getElementById('dash-sec').classList.remove('hidden');
-        document.getElementById('p-name').innerText = user.name;
+        document.getElementById('user-initial').innerText = user.name[0].toUpperCase();
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        document.querySelector('.nav-item:nth-child(1)').classList.add('active');
     }
 
     function showResults() {
         document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
         document.getElementById('res-sec').classList.remove('hidden');
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        document.querySelector('.nav-item:nth-child(2)').classList.add('active');
     }
 
     function openJobs(cat) {
@@ -138,6 +170,7 @@
 
     async function fetchData() {
         if(loading) return; loading = true;
+        document.getElementById('loading').classList.remove('hidden');
         try {
             const res = await fetch('/fetch_jobs', {
                 method: 'POST',
@@ -145,22 +178,27 @@
                 body: JSON.stringify({category: currentCat, state: user.state, edu: user.edu, page: page})
             });
             const data = await res.json();
-            const isRes = currentCat.toLowerCase().includes('result');
             data.forEach(i => {
                 document.getElementById('list').innerHTML += `
-                <div class="job-card" style="border-left-color:${isRes ? 'var(--green)' : 'var(--blue)'}">
-                    <h3 style="margin:0; font-size:16px; font-weight:900;">${i.title}</h3>
-                    <p style="font-size:12px; color:gray; margin:8px 0;">${i.snippet}</p>
-                    <a href="${i.link}" target="_blank" class="btn-primary" style="display:block; text-align:center; text-decoration:none; padding:12px; font-size:14px; background:${isRes ? 'var(--green)' : 'var(--blue)'}">
-                        ${isRes ? 'CHECK RESULT 📄' : 'APPLY NOW 🚀'}
-                    </a>
+                <div class="job-card">
+                    <p style="color:var(--blue); font-size:10px; font-weight:800; text-transform:uppercase;">Hiring Now</p>
+                    <h3 class="job-title">${i.title}</h3>
+                    <span class="company-name">Official Source</span>
+                    <div class="job-meta">
+                        <div class="meta-item">📍 ${user.state}</div>
+                        <div class="meta-item">📅 2026</div>
+                        <div class="meta-item">🎓 ${user.edu}</div>
+                    </div>
+                    <a href="${i.link}" target="_blank" class="btn-apply">View Details & Apply</a>
                 </div>`;
             });
             page++;
-        } catch(e) {} loading = false;
+        } catch(e) {} 
+        loading = false;
+        document.getElementById('loading').classList.add('hidden');
     }
 
-    window.onscroll = () => { if((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 600) fetchData(); };
+    window.onscroll = () => { if((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) fetchData(); };
     function logout() { localStorage.removeItem('rozgarUser'); location.reload(); }
 </script>
 </body>
