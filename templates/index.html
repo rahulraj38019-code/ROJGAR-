@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROZGAR - R YADAV PRODUCTION</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        .active-btn { background-color: #172554 !important; color: white !important; border-color: #172554 !important; }
+        .active-btn { background-color: #172554 !important; color: white !important; border-color: #172554 !important; transform: scale(1.05); }
         .marquee-live { animation: scroll 20s linear infinite; }
         @keyframes scroll { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
     </style>
@@ -28,19 +29,19 @@
 
         <div id="login-view" class="p-8 flex-1 flex flex-col justify-center hidden bg-white">
             <h2 class="text-3xl font-black mb-2 italic">WELCOME ✍️</h2>
-            <p class="text-[10px] text-slate-400 font-bold mb-8 uppercase tracking-widest border-b pb-4">Bihar's Digital Job Portal</p>
+            <p class="text-[10px] text-slate-400 font-bold mb-8 uppercase tracking-widest border-b pb-4">Arwal's Digital Job Portal</p>
             <div class="space-y-4">
-                <input id="un" type="text" placeholder="Apna Naam" class="w-full p-4 rounded-xl border-2 font-bold outline-none bg-slate-50">
-                <input id="ue" type="email" placeholder="Email (Notification ke liye)" class="w-full p-4 rounded-xl border-2 font-bold outline-none bg-slate-50">
-                <input id="us" type="text" placeholder="Zila / State" class="w-full p-4 rounded-xl border-2 font-bold outline-none bg-slate-50">
-                <button onclick="doLogin()" class="w-full bg-blue-950 text-white p-5 rounded-xl font-black text-lg shadow-xl uppercase active:scale-95 transition">Verify & Start 🚀</button>
+                <input id="un" type="text" placeholder="Full Name" class="w-full p-4 rounded-xl border-2 font-bold outline-none bg-slate-50">
+                <input id="ue" type="email" placeholder="Email Address" class="w-full p-4 rounded-xl border-2 font-bold outline-none bg-slate-50">
+                <input id="us" type="text" placeholder="City/State" class="w-full p-4 rounded-xl border-2 font-bold outline-none bg-slate-50">
+                <button onclick="doLogin()" class="w-full bg-blue-950 text-white p-5 rounded-xl font-black text-lg shadow-xl uppercase active:scale-95 transition">Verify Profile 🚀</button>
             </div>
         </div>
 
         <div id="dash-view" class="flex-1 flex flex-col hidden">
             <div class="bg-yellow-400 text-black py-2 overflow-hidden border-b-2 border-yellow-500 cursor-pointer" onclick="window.open('https://www.sarkariresult.com','_blank')">
                 <div class="marquee-live flex whitespace-nowrap uppercase italic font-black text-[10px]">
-                    <span>🔥 LATEST: SSC GD Answer Key Available • Bihar Police Result 2026 • Railway Updates • R YADAV PRODUCTION 🔥</span>
+                    <span>🔥 SSC GD Answer Key • Bihar Police Result 2026 • Railway Updates • R YADAV PRODUCTION VIP UPDATE 🔥</span>
                 </div>
             </div>
 
@@ -50,46 +51,49 @@
                 <button id="tab-results" onclick="switchTab('results')" class="px-5 py-2.5 border-2 border-blue-950 rounded-xl text-[10px] font-black uppercase whitespace-nowrap transition">Results</button>
             </div>
 
+            <div id="result-cats" class="hidden p-3 grid grid-cols-2 gap-2 bg-blue-50 border-b">
+                <button onclick="loadData('Bihar Board 10th 12th Result 2026')" class="p-2 bg-white rounded-lg shadow-sm border font-black text-[8px] uppercase hover:bg-blue-100">Bihar Board 📝</button>
+                <button onclick="loadData('SSC Official Results CGL CHSL GD')" class="p-2 bg-white rounded-lg shadow-sm border font-black text-[8px] uppercase hover:bg-blue-100">SSC Portal 🏢</button>
+                <button onclick="loadData('Railway RRB Results 2026')" class="p-2 bg-white rounded-lg shadow-sm border font-black text-[8px] uppercase hover:bg-blue-100">Railway 🚂</button>
+                <button onclick="loadData('Bihar Police SI Constable Result')" class="p-2 bg-white rounded-lg shadow-sm border font-black text-[8px] uppercase hover:bg-blue-100">Bihar Police 👮</button>
+            </div>
+
             <div id="results-box" class="p-4 space-y-6"></div>
             
             <div id="load-more-div" class="p-6 text-center hidden">
-                <button onclick="loadMore()" class="bg-blue-950 text-white px-10 py-4 rounded-2xl font-black text-[10px] uppercase shadow-2xl active:scale-95 transition">View More Jobs ⬇️</button>
+                <button onclick="loadMore()" class="bg-blue-950 text-white px-10 py-4 rounded-2xl font-black text-[10px] uppercase shadow-2xl">Load More Data ⬇️</button>
             </div>
             
-            <div id="loader" class="hidden text-center py-10 font-black text-blue-900 text-[10px] animate-pulse">SEARCHING SERVERS...</div>
+            <div id="loader" class="hidden text-center py-10 font-black text-blue-900 text-[10px] animate-pulse">FETCHING UPDATES...</div>
         </div>
 
         <div id="profile-ui" class="fixed inset-0 bg-white z-[3000] hidden flex-col">
-            <div class="p-5 bg-blue-950 text-white flex items-center justify-between shadow-xl">
-                <h2 class="font-black italic text-xl">PROFILE SETTINGS</h2>
-                <button onclick="hideProfile()" class="text-[10px] font-black bg-red-600 px-5 py-2 rounded-xl uppercase shadow-lg">Back</button>
+            <div class="p-5 bg-blue-950 text-white flex items-center justify-between">
+                <h2 class="font-black italic text-xl">PROFILE</h2>
+                <button onclick="hideProfile()" class="text-[10px] font-black bg-red-600 px-5 py-2 rounded-xl uppercase">Back</button>
             </div>
-            <div class="p-8 flex-1 space-y-8 overflow-y-auto">
+            <div class="p-8 flex-1 space-y-8">
                 <div class="flex flex-col items-center">
-                    <div id="setting-pfp" class="w-28 h-28 rounded-full bg-slate-200 border-4 border-blue-950 mb-4 overflow-hidden flex items-center justify-center text-5xl shadow-2xl">👤</div>
-                    <input id="upfp" type="text" placeholder="Paste Profile Image URL here" class="w-full p-4 border-2 rounded-2xl text-[10px] font-bold outline-none focus:border-blue-950 shadow-inner" onchange="updatePFPPreview()">
-                    <p class="text-[8px] text-slate-400 mt-2 uppercase font-black italic">Tip: Use a direct link for your photo</p>
+                    <div id="setting-pfp" class="w-28 h-28 rounded-full bg-slate-200 border-4 border-blue-950 mb-4 overflow-hidden flex items-center justify-center text-5xl">👤</div>
+                    <input id="upfp" type="text" placeholder="Image URL paste karein" class="w-full p-4 border-2 rounded-2xl text-[10px] font-bold" onchange="updatePFPPreview()">
                 </div>
-                <div class="space-y-6">
-                    <div class="border-b-2 pb-2"><label class="text-[8px] font-black text-blue-500 uppercase">Your Name</label><p id="p-name" class="font-black text-lg text-slate-800"></p></div>
-                    <div class="border-b-2 pb-2"><label class="text-[8px] font-black text-blue-500 uppercase">Registered Email</label><p id="p-email" class="font-black text-lg text-slate-800"></p></div>
-                    <button onclick="clearData()" class="w-full bg-red-600 text-white p-5 rounded-2xl font-black text-[10px] shadow-xl uppercase active:bg-red-700">Logout & Reset Account</button>
+                <div class="space-y-4">
+                    <p class="text-xs font-black">NAME: <span id="p-name" class="text-blue-600"></span></p>
+                    <p class="text-xs font-black">EMAIL: <span id="p-email" class="text-blue-600"></span></p>
+                    <button onclick="clearData()" class="w-full bg-red-600 text-white p-5 rounded-2xl font-black text-[10px] mt-10 shadow-lg">RESET APP</button>
                 </div>
             </div>
         </div>
 
         <div id="chat-ui" class="fixed inset-0 bg-white z-[2000] hidden flex-col">
             <div class="p-5 bg-blue-950 text-white flex justify-between items-center shadow-2xl">
-                <div>
-                    <h2 class="font-black italic text-xl tracking-tighter">ROZGAR AI</h2>
-                    <p class="text-[8px] text-blue-400 font-bold uppercase tracking-widest">Rahul Raj Assistant</p>
-                </div>
-                <button onclick="hideChat()" class="text-[10px] bg-red-600 px-5 py-2 rounded-xl font-black uppercase shadow-lg">Close</button>
+                <h2 class="font-black italic text-xl">ROZGAR AI</h2>
+                <button onclick="hideChat()" class="text-[10px] bg-red-600 px-5 py-2 rounded-xl font-black uppercase">Close</button>
             </div>
-            <div id="msg-box" class="flex-1 p-5 overflow-y-auto space-y-5 bg-slate-50"></div>
-            <div class="p-4 border-t bg-white flex gap-2">
-                <input id="chat-in" type="text" placeholder="Pucho exam ya study tips..." class="flex-1 p-4 bg-slate-100 rounded-2xl outline-none font-bold text-sm shadow-inner">
-                <button onclick="sendChat()" class="bg-blue-950 text-white px-8 rounded-2xl font-black text-[10px] uppercase shadow-xl active:scale-95 transition">Ask</button>
+            <div id="msg-box" class="flex-1 p-5 overflow-y-auto space-y-4 bg-slate-50"></div>
+            <div class="p-4 border-t flex gap-2">
+                <input id="chat-in" type="text" placeholder="Pucho kuch bhi..." class="flex-1 p-4 bg-slate-100 rounded-2xl outline-none font-bold text-sm">
+                <button onclick="sendChat()" class="bg-blue-950 text-white px-6 rounded-2xl font-black text-[10px]">ASK</button>
             </div>
         </div>
     </div>
@@ -97,6 +101,7 @@
     <script>
         let currentQ = "";
         let pageNum = 1;
+        let isResultsTab = false;
 
         // --- Profile Actions ---
         function showProfile() {
@@ -109,24 +114,22 @@
         function updatePFPPreview() {
             const url = document.getElementById('upfp').value;
             if(url) {
-                const imgTag = `<img src="${url}" class="w-full h-full object-cover">`;
-                document.getElementById('setting-pfp').innerHTML = imgTag;
-                document.getElementById('nav-pfp').innerHTML = imgTag;
+                const img = `<img src="${url}" class="w-full h-full object-cover">`;
+                document.getElementById('setting-pfp').innerHTML = img;
+                document.getElementById('nav-pfp').innerHTML = img;
                 localStorage.setItem('user_pfp', url);
             }
         }
 
-        // --- Navigation Fixes ---
+        // --- Nav Fixes ---
         function showChat() {
             document.getElementById('chat-ui').style.display = 'flex';
-            window.history.pushState({chat: true}, ""); // History State
+            window.history.pushState({chat: true}, "");
         }
-        function hideChat() {
-            document.getElementById('chat-ui').style.display = 'none';
-        }
-        window.onpopstate = () => hideChat(); // Mobile Back Button Fix
+        function hideChat() { document.getElementById('chat-ui').style.display = 'none'; }
+        window.onpopstate = () => hideChat();
 
-        // --- Data Handling ---
+        // --- Data Handling (Fixed: Apply vs Result Logic) ---
         async function loadData(q, isMore = false) {
             const box = document.getElementById('results-box');
             const ldr = document.getElementById('loader');
@@ -146,13 +149,19 @@
                 const data = await res.json();
                 ldr.classList.add('hidden');
                 
+                // Set Button Text and Color based on tab
+                const btnText = isResultsTab ? "CHECK RESULT ✅" : "APPLY NOW 🚀";
+                const btnColor = isResultsTab ? "bg-emerald-600" : "bg-blue-950";
+
                 data.forEach(item => {
                     box.innerHTML += `
                     <div class="p-6 bg-white border-2 rounded-[2rem] shadow-xl border-l-[12px] border-blue-950 transition active:scale-95">
-                        <span class="text-[8px] font-black text-slate-300 uppercase tracking-widest">Job Update • 2026</span>
+                        <span class="text-[8px] font-black text-slate-300 uppercase tracking-widest">Update • 2026</span>
                         <h3 class="font-black text-sm uppercase mb-3 mt-1 text-slate-900 leading-tight">${item.title}</h3>
                         <p class="text-[10px] text-slate-500 mb-6 line-clamp-2 italic">${item.snippet}</p>
-                        <a href="${item.link}" target="_blank" class="block w-full text-center bg-blue-950 text-white py-4 rounded-2xl font-black text-[10px] shadow-lg uppercase tracking-wider">Apply Now</a>
+                        <a href="${item.link}" target="_blank" class="block w-full text-center ${btnColor} text-white py-4 rounded-2xl font-black text-[10px] shadow-lg uppercase tracking-wider">
+                            ${btnText}
+                        </a>
                     </div>`;
                 });
                 if(data.length > 0) lm.classList.remove('hidden');
@@ -165,14 +174,25 @@
             const tabs = ['tab-central', 'tab-state', 'tab-results'];
             tabs.forEach(t => document.getElementById(t).classList.remove('active-btn'));
             document.getElementById('tab-' + mode).classList.add('active-btn');
-            const q = mode === 'central' ? 'central govt jobs' : (mode === 'state' ? 'bihar govt vacancy' : 'sarkari result update');
-            loadData(q);
+            
+            const resCats = document.getElementById('result-cats');
+
+            if(mode === 'results') {
+                isResultsTab = true;
+                resCats.classList.remove('hidden'); // Fix: Show Filter Buttons
+                loadData('latest exam results official 2026 sarkari result');
+            } else {
+                isResultsTab = false;
+                resCats.classList.add('hidden'); // Fix: Hide Filter Buttons
+                const q = mode === 'central' ? 'central govt jobs 2026' : 'bihar government recruitment 2026';
+                loadData(q);
+            }
         }
 
         // --- User Core ---
         function doLogin() {
             const n = document.getElementById('un').value, e = document.getElementById('ue').value, s = document.getElementById('us').value;
-            if(!n || !e) return alert("Naam aur Email bharo bhai!");
+            if(!n || !e) return alert("Pura data bhariye bhai!");
             localStorage.setItem('user_n', n); localStorage.setItem('user_e', e); localStorage.setItem('user_s', s);
             location.reload();
         }
