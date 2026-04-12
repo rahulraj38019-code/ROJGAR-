@@ -3,3 +3,5 @@ requests
 flask-cors
 flask-caching
 groq
+gunicorn
+
