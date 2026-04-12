@@ -25,7 +25,7 @@
         .edu-chip { border: 1.5px solid #e2e8f0; padding: 12px; border-radius: 12px; text-align: center; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.3s; background: #fff; color: var(--text-muted); }
         .edu-chip.selected { background: var(--blue); color: #fff; border-color: var(--blue); box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3); }
 
-        /* Existing Styles Retained */
+        /* Dashboard Styles */
         .card { background: var(--white); padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); margin-bottom: 20px; }
         .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
         .dash-card { background: var(--white); padding: 15px; border-radius: 18px; text-align: center; border: 1px solid #f0f0f0; transition: 0.3s; cursor: pointer; }
@@ -36,6 +36,7 @@
         .pill { background: #fff; padding: 8px 16px; border-radius: 50px; border: 1px solid #ddd; font-size: 12px; font-weight: 600; white-space: nowrap; cursor: pointer; }
         .pill.active { background: var(--blue); color: #fff; border-color: var(--blue); }
 
+        /* Job & AI Plan Cards */
         .job-card { background: var(--white); padding: 18px; border-radius: 16px; margin-bottom: 12px; border: 1px solid #f0f0f0; }
         .job-title { font-size: 15px; font-weight: 700; color: #1e293b; margin: 0; }
         .company-name { font-size: 12px; color: #64748b; font-weight: 600; display: block; margin: 4px 0; }
@@ -45,6 +46,7 @@
         .btn-apply { display: block; text-align: center; background: var(--blue); color: white; padding: 12px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 13px; margin-top: 15px; }
         .btn-primary { width: 100%; background: var(--blue); color: white; padding: 18px; border: none; border-radius: 15px; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3); }
         
+        /* Bottom Nav */
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #eee; box-shadow: 0 -5px 15px rgba(0,0,0,0.03); max-width: 500px; margin: 0 auto; }
         .nav-item { text-align: center; color: #94a3b8; font-size: 10px; font-weight: 700; cursor: pointer; text-decoration: none;}
         .nav-item.active { color: var(--blue); }
@@ -76,7 +78,7 @@
             <label>Current State</label>
             <input type="text" id="u-state" class="input-box" placeholder="e.g. Bihar">
             
-            <label>Education Qualifications (Select all that apply)</label>
+            <label>Education (Multiple Select Karo)</label>
             <div class="edu-grid" id="edu-options">
                 <div class="edu-chip" onclick="toggleEdu(this, '10th')">10th Pass</div>
                 <div class="edu-chip" onclick="toggleEdu(this, '12th')">12th Pass</div>
@@ -98,6 +100,15 @@
             <div class="dash-card" onclick="openJobs('railway')"><i>🚂</i><span>Railway</span></div>
             <div class="dash-card" onclick="openJobs('iti')"><i>⚙️</i><span>ITI Specialist</span></div>
             <div class="dash-card" onclick="openJobs('wfh')"><i>🏠</i><span>Remote/WFH</span></div>
+        </div>
+
+        <div class="card" style="border: 1.5px dashed var(--blue); margin-top: 25px; background: #f0f7ff;">
+            <h4 style="margin:0; color: var(--blue); font-weight: 800;">📚 AI Study Planner</h4>
+            <p style="font-size:11px; color:var(--text-muted); margin: 8px 0;">Apne exam ka naam likhein (e.g. SSC GD, Railway)</p>
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="study-query" placeholder="Exam Name..." style="flex:1; padding:12px; border-radius:12px; border:1.5px solid #e2e8f0; outline:none; font-weight:600;">
+                <button onclick="getStudyPlan()" style="background:var(--blue); color:white; border:none; border-radius:12px; padding:0 15px; font-weight:800; cursor:pointer;">Get Plan</button>
+            </div>
         </div>
 
         <h3 style="margin-top:25px; font-weight:800;">Trending Search</h3>
@@ -129,7 +140,7 @@
             <button onclick="showDash()" style="color:var(--blue); border:none; background:none; font-weight:800;">Home</button>
         </div>
         <div id="list"></div>
-        <div id="loading" class="hidden" style="text-align:center; font-weight:700; color:var(--blue); padding:20px;">Fetching latest jobs...</div>
+        <div id="loading" class="hidden" style="text-align:center; font-weight:700; color:var(--blue); padding:20px;">Fetching latest updates...</div>
     </div>
 </div>
 
@@ -164,11 +175,17 @@
         const n = document.getElementById('u-name').value;
         const s = document.getElementById('u-state').value;
         const d = document.getElementById('u-dob').value;
-        if(!n || !s || selectedEdu.length === 0) return alert("Please fill all details and select education!");
-        
+        if(!n || !s || selectedEdu.length === 0) return alert("Please fill all details!");
         user = {name:n, state:s, dob:d, edu: selectedEdu.join(', ')};
         localStorage.setItem('rozgarUser', JSON.stringify(user));
         showDash();
+    }
+
+    function getStudyPlan() {
+        const query = document.getElementById('study-query').value;
+        if(!query) return alert("Pehle exam ka naam likhein!");
+        const finalSearch = "study plan for " + query + " preparation 2026 in hindi";
+        window.open(`https://www.google.com/search?q=${encodeURIComponent(finalSearch)}`, '_blank');
     }
 
     function showDash() {
@@ -210,7 +227,7 @@
             data.forEach(i => {
                 document.getElementById('list').innerHTML += `
                 <div class="job-card">
-                    <p style="color:var(--blue); font-size:10px; font-weight:800; text-transform:uppercase;">Verified Listing</p>
+                    <p style="color:var(--blue); font-size:10px; font-weight:800; text-transform:uppercase;">Verified Source</p>
                     <h3 class="job-title">${i.title}</h3>
                     <span class="company-name">Posted on Official Portal</span>
                     <div class="job-meta">
