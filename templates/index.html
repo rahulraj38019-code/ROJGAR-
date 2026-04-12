@@ -5,83 +5,75 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background: #f8fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .job-card { border-radius: 20px; transition: 0.3s; border: 1px solid #e5e7eb; background: white; }
-        .tab-active { background: #1d4ed8 !important; color: white !important; }
-        .ai-window { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 200; display: none; background: white; flex-direction: column; }
-        
-        /* Sundar aur Slow Notification */
-        .news-container { background: #1e3a8a; color: white; padding: 10px 0; overflow: hidden; position: relative; }
-        .marquee { display: flex; width: 200%; animation: scroll 30s linear infinite; }
-        .marquee span { padding: 0 40px; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .marquee-slow { animation: scroll 35s linear infinite; }
         @keyframes scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        .official-tag { background: linear-gradient(90deg, #065f46, #059669); }
     </style>
 </head>
-<body>
-
-    <div class="max-w-md mx-auto min-h-screen bg-white shadow-2xl flex flex-col relative overflow-hidden">
+<body class="bg-slate-50 font-sans">
+    <div class="max-w-md mx-auto min-h-screen bg-white shadow-2xl flex flex-col relative">
         
         <div id="setup-section" class="p-8 flex-1 flex flex-col justify-center">
-            <h1 class="text-5xl font-black text-blue-900 italic text-center mb-10">ROZGAR</h1>
+            <h1 class="text-6xl font-black text-blue-900 italic text-center mb-4">ROZGAR</h1>
+            <p class="text-center text-slate-500 mb-8 font-bold uppercase text-[10px] tracking-widest">Sarkari Updates, Seedhe Official Source Se</p>
             <div class="space-y-4">
-                <input id="u_name" type="text" placeholder="Apna Naam" class="w-full p-4 rounded-2xl border-2 border-slate-100 outline-none focus:border-blue-500 bg-slate-50">
-                <input id="u_state" type="text" placeholder="Apna Rajya" class="w-full p-4 rounded-2xl border-2 border-slate-100 outline-none focus:border-blue-500 bg-slate-50">
-                <input id="u_dob" type="date" class="w-full p-4 rounded-2xl border-2 border-slate-100 outline-none focus:border-blue-500 bg-slate-50">
-                <button onclick="saveUser()" class="w-full bg-blue-700 text-white p-5 rounded-3xl font-black text-xl shadow-lg">START JOURNEY 🚀</button>
+                <input id="u_name" type="text" placeholder="Apna Naam" class="w-full p-4 rounded-2xl border-2 bg-slate-50 outline-none focus:border-blue-600">
+                <input id="u_state" type="text" placeholder="State (e.g. Bihar)" class="w-full p-4 rounded-2xl border-2 bg-slate-50 outline-none focus:border-blue-600">
+                <button onclick="saveUser()" class="w-full bg-blue-700 text-white p-5 rounded-3xl font-black text-xl shadow-xl active:scale-95 transition">LOGIN 🚀</button>
             </div>
         </div>
 
         <div id="main-dashboard" class="hidden flex-1 flex flex-col">
-            <div class="p-4 bg-white border-b sticky top-0 z-10">
+            <div class="p-4 bg-white sticky top-0 z-20 shadow-sm border-b">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-2xl font-black text-blue-900 italic">ROZGAR</h2>
-                    <button onclick="clearUser()" class="text-red-500 text-[10px] font-bold">RESET</button>
+                    <button onclick="clearUser()" class="text-red-500 font-bold text-xs uppercase">Reset</button>
                 </div>
-                <div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
-                    <button onclick="setFilter('all')" id="f-all" class="px-5 py-2 text-xs font-bold bg-slate-100 rounded-xl whitespace-nowrap">Latest Jobs</button>
-                    <button onclick="setFilter('central')" id="f-central" class="px-5 py-2 text-xs font-bold bg-slate-100 rounded-xl whitespace-nowrap">Central</button>
-                    <button onclick="setFilter('state')" id="f-state" class="px-5 py-2 text-xs font-bold bg-slate-100 rounded-xl whitespace-nowrap">State</button>
-                    <button onclick="setFilter('results')" id="f-results" class="px-5 py-2 text-xs font-bold bg-slate-100 rounded-xl whitespace-nowrap">Exam Results 📄</button>
+                <div class="flex gap-2 overflow-x-auto no-scrollbar pb-2">
+                    <button onclick="setFilter('all', 'latest jobs')" class="tab-btn px-4 py-2 bg-slate-100 rounded-xl text-[10px] font-black uppercase whitespace-nowrap">All Jobs</button>
+                    <button onclick="setFilter('results', 'SSC MTS result')" class="tab-btn px-4 py-2 bg-slate-100 rounded-xl text-[10px] font-black uppercase whitespace-nowrap">SSC Results</button>
+                    <button onclick="setFilter('results', '10th 12th board result')" class="tab-btn px-4 py-2 bg-slate-100 rounded-xl text-[10px] font-black uppercase whitespace-nowrap">Board Results</button>
+                    <button onclick="setFilter('results', 'Railway Police BPSC result')" class="tab-btn px-4 py-2 bg-slate-100 rounded-xl text-[10px] font-black uppercase whitespace-nowrap">Govt Exams</button>
                 </div>
             </div>
 
-            <div class="news-container">
-                <div class="marquee">
-                    <span>🔥 SSC GD Notification 2026 Out | Bihar Police Result Updates | Railway New Vacancy 2026 | ITI Campus Selection Details | Check Your Results Now</span>
-                    <span>🔥 SSC GD Notification 2026 Out | Bihar Police Result Updates | Railway New Vacancy 2026 | ITI Campus Selection Details | Check Your Results Now</span>
+            <div class="bg-blue-900 text-white py-2 overflow-hidden">
+                <div class="marquee-slow flex whitespace-nowrap font-bold text-[10px] uppercase">
+                    <span>• Official Links Only • No Third Party • SSC Results Out • Railway Update 2026 • 10th-12th Results Official Portal • Rozgar AI active •</span>
+                    <span>• Official Links Only • No Third Party • SSC Results Out • Railway Update 2026 • 10th-12th Results Official Portal • Rozgar AI active •</span>
                 </div>
             </div>
 
             <div id="content-list" class="p-4 space-y-6 pb-24"></div>
-            <div id="loader" class="hidden text-center py-20 font-bold text-blue-600 animate-pulse text-xs">SEARCHING UPDATES...</div>
+            <div id="loader" class="hidden text-center py-20 font-black text-blue-600 animate-pulse text-[10px]">VERIFYING OFFICIAL LINKS...</div>
         </div>
 
-        <div id="ai-window" class="ai-window">
+        <div id="ai-window" class="fixed inset-0 bg-white z-[300] hidden flex-col">
             <div class="p-5 bg-slate-900 text-white flex justify-between items-center">
-                <h2 class="text-xl font-black italic">ROZGAR AI</h2>
-                <button onclick="closeAI()" class="text-xs bg-slate-700 px-4 py-2 rounded-lg">CLOSE</button>
+                <h2 class="font-black italic">ROZGAR AI (GEMINI)</h2>
+                <button onclick="closeAI()" class="text-xs bg-red-600 px-4 py-2 rounded-lg font-bold">EXIT</button>
             </div>
-            <div id="ai-messages" class="flex-1 p-5 overflow-y-auto space-y-4 bg-slate-50"></div>
+            <div id="ai-messages" class="flex-1 p-5 overflow-y-auto space-y-4 bg-slate-50 text-sm"></div>
             <div class="p-4 border-t bg-white flex gap-2">
-                <input id="ai-input" type="text" placeholder="Apna sawal likhiye..." class="flex-1 p-4 bg-slate-100 rounded-2xl outline-none">
-                <button onclick="aiChat()" class="bg-blue-700 text-white px-6 rounded-2xl font-bold">ASK</button>
+                <input id="ai-input" type="text" placeholder="Kuchh bhi puchho..." class="flex-1 p-4 bg-slate-100 rounded-2xl outline-none border focus:border-blue-500">
+                <button onclick="aiChat()" class="bg-blue-700 text-white px-8 rounded-2xl font-black">ASK</button>
             </div>
         </div>
 
-        <button onclick="openAI()" class="fixed bottom-6 right-6 w-16 h-16 bg-blue-900 text-white rounded-full shadow-2xl flex items-center justify-center text-3xl z-[150]">🤖</button>
+        <button onclick="openAI()" class="fixed bottom-6 right-6 w-16 h-16 bg-blue-900 text-white rounded-full shadow-2xl flex items-center justify-center text-3xl z-[250] border-4 border-white">🤖</button>
     </div>
 
     <script>
-        let currentFilter = 'all';
+        let currentType = 'all';
+        let currentInterest = 'latest jobs';
 
-        window.onload = function() {
-            if(localStorage.getItem('r_name')) showDashboard();
-        };
+        window.onload = () => { if(localStorage.getItem('r_name')) showDashboard(); };
 
         function saveUser() {
             const name = document.getElementById('u_name').value;
             const state = document.getElementById('u_state').value;
-            if(!name || !state) return alert("Details bharo bhai!");
+            if(!name || !state) return alert("Bhai, details fill kijiye!");
             localStorage.setItem('r_name', name);
             localStorage.setItem('r_state', state);
             showDashboard();
@@ -93,37 +85,34 @@
             fetchData();
         }
 
-        function setFilter(type) {
-            currentFilter = type;
-            document.querySelectorAll('#main-dashboard button').forEach(b => b.classList.remove('tab-active'));
-            document.getElementById('f-' + type).classList.add('tab-active');
+        function setFilter(type, interest) {
+            currentType = type;
+            currentInterest = interest;
             document.getElementById('content-list').innerHTML = '';
             fetchData();
         }
 
         async function fetchData() {
-            const state = localStorage.getItem('r_state');
             const loader = document.getElementById('loader');
             loader.classList.remove('hidden');
-            
             try {
                 const res = await fetch('/search', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({state, type: currentFilter})
+                    body: JSON.stringify({state: localStorage.getItem('r_state'), type: currentType, interest: currentInterest})
                 });
                 const data = await res.json();
                 loader.classList.add('hidden');
-                
                 data.forEach(j => {
                     document.getElementById('content-list').innerHTML += `
-                        <div class="job-card p-6 shadow-sm border-l-8 border-blue-600">
-                            <h2 class="text-lg font-black text-slate-800 leading-tight mb-2">${j.title}</h2>
-                            <p class="text-xs text-slate-500 mb-4">${j.snippet}</p>
-                            <a href="${j.link}" target="_blank" class="block w-full text-center bg-slate-900 text-white py-3 rounded-xl font-bold text-xs uppercase">Open Official Site</a>
+                        <div class="p-6 bg-white border-l-8 border-emerald-600 rounded-2xl shadow-sm border border-slate-100">
+                            <span class="official-tag text-[8px] text-white px-3 py-1 rounded-full font-black uppercase tracking-tighter">Official Source Verified ✅</span>
+                            <h2 class="text-lg font-black text-slate-900 mt-2 mb-2 leading-tight uppercase">${j.title}</h2>
+                            <p class="text-[10px] text-slate-500 mb-4 font-medium">${j.snippet}</p>
+                            <a href="${j.link}" target="_blank" class="block w-full text-center bg-blue-900 text-white py-3 rounded-xl font-black text-[10px] uppercase tracking-widest">VISIT OFFICIAL WEBSITE</a>
                         </div>`;
                 });
-            } catch (e) { loader.innerText = "Error!"; }
+            } catch (e) { loader.innerText = "Check Connection!"; }
         }
 
         function openAI() { document.getElementById('ai-window').style.display = 'flex'; }
@@ -133,28 +122,25 @@
             const input = document.getElementById('ai-input');
             const box = document.getElementById('ai-messages');
             if(!input.value) return;
-            
             const msg = input.value;
-            box.innerHTML += `<div class="bg-blue-600 text-white p-4 rounded-2xl ml-10 text-sm font-bold shadow-sm">${msg}</div>`;
+            box.innerHTML += `<div class="bg-blue-600 text-white p-4 rounded-2xl ml-12 font-bold shadow-md">${msg}</div>`;
             input.value = '';
             
             const typing = document.createElement('div');
-            typing.className = "text-xs font-bold text-slate-400 animate-pulse";
-            typing.innerText = "ROZGAR AI is thinking...";
+            typing.className = "font-black text-blue-600 animate-bounce p-2";
+            typing.innerText = "Gemini is thinking...";
             box.appendChild(typing);
             box.scrollTop = box.scrollHeight;
 
-            try {
-                const res = await fetch('/chat', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({message: msg, state: localStorage.getItem('r_state')})
-                });
-                const data = await res.json();
-                typing.remove();
-                box.innerHTML += `<div class="bg-white p-4 rounded-2xl shadow-md border border-slate-200 text-sm leading-relaxed"><b>AI:</b> ${data.reply}</div>`;
-                box.scrollTop = box.scrollHeight;
-            } catch (e) { typing.innerText = "Error!"; }
+            const res = await fetch('/chat', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({message: msg, name: localStorage.getItem('r_name')})
+            });
+            const data = await res.json();
+            typing.remove();
+            box.innerHTML += `<div class="bg-white p-4 rounded-2xl border-2 border-blue-50 shadow-sm leading-relaxed text-slate-800"><b>Gemini AI:</b><br>${data.reply}</div>`;
+            box.scrollTop = box.scrollHeight;
         }
 
         function clearUser() { localStorage.clear(); location.reload(); }
