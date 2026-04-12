@@ -27,7 +27,7 @@
         
         <div class="p-4 bg-blue-950 text-white flex justify-between items-center sticky top-0 z-50">
             <div class="flex items-center gap-3">
-                <div id="nav-pfp" onclick="showProfile()" class="w-10 h-10 rounded-full bg-blue-800 border-2 border-blue-400 overflow-hidden cursor-pointer flex items-center justify-center font-black text-xs uppercase tracking-tighter">Profile</div>
+                <div id="nav-pfp" onclick="showProfile()" class="w-10 h-10 rounded-full bg-blue-800 border-2 border-blue-400 overflow-hidden cursor-pointer flex items-center justify-center font-black text-[10px] uppercase">Profile</div>
                 <div>
                     <h1 class="text-lg font-black italic uppercase leading-none">ROZGAR</h1>
                     <p class="text-[7px] font-bold text-blue-400 uppercase tracking-widest">R YADAV PRODUCTION</p>
@@ -64,11 +64,17 @@
         </div>
 
         <div id="floating-support" class="fixed bottom-6 right-6 flex flex-col gap-3 z-[4000] hidden">
-            <a href="https://chat.whatsapp.com/JOvQploZdepGZEQgMpYcmv" target="_blank" class="float-btn flex items-center gap-2 bg-blue-600 text-white pl-4 pr-2 py-2 rounded-full shadow-2xl border-2 border-white active:scale-90 transition">
+            <a href="https://www.instagram.com/___rahul_yadav_._" target="_blank" class="float-btn flex items-center gap-2 bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-600 text-white pl-4 pr-2 py-2 rounded-full shadow-2xl border-2 border-white active:scale-90 transition">
+                <span class="text-[9px] font-black uppercase tracking-tight">Follow On Insta</span>
+                <img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg" class="w-8 h-8 bg-white rounded-full p-1.5">
+            </a>
+
+            <a href="https://chat.whatsapp.com/JOvQploZdepGZEQgMpYcmv" target="_blank" class="float-btn flex items-center gap-2 bg-blue-600 text-white pl-4 pr-2 py-2 rounded-full shadow-2xl border-2 border-white active:scale-90 transition" style="animation-delay: 0.3s;">
                 <span class="text-[9px] font-black uppercase tracking-tight">VIP Group</span>
                 <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" class="w-8 h-8 bg-white rounded-full p-1">
             </a>
-            <a href="https://whatsapp.com/channel/0029VbCL3cTElagwBiU2aJ2N" target="_blank" class="float-btn flex items-center gap-2 bg-emerald-500 text-white pl-4 pr-2 py-2 rounded-full shadow-2xl border-2 border-white active:scale-90 transition" style="animation-delay: 0.5s;">
+
+            <a href="https://whatsapp.com/channel/0029VbCL3cTElagwBiU2aJ2N" target="_blank" class="float-btn flex items-center gap-2 bg-emerald-500 text-white pl-4 pr-2 py-2 rounded-full shadow-2xl border-2 border-white active:scale-90 transition" style="animation-delay: 0.6s;">
                 <span class="text-[9px] font-black uppercase tracking-tight">Help Center</span>
                 <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" class="w-8 h-8 bg-white rounded-full p-1">
             </a>
@@ -164,12 +170,10 @@
             const box = document.getElementById('results-box');
             const ldr = document.getElementById('loader');
             const lm = document.getElementById('load-more-div');
-
             if(!isMore) { box.innerHTML = ""; pageNum = 1; }
             currentQ = q;
             ldr.classList.remove('hidden');
             lm.classList.add('hidden');
-            
             try {
                 const res = await fetch('/search', {
                     method: 'POST',
@@ -178,25 +182,13 @@
                 });
                 const data = await res.json();
                 ldr.classList.add('hidden');
-                
                 const isResult = q.toLowerCase().includes('result');
                 const themeColor = isResult ? 'emerald-600' : (currentMaster === 'govt' ? 'blue-950' : 'indigo-600');
                 const btnText = isResult ? 'CHECK RESULT ✅' : 'DETAILS & APPLY 🚀';
-
                 data.forEach(item => {
                     const sourceTag = item.source || 'Official Update';
                     const liveBadge = item.is_live ? `<span class="live-tag bg-red-600 text-white px-2 py-0.5 rounded text-[7px] font-bold">LIVE FORM</span>` : '';
-                    
-                    box.innerHTML += `
-                    <div class="job-card p-6 bg-white border-2 border-slate-100 shadow-xl border-l-[10px] border-${themeColor}">
-                        <div class="flex justify-between items-start mb-2">
-                            <button onclick="copyMyInfo()" class="bg-yellow-400 text-black px-3 py-1 rounded-lg text-[8px] font-black uppercase shadow-md active:scale-95">📋 Copy My Info</button>
-                            ${liveBadge}
-                        </div>
-                        <h3 class="font-black text-sm uppercase mb-3 mt-1 text-slate-900 leading-tight">${item.title}</h3>
-                        <p class="text-[10px] text-slate-500 mb-6 line-clamp-2 italic">${item.snippet}</p>
-                        <a href="${item.link}" target="_blank" class="block w-full text-center bg-${themeColor} text-white py-4 rounded-2xl font-black text-[10px] shadow-lg uppercase tracking-wider">${btnText}</a>
-                    </div>`;
+                    box.innerHTML += `<div class="job-card p-6 bg-white border-2 border-slate-100 shadow-xl border-l-[10px] border-${themeColor}"><div class="flex justify-between items-start mb-2"><button onclick="copyMyInfo()" class="bg-yellow-400 text-black px-3 py-1 rounded-lg text-[8px] font-black uppercase shadow-md active:scale-95">📋 Copy My Info</button>${liveBadge}</div><h3 class="font-black text-sm uppercase mb-3 mt-1 text-slate-900 leading-tight">${item.title}</h3><p class="text-[10px] text-slate-500 mb-6 line-clamp-2 italic">${item.snippet}</p><a href="${item.link}" target="_blank" class="block w-full text-center bg-${themeColor} text-white py-4 rounded-2xl font-black text-[10px] shadow-lg uppercase tracking-wider">${btnText}</a></div>`;
                 });
                 if(data.length > 0) lm.classList.remove('hidden');
             } catch(e) { ldr.classList.add('hidden'); }
