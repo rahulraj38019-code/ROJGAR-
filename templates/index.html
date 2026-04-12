@@ -111,6 +111,15 @@
             </div>
         </div>
 
+        <div class="card" style="border: 1.5px dashed #28a745; margin-top: 15px; background: #f2faf3;">
+            <h4 style="margin:0; color: #28a745; font-weight: 800;">📄 Check Official Result</h4>
+            <p style="font-size:11px; color:var(--text-muted); margin: 8px 0;">Direct official portal par result dekhein</p>
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="official-res-query" placeholder="e.g. Bihar Police, CBSE 10th" style="flex:1; padding:12px; border-radius:12px; border:1.5px solid #d4edda; outline:none; font-weight:600;">
+                <button onclick="getOfficialResult()" style="background:#28a745; color:white; border:none; border-radius:12px; padding:0 15px; font-weight:800; cursor:pointer;">Check Now</button>
+            </div>
+        </div>
+
         <h3 style="margin-top:25px; font-weight:800;">Trending Search</h3>
         <div class="pill-row">
             <div class="pill active" onclick="openJobs('latest jobs')">All Jobs</div>
@@ -185,6 +194,14 @@
         const query = document.getElementById('study-query').value;
         if(!query) return alert("Pehle exam ka naam likhein!");
         const finalSearch = "study plan for " + query + " preparation 2026 in hindi";
+        window.open(`https://www.google.com/search?q=${encodeURIComponent(finalSearch)}`, '_blank');
+    }
+
+    function getOfficialResult() {
+        const query = document.getElementById('official-res-query').value;
+        if(!query) return alert("Exam ya Board ka naam likhein!");
+        // Isme official keywords add kar diye hain taaki Google sirf official link dikhaye
+        const finalSearch = query + " official website result 2026 gov.in nic.in";
         window.open(`https://www.google.com/search?q=${encodeURIComponent(finalSearch)}`, '_blank');
     }
 
