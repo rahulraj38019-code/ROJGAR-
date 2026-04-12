@@ -8,11 +8,12 @@ import os, json
 app = Flask(__name__)
 CORS(app)
 
-# Caching ko thoda flexible rakha hai taaki filters switch karne par turant naya data mile
-cache = Cache(app, config={'CACHE_TYPE': 'SimpleCache', 'CACHE_DEFAULT_TIMEOUT': 300})
+# Cache Setup: Performance boost ke liye
+cache = Cache(app, config={'CACHE_TYPE': 'SimpleCache', 'CACHE_DEFAULT_TIMEOUT': 600})
 
-SERPER_API_KEY = "268aa2e751d03f3d61ffa0fe6b46cd80bf6ec73d"
-GEMINI_API_KEY = "AIzaSyDxIVi8NxFf5QEGoXb2wT1FRbzyKqfHKf0" 
+# API Keys (Render ke Environment Variables se uthayega)
+SERPER_API_KEY = os.getenv("SERPER_API_KEY", "268aa2e751d03f3d61ffa0fe6b46cd80bf6ec73d")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "AIzaSyDxIVi8NxFf5QEGoXb2wT1FRbzyKqfHKf0") 
 CURRENT_APP_VERSION = "3.5 PRO"
 
 @app.route('/')
@@ -24,57 +25,66 @@ def get_version():
     return jsonify({"version": CURRENT_APP_VERSION})
 
 @app.route('/search', methods=['POST'])
-# Cache bypass logic added via frontend timestamp
 def search():
     try:
         data = request.get_json()
         q_text = data.get('interest', 'latest jobs').lower()
         
-        # --- SMART AGGREGATOR LOGIC ---
-        
-        # 1. Agar user RESULTS dekh raha hai (Board, SSC, Police)
+        # --- SMART AGGREGATOR LOGIC (Fix: Ab results miss nahi honge) ---
         if "result" in q_text:
-            smart_query = f"{q_text} last 1 year declaration date site:sarkariresult.com OR site:indiaresults.com OR site:fastjobsearchers.com 2025-2026"
-        
-        # 2. Agar specifically GOVERNMENT JOBS/NOTIFICATIONS hai
-        elif any(x in q_text for x in ["govt", "sarkari", "notification", "form live"]):
-            smart_query = f"{q_text} official notification last date to apply total post vacancy site:sarkariresult.com OR site:freejobalert.com 2026"
-        
-        # 3. Agar PRIVATE JOBS/WFH/INTERNSHALA hai
+            # Results ke liye best sites target karega
+            smart_query = f"{q_text} 2025 2026 site:sarkariresult.com OR site:indiaresults.com"
+        elif any(x in q_text for x in ["govt", "sarkari", "police", "ssc", "railway"]):
+            # Govt jobs ke liye official notification focus
+            smart_query = f"{q_text} notification vacancy 2026 site:freejobalert.com OR site:sarkariresult.com"
         else:
-            # Isme Internshala aur Apna app ko priority di hai
-            smart_query = (
-                f"{q_text} (site:internshala.com OR site:apna.co OR site:naukri.com OR site:linkedin.com/jobs) "
-                f"immediate hiring work from home remote jobs 2026"
-            )
-        
+            # Private jobs ke liye Internshala, Apna aur Naukri target
+            smart_query = f"{q_text} job vacancy 2026 site:internshala.com OR site:apna.co OR site:naukri.com"
+
         headers = {
             'X-API-KEY': SERPER_API_KEY, 
             'Content-Type': 'application/json'
         }
         
-        # 50 results taaki filter karne ke liye kaafi data ho
+        # API Call
         response = requests.post(
             'https://google.serper.dev/search', 
             headers=headers, 
-            json={'q': smart_query, 'num': 50, 'gl': 'in'}, 
+            json={'q': smart_query, 'num': 40, 'gl': 'in'}, 
             timeout=20
         )
         
         results = response.json().get('organic', [])
 
-        # Post-Processing: Card mein extra details dikhane ke liye snippet clean-up
+        # BACKUP: Agar results nahi mile toh generic search karega
+        if not results or len(results) < 5:
+            backup_res = requests.post(
+                'https://google.serper.dev/search', 
+                headers=headers, 
+                json={'q': f"{q_text} latest updates 2026", 'num': 20}, 
+                timeout=15
+            )
+            results.extend(backup_res.json().get('organic', []))
+
+        # Frontend ke liye data format karna
         processed_results = []
         for item in results:
-            # Agar form live hai toh title mein detect karega
-            is_live = "apply" in item.get('snippet', '').lower() or "live" in item.get('snippet', '').lower()
+            link = item.get('link', '')
+            source_name = "Official Update"
             
+            # Platform identify karna link se
+            if "internshala" in link: source_name = "Internshala"
+            elif "apna.co" in link: source_name = "Apna App"
+            elif "naukri" in link: source_name = "Naukri.com"
+            elif "sarkariresult" in link: source_name = "Sarkari Result"
+            elif "ssc.nic" in link: source_name = "SSC Official"
+
             processed_results.append({
                 "title": item.get('title'),
-                "link": item.get('link'),
+                "link": link,
                 "snippet": item.get('snippet'),
-                "source": item.get('link').split('/')[2], # Website ka naam (e.g. internshala.com)
-                "is_live": is_live
+                "source": source_name,
+                "is_live": "apply" in item.get('snippet', '').lower() or "live" in item.get('snippet', '').lower()
             })
 
         return jsonify(processed_results)
@@ -91,14 +101,7 @@ def chat():
         
         url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
         
-        prompt = f"""
-        You are Rozgar AI by R YADAV PRODUCTION. 
-        User Name: {name}. Message: {message}.
-        Task: Provide specific career advice for Indian students (Bihar/Arwal focus).
-        If they ask about govt exams, give info about dates and patterns.
-        If they ask about private, suggest Internshala/LinkedIn tips.
-        Language: Hinglish.
-        """
+        prompt = f"You are Rozgar AI by R YADAV PRODUCTION. User: {name}. Message: {message}. Provide career advice in Hinglish."
         
         payload = {"contents": [{"parts": [{"text": prompt}]}]}
         res = requests.post(url, headers={'Content-Type': 'application/json'}, data=json.dumps(payload), timeout=30)
@@ -108,10 +111,10 @@ def chat():
             reply = res_json['candidates'][0]['content']['parts'][0]['text']
             return jsonify({"reply": reply})
         else:
-            return jsonify({"reply": "Bhai, AI server thoda busy hai, dobara try karo."})
+            return jsonify({"reply": "AI thoda busy hai, dobara koshish karein!"})
             
     except Exception as e:
-        return jsonify({"reply": "Network issue! Kripya internet check karein."})
+        return jsonify({"reply": "Network issue! Check internet."})
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 8080))
