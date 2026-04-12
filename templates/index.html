@@ -5,93 +5,123 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .update-overlay { position: fixed; inset: 0; background: #0f172a; z-index: 2000; display: none; align-items: center; justify-content: center; flex-direction: column; color: white; font-family: sans-serif; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .marquee-live { animation: scroll 40s linear infinite; }
+        @keyframes scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        .update-overlay { position: fixed; inset: 0; background: #0f172a; z-index: 9999; display: none; align-items: center; justify-content: center; flex-direction: column; color: white; }
     </style>
 </head>
 <body class="bg-slate-100">
 
     <div id="update-bar-ui" class="update-overlay">
-        <h1 class="text-4xl font-black italic">ROZGAR <span class="text-blue-500">2.1</span></h1>
-        <p class="text-blue-400 font-bold text-[10px] mt-2 tracking-widest uppercase">R YADAV PRODUCTION</p>
-        <div class="w-64 h-1.5 bg-slate-800 rounded-full mt-10 overflow-hidden">
+        <h1 class="text-4xl font-black italic">ROZGAR <span class="text-blue-500">2.2</span></h1>
+        <p class="text-blue-400 font-bold text-[10px] mt-2 tracking-widest uppercase text-center">R YADAV PRODUCTION<br><span class="text-white/50 text-[8px]">Securing Official Databases...</span></p>
+        <div class="w-64 h-1.5 bg-slate-800 rounded-full mt-10 overflow-hidden text-center">
             <div id="p-fill" class="h-full bg-blue-500 transition-all duration-300" style="width: 0%"></div>
         </div>
-        <p id="p-text" class="mt-4 text-[10px] text-slate-400 uppercase">Updating System... 0%</p>
+        <p id="p-text" class="mt-4 text-[10px] text-slate-400 uppercase font-mono tracking-tighter">0%</p>
     </div>
 
-    <div id="main-app" class="max-w-md mx-auto min-h-screen bg-white shadow-2xl flex flex-col relative overflow-hidden">
-        <div class="p-4 bg-blue-950 text-white flex justify-between items-center">
+    <div id="app-container" class="max-w-md mx-auto min-h-screen bg-white shadow-2xl flex flex-col relative overflow-hidden">
+        
+        <div class="p-4 bg-blue-950 text-white flex justify-between items-center shadow-xl border-b border-blue-800">
             <div>
-                <h1 class="text-xl font-black italic tracking-tighter">ROZGAR</h1>
-                <p class="text-[7px] font-bold text-blue-400">R YADAV PRODUCTION</p>
+                <h1 class="text-2xl font-black italic tracking-tighter uppercase">ROZGAR</h1>
+                <p class="text-[7px] font-bold text-blue-400 tracking-widest uppercase">By R YADAV PRODUCTION</p>
             </div>
-            <button onclick="clearData()" class="text-[8px] bg-red-600 px-2 py-1 rounded font-bold">RESET</button>
+            <button onclick="clearData()" class="text-[8px] bg-red-600 px-3 py-1.5 rounded-lg font-black uppercase shadow-lg">Reset</button>
         </div>
 
-        <div id="login-view" class="p-8 flex-1 flex flex-col justify-center hidden">
-            <h2 class="text-3xl font-black text-center mb-8">Swagat Hai!</h2>
-            <input id="un" type="text" placeholder="Naam" class="w-full p-4 border rounded-xl mb-4">
-            <input id="us" type="text" placeholder="State" class="w-full p-4 border rounded-xl mb-6">
-            <button onclick="doLogin()" class="w-full bg-blue-950 text-white p-5 rounded-xl font-black shadow-lg">START 🚀</button>
-        </div>
-
-        <div id="dash-view" class="flex-1 hidden">
-            <div class="p-3 border-b sticky top-0 bg-white z-50 flex gap-2 overflow-x-auto">
-                <button onclick="loadData('all','latest jobs')" class="px-4 py-2 bg-blue-900 text-white rounded-lg text-[10px] font-bold uppercase whitespace-nowrap">Jobs</button>
-                <button onclick="loadData('results','exam result')" class="px-4 py-2 bg-slate-100 rounded-lg text-[10px] font-bold uppercase whitespace-nowrap">Results</button>
+        <div id="login-view" class="p-8 flex-1 flex flex-col justify-center hidden bg-white">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-blue-950 rounded-2xl mx-auto flex items-center justify-center text-3xl mb-4">👤</div>
+                <h2 class="text-2xl font-black text-slate-900 uppercase">Registration</h2>
             </div>
-            <div id="results-box" class="p-4 space-y-4"></div>
-            <div id="load-msg" class="hidden text-center py-10 text-[10px] font-bold text-blue-900">Searching Official Links...</div>
-        </div>
-
-        <button onclick="showChat()" class="fixed bottom-6 right-6 w-14 h-14 bg-blue-950 text-white rounded-full shadow-2xl flex items-center justify-center text-2xl z-50 animate-bounce">🤖</button>
-
-        <div id="chat-ui" class="fixed inset-0 bg-white z-[1000] hidden flex-col">
-            <div class="p-4 bg-blue-950 text-white flex justify-between items-center">
-                <span class="font-black italic">ROZGAR AI</span>
-                <button onclick="hideChat()" class="text-xs font-bold bg-white/20 px-3 py-1 rounded">CLOSE</button>
-            </div>
-            <div id="msg-box" class="flex-1 p-4 overflow-y-auto space-y-4 bg-slate-50 text-sm"></div>
-            <div class="p-4 border-t flex gap-2">
-                <input id="chat-in" type="text" placeholder="Study plan pucho..." class="flex-1 p-3 bg-slate-100 rounded-lg outline-none">
-                <button onclick="sendChat()" class="bg-blue-950 text-white px-5 rounded-lg font-bold">ASK</button>
+            <div class="space-y-4">
+                <input id="un" type="text" placeholder="Full Name" class="w-full p-4 rounded-xl border-2 bg-slate-50 outline-none focus:border-blue-950 text-sm font-bold">
+                <div class="flex flex-col gap-1">
+                    <label class="text-[10px] font-black text-slate-400 uppercase ml-2">Date of Birth</label>
+                    <input id="ud" type="date" class="w-full p-4 rounded-xl border-2 bg-slate-50 outline-none focus:border-blue-950 text-sm font-bold uppercase">
+                </div>
+                <input id="us" type="text" placeholder="State (e.g. Bihar)" class="w-full p-4 rounded-xl border-2 bg-slate-50 outline-none focus:border-blue-950 text-sm font-bold uppercase">
+                <button onclick="doLogin()" class="w-full bg-blue-950 text-white p-5 rounded-2xl font-black text-lg shadow-xl uppercase active:scale-95 transition">Verify & Start 🚀</button>
             </div>
         </div>
+
+        <div id="dash-view" class="flex-1 flex flex-col hidden bg-slate-50">
+            <div class="bg-white sticky top-0 z-30 shadow-md border-b">
+                <div class="p-3">
+                    <div class="flex gap-2 overflow-x-auto no-scrollbar">
+                        <button onclick="loadData('all','central govt jobs 2026')" class="px-4 py-2 bg-blue-950 text-white rounded-xl text-[9px] font-black uppercase whitespace-nowrap shadow-md">Central Jobs</button>
+                        <button onclick="loadData('all','bihar state govt jobs 2026')" class="px-4 py-2 bg-white border-2 border-blue-950 text-blue-950 rounded-xl text-[9px] font-black uppercase whitespace-nowrap shadow-sm">Bihar Jobs</button>
+                        <button onclick="loadData('results','all exam results 2026')" class="px-4 py-2 bg-emerald-600 text-white rounded-xl text-[9px] font-black uppercase whitespace-nowrap shadow-md">All Results</button>
+                    </div>
+                </div>
+                
+                <div class="px-3 pb-3 flex gap-2">
+                    <input id="search-input" type="text" placeholder="Search Result (e.g. SSC, Railway...)" class="flex-1 p-3 bg-slate-100 rounded-xl text-[11px] font-bold outline-none border-2 border-transparent focus:border-blue-950 transition">
+                    <button onclick="manualSearch()" class="bg-blue-950 text-white px-5 rounded-xl font-black text-[10px] uppercase shadow-lg">Search</button>
+                </div>
+            </div>
+
+            <div class="bg-yellow-400 text-black py-1.5 overflow-hidden border-b border-yellow-600">
+                <div class="marquee-live flex whitespace-nowrap font-black text-[9px] uppercase tracking-tighter">
+                    <span>!!! UPDATING OFFICIAL DATA • R YADAV PRODUCTION • SSC GD RESULT OUT • RAHUL RAJ ARWAL • RAILWAY GROUP D NOV 2026 • !!!</span>
+                </div>
+            </div>
+
+            <div id="results-box" class="p-4 space-y-6 pb-32"></div>
+            <div id="loader" class="hidden text-center py-20 font-black text-blue-950 animate-pulse text-[10px] uppercase tracking-widest italic">Syncing with Govt Servers...</div>
+        </div>
+
+        <button onclick="showChat()" class="fixed bottom-6 right-6 w-16 h-16 bg-blue-950 text-white rounded-full shadow-2xl flex items-center justify-center text-3xl z-50 border-4 border-white animate-bounce">🤖</button>
+
+        <div id="chat-ui" class="fixed inset-0 bg-white z-[2000] hidden flex-col">
+            <div class="p-5 bg-blue-950 text-white flex justify-between items-center shadow-2xl border-b-4 border-blue-800">
+                <div>
+                    <h2 class="font-black italic text-xl tracking-tighter">ROZGAR AI</h2>
+                    <p class="text-[7px] text-blue-400 font-bold uppercase tracking-widest italic">Digital Career Coach</p>
+                </div>
+                <button onclick="hideChat()" class="text-[10px] bg-red-600 px-4 py-2 rounded-xl font-black uppercase shadow-lg">Close</button>
+            </div>
+            <div id="msg-box" class="flex-1 p-5 overflow-y-auto space-y-5 bg-slate-50"></div>
+            <div class="p-4 border-t bg-white flex gap-2">
+                <input id="chat-in" type="text" placeholder="Pucho: 6 hour study plan..." class="flex-1 p-4 bg-slate-100 rounded-2xl outline-none text-sm font-bold border-2 focus:border-blue-950 transition shadow-inner">
+                <button onclick="sendChat()" class="bg-blue-950 text-white px-6 rounded-2xl font-black text-[10px] uppercase shadow-xl">Send</button>
+            </div>
+        </div>
+
     </div>
 
     <script>
-        // SMART LOGIC: LocalStorage se version check
-        async function smartUpdate() {
+        const CURRENT_VER = "2.2";
+
+        async function checkUpdate() {
             try {
                 const res = await fetch('/get_version');
-                const serverData = await res.json();
-                const localVer = localStorage.getItem('app_version');
-
-                // Agar server ka version local se bada hai, tabhi update bar dikhao
-                if (serverData.version !== localVer) {
+                const sData = await res.json();
+                const lVer = localStorage.getItem('app_v');
+                if (sData.version !== lVer) {
                     const ui = document.getElementById('update-bar-ui');
                     const fill = document.getElementById('p-fill');
                     ui.style.display = 'flex';
-                    
                     let p = 0;
                     let t = setInterval(() => {
-                        p += 5;
+                        p += 2;
                         fill.style.width = p + '%';
-                        document.getElementById('p-text').innerText = "Installing Secure Update... " + p + "%";
-                        
+                        document.getElementById('p-text').innerText = "Installing Secure Modules... " + p + "%";
                         if (p >= 100) {
                             clearInterval(t);
-                            // UPDATE LOCAL VERSION: Ab agli baar loop nahi hoga
-                            localStorage.setItem('app_version', serverData.version);
+                            localStorage.setItem('app_v', sData.version);
                             setTimeout(() => location.reload(), 500);
                         }
-                    }, 100);
+                    }, 60);
                 }
-            } catch(e) { console.log("Offline"); }
+            } catch(e) {}
         }
 
         window.onload = () => {
-            smartUpdate();
+            checkUpdate();
             if(localStorage.getItem('user_n')) {
                 document.getElementById('dash-view').classList.remove('hidden');
                 loadData();
@@ -102,16 +132,18 @@
 
         function doLogin() {
             const n = document.getElementById('un').value;
+            const d = document.getElementById('ud').value;
             const s = document.getElementById('us').value;
-            if(!n || !s) return alert("Details bharo bhai!");
+            if(!n || !d || !s) return alert("Pura data bharo bhai!");
             localStorage.setItem('user_n', n);
+            localStorage.setItem('user_d', d);
             localStorage.setItem('user_s', s);
             location.reload();
         }
 
-        async function loadData(t='all', i='latest') {
+        async function loadData(t='all', i='latest sarkari jobs bihar india') {
             const box = document.getElementById('results-box');
-            const ldr = document.getElementById('load-msg');
+            const ldr = document.getElementById('loader');
             box.innerHTML = "";
             ldr.classList.remove('hidden');
             const res = await fetch('/search', {
@@ -123,30 +155,46 @@
             ldr.classList.add('hidden');
             data.forEach(item => {
                 box.innerHTML += `
-                <div class="p-4 border rounded-xl shadow-sm bg-white border-l-4 border-blue-900">
-                    <h3 class="font-black text-[12px] mb-2">${item.title}</h3>
-                    <a href="${item.link}" target="_blank" class="text-blue-700 text-[10px] font-bold underline">Official Site Link →</a>
+                <div class="p-6 bg-white border border-slate-200 rounded-[2rem] shadow-xl border-l-[10px] border-blue-950 relative overflow-hidden">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="bg-blue-100 text-blue-900 text-[8px] px-3 py-1.5 rounded-full font-black uppercase">Official Portal Verified ✅</span>
+                    </div>
+                    <h3 class="font-black text-sm text-slate-900 mb-2 leading-tight uppercase tracking-tighter">${item.title}</h3>
+                    <p class="text-[10px] text-slate-500 mb-6 font-medium italic line-clamp-2">${item.snippet}</p>
+                    <a href="${item.link}" target="_blank" class="block w-full text-center bg-blue-950 text-white py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg active:scale-95 transition">Check Official Site</a>
                 </div>`;
             });
+        }
+
+        function manualSearch() {
+            const val = document.getElementById('search-input').value;
+            if(!val) return;
+            loadData('results', val + " official result 2026");
         }
 
         function showChat() { document.getElementById('chat-ui').style.display='flex'; }
         function hideChat() { document.getElementById('chat-ui').style.display='none'; }
 
         async function sendChat() {
-            const input = document.getElementById('chat-in');
+            const inp = document.getElementById('chat-in');
             const box = document.getElementById('msg-box');
-            if(!input.value) return;
-            const userM = input.value;
-            box.innerHTML += `<div class="bg-blue-100 p-3 rounded-lg ml-8 font-bold">${userM}</div>`;
-            input.value = "";
+            if(!inp.value) return;
+            const userM = inp.value;
+            box.innerHTML += `<div class="bg-blue-950 text-white p-4 rounded-2xl ml-8 font-bold border-2 border-white shadow-xl text-xs">${userM}</div>`;
+            inp.value = "";
+            box.scrollTop = box.scrollHeight;
+
             const res = await fetch('/chat', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({message: userM, name: localStorage.getItem('user_n')})
+                body: JSON.stringify({
+                    message: userM, 
+                    name: localStorage.getItem('user_n'),
+                    dob: localStorage.getItem('user_d')
+                })
             });
             const d = await res.json();
-            box.innerHTML += `<div class="bg-white border p-3 rounded-lg mr-8 shadow-sm"><b>AI:</b> ${d.reply}</div>`;
+            box.innerHTML += `<div class="bg-white border-2 border-slate-200 p-5 rounded-2xl mr-8 shadow-2xl text-[13px] leading-relaxed text-slate-800 font-medium whitespace-pre-line border-l-8 border-blue-950"><b>AI Coach:</b>\n${d.reply}</div>`;
             box.scrollTop = box.scrollHeight;
         }
 
