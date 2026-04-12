@@ -3,134 +3,148 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROZGAR - R Yadav Production</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        .marquee-live { animation: scroll 20s linear infinite; font-size: 15px; font-weight: 900; }
+        .marquee-live { animation: scroll 25s linear infinite; font-size: 16px; font-weight: 900; }
         @keyframes scroll { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
         .update-overlay { position: fixed; inset: 0; background: #070b14; z-index: 9999; display: none; align-items: center; justify-content: center; flex-direction: column; color: white; }
-        .active-btn { background-color: #172554 !important; color: white !important; border-color: #172554 !important; }
+        .active-btn { background-color: #172554 !important; color: white !important; border-color: #172554 !important; transform: scale(1.05); }
     </style>
 </head>
-<body class="bg-slate-50 font-sans">
+<body class="bg-slate-100 font-sans">
 
     <div id="update-bar-ui" class="update-overlay">
-        <h1 class="text-4xl font-black italic">ROZGAR <span class="text-blue-500">2.4</span></h1>
-        <p class="text-blue-400 font-bold mt-2 uppercase tracking-widest">R YADAV PRODUCTION</p>
-        <div class="w-64 h-2 bg-slate-800 rounded-full mt-10 overflow-hidden">
-            <div id="p-fill" class="h-full bg-blue-500" style="width: 0%"></div>
+        <h1 class="text-5xl font-black italic">ROZGAR <span class="text-blue-500">2.5</span></h1>
+        <p class="text-blue-400 font-bold mt-2 uppercase tracking-[0.3em]">R YADAV PRODUCTION</p>
+        <div class="w-72 h-2 bg-slate-800 rounded-full mt-12 overflow-hidden shadow-2xl">
+            <div id="p-fill" class="h-full bg-blue-500 shadow-[0_0_15px_#3b82f6]" style="width: 0%"></div>
         </div>
-        <p id="p-text" class="mt-4 text-xs font-mono">CONNECTING SERVERS... 0%</p>
+        <p id="p-text" class="mt-6 text-xs text-slate-500 font-mono">INITIALIZING SECURE CORE... 0%</p>
     </div>
 
     <div id="app-container" class="max-w-md mx-auto min-h-screen bg-white shadow-2xl flex flex-col relative overflow-hidden">
         
-        <div class="p-4 bg-blue-950 text-white flex justify-between items-center shadow-lg border-b-2 border-blue-900">
-            <div>
-                <h1 class="text-xl font-black italic uppercase">ROZGAR</h1>
-                <p class="text-[7px] font-bold text-blue-400 uppercase tracking-widest">By Rahul Raj Arwal</p>
+        <div class="p-5 bg-blue-950 text-white flex justify-between items-center border-b-4 border-blue-900 shadow-xl">
+            <div onclick="location.reload()" class="cursor-pointer">
+                <h1 class="text-2xl font-black italic tracking-tighter">ROZGAR</h1>
+                <p class="text-[8px] font-bold text-blue-400 uppercase tracking-widest">By Rahul Raj Arwal</p>
             </div>
-            <button onclick="clearData()" class="text-[9px] bg-red-600 px-3 py-1.5 rounded-lg font-black uppercase shadow-md">Reset</button>
+            <button onclick="clearData()" class="text-[9px] bg-red-600 px-4 py-2 rounded-xl font-black uppercase shadow-lg active:bg-red-700">Reset App</button>
         </div>
 
-        <div id="login-view" class="p-8 flex-1 flex flex-col justify-center hidden">
-            <h2 class="text-3xl font-black text-center mb-10 italic">REGISTER ✍️</h2>
-            <div class="space-y-4">
-                <input id="un" type="text" placeholder="Full Name" class="w-full p-4 rounded-xl border-2 bg-slate-50 outline-none focus:border-blue-950 font-bold">
-                <input id="ud" type="date" class="w-full p-4 rounded-xl border-2 bg-slate-50 outline-none focus:border-blue-950 font-bold">
-                <input id="us" type="text" placeholder="State Name (Bihar)" class="w-full p-4 rounded-xl border-2 bg-slate-50 outline-none focus:border-blue-950 font-bold">
-                <button onclick="doLogin()" class="w-full bg-blue-950 text-white p-5 rounded-xl font-black text-lg shadow-xl uppercase active:scale-95 transition">Verify & Start 🚀</button>
+        <div id="login-view" class="p-10 flex-1 flex flex-col justify-center hidden">
+            <h2 class="text-4xl font-black text-slate-900 mb-2 italic">Register ✍️</h2>
+            <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-10 border-b pb-4">Digital Bihar Job Center</p>
+            <div class="space-y-6">
+                <input id="un" type="text" placeholder="Apna Poora Naam" class="w-full p-5 rounded-2xl border-2 bg-slate-50 outline-none focus:border-blue-950 font-bold shadow-sm">
+                <div class="flex flex-col gap-1">
+                    <label class="text-[10px] font-black text-slate-400 uppercase ml-2">Date of Birth</label>
+                    <input id="ud" type="date" class="w-full p-5 rounded-2xl border-2 bg-slate-50 outline-none focus:border-blue-950 font-bold uppercase shadow-sm">
+                </div>
+                <input id="us" type="text" placeholder="State (e.g. Bihar)" class="w-full p-5 rounded-2xl border-2 bg-slate-50 outline-none focus:border-blue-950 font-bold shadow-sm">
+                <button onclick="doLogin()" class="w-full bg-blue-950 text-white p-6 rounded-2xl font-black text-xl shadow-2xl active:scale-95 transition uppercase">Start Journey 🚀</button>
             </div>
         </div>
 
-        <div id="dash-view" class="flex-1 flex flex-col hidden">
+        <div id="dash-view" class="flex-1 flex flex-col hidden bg-slate-50">
             <div class="bg-white sticky top-0 z-30 shadow-md">
-                <div class="p-3 flex gap-2 overflow-x-auto no-scrollbar">
-                    <button id="tab-central" onclick="switchTab('central')" class="px-5 py-2.5 bg-blue-950 text-white rounded-xl text-[10px] font-black uppercase whitespace-nowrap active-btn shadow-md">Central Jobs 🇮🇳</button>
-                    <button id="tab-state" onclick="switchTab('state')" class="px-5 py-2.5 bg-white border-2 border-blue-950 text-blue-950 rounded-xl text-[10px] font-black uppercase whitespace-nowrap shadow-sm">Bihar Jobs 🏠</button>
-                    <button id="tab-results" onclick="switchTab('results')" class="px-5 py-2.5 bg-white border-2 border-blue-950 text-blue-950 rounded-xl text-[10px] font-black uppercase whitespace-nowrap shadow-sm">Results ✅</button>
+                <div class="p-4 flex gap-2 overflow-x-auto no-scrollbar">
+                    <button id="tab-central" onclick="switchTab('central')" class="px-6 py-3 border-2 border-blue-950 rounded-2xl text-[10px] font-black uppercase whitespace-nowrap shadow-sm transition-all">Central Jobs 🇮🇳</button>
+                    <button id="tab-state" onclick="switchTab('state')" class="px-6 py-3 border-2 border-blue-950 rounded-2xl text-[10px] font-black uppercase whitespace-nowrap shadow-sm transition-all">State Jobs 🏠</button>
+                    <button id="tab-results" onclick="switchTab('results')" class="px-6 py-3 border-2 border-blue-950 rounded-2xl text-[10px] font-black uppercase whitespace-nowrap shadow-sm transition-all">Results ✅</button>
                 </div>
                 
-                <div id="search-container" class="px-3 pb-3 flex gap-2">
-                    <input id="search-input" type="text" placeholder="Search Central Jobs..." class="flex-1 p-3 bg-slate-100 rounded-xl text-xs font-bold outline-none border-2 border-transparent focus:border-blue-950 transition">
-                    <button onclick="manualSearch()" class="bg-blue-950 text-white px-5 rounded-xl font-black text-[10px] uppercase shadow-lg">Go</button>
+                <div class="px-4 pb-4 flex gap-2">
+                    <input id="search-input" type="text" placeholder="Search Jobs..." class="flex-1 p-4 bg-slate-100 rounded-2xl text-xs font-bold outline-none border-2 border-transparent focus:border-blue-950 transition shadow-inner">
+                    <button onclick="manualSearch()" class="bg-blue-950 text-white px-6 rounded-2xl font-black text-[10px] uppercase shadow-lg">GO</button>
                 </div>
 
-                <div id="result-cats" class="hidden px-3 pb-3 grid grid-cols-2 gap-2 bg-blue-50 py-2 border-t">
-                    <button onclick="loadData('results','Bihar Board 10th 12th Result 2026')" class="p-2 bg-white rounded-lg shadow-sm border font-black text-[8px] uppercase">Bihar Board 📝</button>
-                    <button onclick="loadData('results','SSC Official Results 2025 2026')" class="p-2 bg-white rounded-lg shadow-sm border font-black text-[8px] uppercase">SSC Portal 🏢</button>
-                    <button onclick="loadData('results','Railway RRB Exam Results 2026')" class="p-2 bg-white rounded-lg shadow-sm border font-black text-[8px] uppercase">Railway 🚂</button>
-                    <button onclick="loadData('results','Bihar Police Constable Answer Key Result')" class="p-2 bg-white rounded-lg shadow-sm border font-black text-[8px] uppercase">Bihar Police 👮</button>
+                <div id="result-cats" class="hidden p-4 grid grid-cols-2 gap-3 bg-blue-50 border-t border-blue-100">
+                    <button onclick="loadData('results','Bihar Board 10th 12th Result 2026')" class="p-3 bg-white rounded-xl shadow-sm border-2 border-slate-200 font-black text-[9px] uppercase hover:border-blue-950">Bihar Board 📝</button>
+                    <button onclick="loadData('results','SSC Official Results 2026 CGL CHSL GD')" class="p-3 bg-white rounded-xl shadow-sm border-2 border-slate-200 font-black text-[9px] uppercase hover:border-blue-950">SSC Portal 🏢</button>
+                    <button onclick="loadData('results','Railway RRB NTPC Group D Results 2026')" class="p-3 bg-white rounded-xl shadow-sm border-2 border-slate-200 font-black text-[9px] uppercase hover:border-blue-950">Railway 🚂</button>
+                    <button onclick="loadData('results','Bihar Police Constable SI Result Answer Key')" class="p-3 bg-white rounded-xl shadow-sm border-2 border-slate-200 font-black text-[9px] uppercase hover:border-blue-950">Bihar Police 👮</button>
                 </div>
             </div>
 
-            <div class="bg-yellow-400 text-black py-2 overflow-hidden border-y-2 border-yellow-500 cursor-pointer" onclick="window.open('https://www.sarkariresult.com','_blank')">
+            <div class="bg-yellow-400 text-black py-3 overflow-hidden border-y-2 border-yellow-600 cursor-pointer shadow-sm" onclick="window.open('https://www.sarkariresult.com','_blank')">
                 <div class="marquee-live flex whitespace-nowrap uppercase italic">
-                    <span>🔥 LATEST: SSC GD Answer Key Available • Bihar Police Result 2026 • Railway NTPC Exam Updates • R YADAV PRODUCTION VIP APP !!! 🔥</span>
+                    <span>🔥 LATEST: SSC GD Answer Key Out Now • Bihar Police Result 2026 Declared 📣 • RRB NTPC Phase 2 Schedule Released • R YADAV PRODUCTION VIP UPDATE !!! 🔥</span>
                 </div>
             </div>
 
-            <div id="results-box" class="p-4 space-y-6 pb-32"></div>
-            <div id="loader" class="hidden text-center py-20 font-black text-blue-950 animate-pulse text-[10px] uppercase">Searching Official Databases... 🌐</div>
+            <div id="results-box" class="p-4 space-y-8 pb-32"></div>
+            
+            <div id="loader" class="hidden text-center py-20">
+                <div class="w-10 h-10 border-4 border-blue-950 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                <p class="font-black text-blue-950 text-[10px] uppercase tracking-widest">Scanning Official Servers...</p>
+            </div>
         </div>
 
         <div id="chat-ui" class="fixed inset-0 bg-white z-[2000] hidden flex-col">
-            <div class="p-4 bg-blue-950 text-white flex justify-between items-center shadow-xl">
+            <div class="p-5 bg-blue-950 text-white flex justify-between items-center shadow-2xl border-b-4 border-blue-900">
                 <div>
-                    <h2 class="font-black italic text-xl tracking-tighter">ROZGAR AI</h2>
-                    <p class="text-[8px] text-blue-400 font-bold uppercase">Coach Rahul Raj</p>
+                    <h2 class="font-black italic text-2xl tracking-tighter">ROZGAR AI</h2>
+                    <p class="text-[8px] text-blue-400 font-bold uppercase tracking-widest">Coach Rahul Raj</p>
                 </div>
-                <button onclick="hideChat()" class="text-[9px] bg-red-600 px-4 py-2 rounded-xl font-black uppercase">Back</button>
+                <button onclick="hideChat()" class="text-[10px] bg-red-600 px-5 py-2 rounded-2xl font-black uppercase shadow-lg active:bg-red-700">Back to App</button>
             </div>
-            <div id="msg-box" class="flex-1 p-5 overflow-y-auto space-y-5 bg-slate-50"></div>
-            <div class="p-4 border-t flex gap-2">
-                <input id="chat-in" type="text" placeholder="Pucho: 6 hour study plan..." class="flex-1 p-4 bg-slate-100 rounded-2xl outline-none font-bold text-sm">
-                <button onclick="sendChat()" class="bg-blue-950 text-white px-6 rounded-2xl font-black text-xs uppercase shadow-lg">Ask</button>
+            <div id="msg-box" class="flex-1 p-6 overflow-y-auto space-y-6 bg-slate-50"></div>
+            <div class="p-4 border-t bg-white flex gap-3 shadow-[0_-5px_20px_rgba(0,0,0,0.05)]">
+                <input id="chat-in" type="text" placeholder="Ask: 6 hour SSC study plan..." class="flex-1 p-5 bg-slate-100 rounded-[2rem] outline-none font-bold border-2 focus:border-blue-950 shadow-inner text-sm">
+                <button onclick="sendChat()" class="bg-blue-950 text-white px-8 rounded-[2rem] font-black text-xs uppercase shadow-xl active:scale-95 transition">Ask</button>
             </div>
         </div>
 
-        <button onclick="showChat()" class="fixed bottom-8 right-6 w-14 h-14 bg-blue-950 text-white rounded-full shadow-2xl flex items-center justify-center text-2xl z-50 border-4 border-white">🤖</button>
+        <button onclick="showChat()" class="fixed bottom-10 right-6 w-16 h-16 bg-blue-950 text-white rounded-full shadow-[0_10px_30px_rgba(23,37,84,0.4)] flex items-center justify-center text-3xl z-50 border-4 border-white animate-bounce">🤖</button>
     </div>
 
     <script>
+        const APP_VERSION = "2.5";
         let currentTab = 'central';
 
-        async function initUpdate() {
+        // Check for updates on load
+        async function checkUpdates() {
             try {
                 const res = await fetch('/get_version');
-                const sData = await res.json();
-                if (sData.version !== localStorage.getItem('app_v')) {
+                const data = await res.json();
+                if (data.version !== localStorage.getItem('app_v')) {
                     document.getElementById('update-bar-ui').style.display = 'flex';
                     let p = 0;
                     let t = setInterval(() => {
                         p += 2;
                         document.getElementById('p-fill').style.width = p + '%';
-                        document.getElementById('p-text').innerText = "UPDATING... " + p + "%";
+                        document.getElementById('p-text').innerText = "UPDATING SYSTEM... " + p + "%";
                         if (p >= 100) {
                             clearInterval(t);
-                            localStorage.setItem('app_v', sData.version);
+                            localStorage.setItem('app_v', data.version);
                             location.reload();
                         }
                     }, 50);
                 }
-            } catch(e) {}
+            } catch(e) { console.log("Update check failed"); }
         }
 
         window.onload = () => {
-            initUpdate();
+            checkUpdates();
             if(localStorage.getItem('user_n')) {
                 document.getElementById('dash-view').classList.remove('hidden');
-                switchTab('central');
+                switchTab('central'); // Load default jobs
             } else {
                 document.getElementById('login-view').classList.remove('hidden');
             }
         };
 
+        // Tab Switching Logic
         function switchTab(mode) {
             currentTab = mode;
             const tabs = ['tab-central', 'tab-state', 'tab-results'];
-            tabs.forEach(t => document.getElementById(t).classList.remove('active-btn'));
-            document.getElementById('tab-' + mode).classList.add('active-btn');
+            tabs.forEach(t => document.getElementById(t).classList.remove('active-btn', 'bg-blue-950', 'text-white'));
+            
+            const activeBtn = document.getElementById('tab-' + mode);
+            activeBtn.classList.add('active-btn', 'bg-blue-950', 'text-white');
             
             const resCats = document.getElementById('result-cats');
             const sInp = document.getElementById('search-input');
@@ -138,58 +152,75 @@
             if(mode === 'results') {
                 resCats.classList.remove('hidden');
                 sInp.placeholder = "Search Results & Answer Keys...";
-                loadData('results', 'latest exam results official 2026');
+                loadData('results', 'latest exam results official 2026 portal');
+            } else if(mode === 'state') {
+                resCats.classList.add('hidden');
+                sInp.placeholder = "Search Bihar Jobs...";
+                loadData('all', 'Bihar state government recruitment 2026 official');
             } else {
                 resCats.classList.add('hidden');
-                sInp.placeholder = mode === 'central' ? "Search Central Jobs..." : "Search Bihar State Jobs...";
-                loadData('all', mode === 'central' ? 'central government jobs official 2026' : 'Bihar state government jobs official 2026');
+                sInp.placeholder = "Search Central Jobs...";
+                loadData('all', 'central government jobs recruitment 2026 official');
             }
         }
 
-        async function loadData(t='all', i='latest sarkari jobs bihar india') {
+        // Data Loading Logic (Improved Query)
+        async function loadData(type='all', queryKeyword) {
             const box = document.getElementById('results-box');
             const ldr = document.getElementById('loader');
-            box.innerHTML = ""; ldr.classList.remove('hidden');
-            
-            const res = await fetch('/search', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({interest: i})
-            });
-            const data = await res.json();
-            ldr.classList.add('hidden');
-            
-            if(data.length === 0) {
-                box.innerHTML = `<p class="text-center font-bold text-slate-400 mt-10">Koi naya update nahi mila bhai!</p>`;
-                return;
-            }
+            box.innerHTML = ""; 
+            ldr.classList.remove('hidden');
 
-            data.forEach(item => {
-                const title = item.title.toLowerCase();
-                const isResult = title.includes('result') || title.includes('score') || title.includes('merit');
-                const isKey = title.includes('answer key');
-                
-                box.innerHTML += `
-                <div class="p-6 bg-white border-2 border-slate-200 rounded-[2rem] shadow-xl border-l-[10px] border-blue-950">
-                    <div class="flex justify-between items-center mb-4">
-                        <span class="bg-blue-100 text-blue-900 text-[8px] px-2 py-1 rounded font-black uppercase">Official ✅</span>
-                        <span class="text-[9px] font-black text-slate-400">2025-26</span>
-                    </div>
-                    <h3 class="font-black text-sm text-slate-900 mb-3 uppercase leading-tight">${item.title}</h3>
-                    <p class="text-[10px] text-slate-500 mb-6 italic line-clamp-3">${item.snippet}</p>
-                    <div class="flex flex-col gap-2">
-                        <a href="${item.link}" target="_blank" class="w-full text-center bg-blue-950 text-white py-4 rounded-2xl font-black text-[10px] uppercase shadow-lg">Check Official Site</a>
-                        ${isKey ? `<button class="bg-emerald-600 text-white py-3 rounded-2xl font-black text-[9px] uppercase shadow-md">Download Answer Key ⬇️</button>` : ''}
-                        ${isResult ? `<p class="text-[8px] text-center font-bold text-red-600 mt-1 animate-pulse">RESULT LIVE NOW 📣</p>` : ''}
-                    </div>
-                </div>`;
-            });
+            try {
+                const res = await fetch('/search', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ interest: queryKeyword })
+                });
+                const data = await res.json();
+                ldr.classList.add('hidden');
+
+                if(!data || data.length === 0) {
+                    box.innerHTML = `
+                        <div class="text-center p-12 bg-white rounded-[3rem] border-4 border-dashed border-slate-200">
+                            <p class="text-5xl mb-4">🔍</p>
+                            <p class="font-black text-slate-400 uppercase text-xs tracking-widest">No New Data Found</p>
+                            <button onclick="location.reload()" class="mt-6 bg-blue-950 text-white px-8 py-3 rounded-2xl font-black text-xs shadow-xl uppercase">Refresh App</button>
+                        </div>`;
+                    return;
+                }
+
+                data.forEach(item => {
+                    const titleLow = item.title.toLowerCase();
+                    const isResult = titleLow.includes('result') || titleLow.includes('score');
+                    const isKey = titleLow.includes('answer key');
+                    
+                    box.innerHTML += `
+                    <div class="p-8 bg-white border-2 border-slate-200 rounded-[2.5rem] shadow-2xl relative border-l-[12px] border-blue-950 transition-transform active:scale-95">
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="bg-blue-100 text-blue-900 text-[9px] px-3 py-1.5 rounded-full font-black uppercase tracking-tighter">Official Portal Verified ✅</span>
+                            <span class="text-[9px] font-black text-slate-400">2026</span>
+                        </div>
+                        <h3 class="font-black text-md text-slate-900 mb-3 uppercase leading-tight">${item.title}</h3>
+                        <p class="text-[11px] text-slate-500 mb-8 font-medium italic line-clamp-3">${item.snippet}</p>
+                        <div class="flex flex-col gap-2">
+                            <a href="${item.link}" target="_blank" class="block w-full text-center bg-blue-950 text-white py-5 rounded-[1.5rem] font-black text-[10px] uppercase tracking-widest shadow-xl">Check Details</a>
+                            ${isKey ? `<button class="w-full bg-emerald-600 text-white py-4 rounded-[1.5rem] font-black text-[9px] uppercase shadow-lg">Download Answer Key ⬇️</button>` : ''}
+                            ${isResult ? `<p class="text-[9px] text-center font-black text-red-600 animate-pulse mt-2 tracking-widest">RESULT DECLARED 📣</p>` : ''}
+                        </div>
+                    </div>`;
+                });
+            } catch (err) {
+                ldr.classList.add('hidden');
+                box.innerHTML = "<p class='text-center text-red-600 font-black uppercase text-xs py-10'>Server Error! Check Internet.</p>";
+            }
         }
 
+        // Search, Chat, Login Functions
         function manualSearch() {
             const val = document.getElementById('search-input').value;
-            if(!val) return;
-            loadData('all', val + " official portal 2026");
+            if(!val) return alert("Kuch toh likho bhai!");
+            loadData('all', val + " official recruitment portal 2026");
         }
 
         function showChat() { document.getElementById('chat-ui').style.display='flex'; }
@@ -199,29 +230,24 @@
             const inp = document.getElementById('chat-in');
             const box = document.getElementById('msg-box');
             if(!inp.value) return;
-            const userM = inp.value;
-            box.innerHTML += `<div class="bg-blue-950 text-white p-4 rounded-2xl ml-8 font-bold text-sm shadow-md">${userM}</div>`;
+            const msg = inp.value;
+            box.innerHTML += `<div class="bg-blue-950 text-white p-5 rounded-[2rem] ml-10 font-bold text-sm shadow-xl">${msg}</div>`;
             inp.value = "";
             box.scrollTop = box.scrollHeight;
-            
             const res = await fetch('/chat', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({message: userM, name: localStorage.getItem('user_n')})
+                body: JSON.stringify({ message: msg, name: localStorage.getItem('user_n') })
             });
             const d = await res.json();
-            box.innerHTML += `<div class="bg-white border-2 p-5 rounded-2xl mr-8 shadow-xl text-sm border-l-8 border-blue-950 font-medium whitespace-pre-line"><b>ROZGAR AI:</b>\n${d.reply}</div>`;
+            box.innerHTML += `<div class="bg-white border-2 p-6 rounded-[2rem] mr-10 shadow-2xl text-[14px] leading-relaxed border-l-8 border-blue-950 font-medium whitespace-pre-line"><b>ROZGAR AI:</b>\n${d.reply}</div>`;
             box.scrollTop = box.scrollHeight;
         }
 
         function doLogin() {
-            const n = document.getElementById('un').value;
-            const d = document.getElementById('ud').value;
-            const s = document.getElementById('us').value;
-            if(!n || !d || !s) return alert("Bhai data bharo!");
-            localStorage.setItem('user_n', n);
-            localStorage.setItem('user_d', d);
-            localStorage.setItem('user_s', s);
+            const n = document.getElementById('un').value, d = document.getElementById('ud').value, s = document.getElementById('us').value;
+            if(!n || !d || !s) return alert("Pura data bhariye!");
+            localStorage.setItem('user_n', n); localStorage.setItem('user_d', d); localStorage.setItem('user_s', s);
             location.reload();
         }
         function clearData() { localStorage.clear(); location.reload(); }
