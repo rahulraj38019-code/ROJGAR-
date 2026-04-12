@@ -15,6 +15,10 @@
         .job-card:hover { transform: translateY(-8px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
         .live-tag { animation: pulse 2s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        
+        /* Floating Buttons Animation */
+        .float-btn { animation: bounce 3s infinite; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
     </style>
 </head>
 <body class="bg-slate-100 font-sans">
@@ -23,7 +27,7 @@
         
         <div class="p-4 bg-blue-950 text-white flex justify-between items-center sticky top-0 z-50">
             <div class="flex items-center gap-3">
-                <div id="nav-pfp" onclick="showProfile()" class="w-10 h-10 rounded-full bg-blue-800 border-2 border-blue-400 overflow-hidden cursor-pointer flex items-center justify-center font-black text-xs">👤 Profile</div>
+                <div id="nav-pfp" onclick="showProfile()" class="w-10 h-10 rounded-full bg-blue-800 border-2 border-blue-400 overflow-hidden cursor-pointer flex items-center justify-center font-black text-xs uppercase tracking-tighter">Profile</div>
                 <div>
                     <h1 class="text-lg font-black italic uppercase leading-none">ROZGAR</h1>
                     <p class="text-[7px] font-bold text-blue-400 uppercase tracking-widest">R YADAV PRODUCTION</p>
@@ -50,13 +54,24 @@
 
             <div id="filter-tabs" class="bg-slate-50 p-3 flex gap-2 overflow-x-auto no-scrollbar border-b"></div>
 
-            <div id="results-box" class="p-4 space-y-6 bg-slate-50 flex-1"></div>
+            <div id="results-box" class="p-4 space-y-6 bg-slate-50 flex-1 pb-32"></div>
             
             <div id="load-more-div" class="p-6 text-center hidden">
                 <button onclick="loadMore()" class="bg-blue-950 text-white px-10 py-4 rounded-2xl font-black text-[10px] uppercase shadow-2xl">Load More Data ⬇️</button>
             </div>
             
             <div id="loader" class="hidden text-center py-10 font-black text-blue-900 text-[10px] animate-pulse">FETCHING LIVE DATA...</div>
+        </div>
+
+        <div id="floating-support" class="fixed bottom-6 right-6 flex flex-col gap-3 z-[4000] hidden">
+            <a href="https://chat.whatsapp.com/JOvQploZdepGZEQgMpYcmv" target="_blank" class="float-btn flex items-center gap-2 bg-blue-600 text-white pl-4 pr-2 py-2 rounded-full shadow-2xl border-2 border-white active:scale-90 transition">
+                <span class="text-[9px] font-black uppercase tracking-tight">VIP Group</span>
+                <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" class="w-8 h-8 bg-white rounded-full p-1">
+            </a>
+            <a href="https://whatsapp.com/channel/0029VbCL3cTElagwBiU2aJ2N" target="_blank" class="float-btn flex items-center gap-2 bg-emerald-500 text-white pl-4 pr-2 py-2 rounded-full shadow-2xl border-2 border-white active:scale-90 transition" style="animation-delay: 0.5s;">
+                <span class="text-[9px] font-black uppercase tracking-tight">Help Center</span>
+                <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" class="w-8 h-8 bg-white rounded-full p-1">
+            </a>
         </div>
 
         <div id="login-view" class="p-8 flex-1 flex flex-col justify-center bg-white hidden">
@@ -187,7 +202,6 @@
             } catch(e) { ldr.classList.add('hidden'); }
         }
 
-        // --- Info Copy Logic ---
         function copyMyInfo() {
             const info = `Name: ${localStorage.getItem('user_n')}\nEmail: ${localStorage.getItem('user_e')}\nPhone: ${localStorage.getItem('user_p')}\nResume: ${localStorage.getItem('user_r')}`;
             navigator.clipboard.writeText(info);
@@ -196,7 +210,6 @@
             setTimeout(() => t.classList.add('hidden'), 2000);
         }
 
-        // --- Core App Functions ---
         function showProfile() {
             document.getElementById('p-name-in').value = localStorage.getItem('user_n');
             document.getElementById('p-email-in').value = localStorage.getItem('user_e');
@@ -220,17 +233,11 @@
             const e = document.getElementById('ue').value;
             const p = document.getElementById('u-phone').value;
             const r = document.getElementById('u-resume').value;
-            
             if(!n || !e) return alert("Bhai, kam se kam Naam aur Email toh dalo!");
-            
-            localStorage.setItem('user_n', n); 
-            localStorage.setItem('user_e', e);
-            localStorage.setItem('user_p', p);
-            localStorage.setItem('user_r', r);
+            localStorage.setItem('user_n', n); localStorage.setItem('user_e', e); localStorage.setItem('user_p', p); localStorage.setItem('user_r', r);
             location.reload();
         }
 
-        // Chat & Others
         function showChat() { document.getElementById('chat-ui').style.display = 'flex'; }
         function hideChat() { document.getElementById('chat-ui').style.display = 'none'; }
 
@@ -257,10 +264,12 @@
             if(localStorage.getItem('user_n')) {
                 document.getElementById('login-view').classList.add('hidden');
                 document.getElementById('dash-view').classList.remove('hidden');
+                document.getElementById('floating-support').classList.remove('hidden');
                 switchMaster('govt');
             } else {
                 document.getElementById('login-view').classList.remove('hidden');
                 document.getElementById('dash-view').classList.add('hidden');
+                document.getElementById('floating-support').classList.add('hidden');
             }
         };
 
