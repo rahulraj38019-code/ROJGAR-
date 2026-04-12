@@ -5,180 +5,189 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background: #eff6ff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .job-card { border-radius: 20px; border: 1px solid #e2e8f0; transition: 0.3s; }
-        .job-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(59, 130, 246, 0.1); }
-        .ai-btn { position: fixed; bottom: 20px; right: 20px; z-index: 100; }
-        .active-tab { border-bottom: 3px solid #1d4ed8; color: #1d4ed8; }
+        body { background: #f0f4f8; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        .job-card { border-radius: 24px; transition: 0.3s; border: 1px solid #e2e8f0; background: white; }
+        .tab-active { background: #1e40af; color: white; border-radius: 12px; }
+        .ai-window { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 200; display: none; background: white; flex-direction: column; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .animate-up { animation: slideUp 0.3s ease-out; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+        .animate-marquee { display: inline-block; animation: marquee 20s linear infinite; }
     </style>
 </head>
-<body class="p-2 sm:p-4">
-    <div class="max-w-md mx-auto bg-white rounded-[2.5rem] shadow-2xl p-6 relative overflow-hidden">
-        <div class="text-center mb-6">
-            <h1 class="text-5xl font-black text-blue-900 italic tracking-tighter">ROZGAR</h1>
-            <p class="text-blue-500 font-bold text-[10px] uppercase tracking-[0.3em]">AI-Powered Job Portal</p>
-        </div>
+<body>
 
-        <div id="nav-tabs" class="flex justify-around mb-6 font-bold text-gray-400 border-b hidden">
-            <button id="tab-jobs" onclick="switchTab('jobs')" class="pb-2 active-tab">JOBS</button>
-            <button id="tab-results" onclick="switchTab('results')" class="pb-2">RESULTS</button>
-        </div>
-
-        <div id="setup-section" class="space-y-4">
-            <div class="bg-blue-50 p-4 rounded-3xl mb-4">
-                <p class="text-blue-800 text-xs font-bold mb-2 text-center italic">"Bihar ke yuvaon ka apna app"</p>
+    <div class="max-w-md mx-auto min-h-screen bg-white shadow-2xl flex flex-col relative">
+        
+        <div id="setup-section" class="p-8 flex-1 flex flex-col justify-center">
+            <div class="text-center mb-8">
+                <h1 class="text-6xl font-black text-blue-900 italic tracking-tighter">ROZGAR</h1>
+                <p class="text-blue-600 font-bold text-[10px] uppercase tracking-[0.3em] mt-2">Sapne Aapke, Raasta Humara</p>
             </div>
-            <input id="u_name" placeholder="Apna Naam" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-blue-500 transition-all">
-            <input id="u_state" placeholder="State (e.g. Bihar)" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-blue-500 transition-all">
-            <input id="u_interest" placeholder="Qualification (e.g. 10th, ITI, BA)" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-blue-500 transition-all">
-            <button onclick="startSearch()" class="w-full bg-blue-600 text-white p-5 rounded-3xl font-black text-xl shadow-xl hover:bg-blue-700 active:scale-95">GO TO DASHBOARD 🚀</button>
-        </div>
+            
+            <div class="bg-blue-50 p-6 rounded-[2rem] mb-8 border border-blue-100">
+                <p class="text-center text-blue-900 font-bold italic text-sm">
+                    "Mehnat tumhari, manzil humari. <br>Ab naukri hogi tumhari mutthi mein!"
+                </p>
+            </div>
 
-        <div id="results-section" class="hidden">
-            <div class="flex justify-between items-center mb-4 bg-blue-50 p-3 rounded-2xl">
-                <div>
-                    <p id="greet" class="font-black text-blue-900 text-lg uppercase"></p>
-                    <p id="loc-display" class="text-[10px] text-blue-500 font-bold"></p>
+            <div class="space-y-4">
+                <input id="u_name" type="text" placeholder="Apna Naam" class="w-full p-4 rounded-2xl border-2 border-slate-100 outline-none focus:border-blue-500 bg-slate-50">
+                <input id="u_state" type="text" placeholder="Apna Rajya (e.g. Bihar)" class="w-full p-4 rounded-2xl border-2 border-slate-100 outline-none focus:border-blue-500 bg-slate-50">
+                <div class="relative">
+                    <span class="absolute left-4 top-1 text-[9px] text-blue-400 font-black uppercase">Date of Birth</span>
+                    <input id="u_dob" type="date" class="w-full p-5 pt-7 rounded-2xl border-2 border-slate-100 outline-none focus:border-blue-500 bg-slate-50">
                 </div>
-                <button onclick="clearData()" class="bg-white text-red-500 text-[10px] font-black p-2 rounded-xl shadow-sm">RESET</button>
+                <button onclick="saveUser()" class="w-full bg-blue-700 text-white p-5 rounded-3xl font-black text-xl shadow-xl active:scale-95 transition-all">START SEARCHING 🚀</button>
             </div>
-
-            <div id="jobs-container">
-                <div id="jobs-list" class="space-y-6"></div>
-                <button onclick="loadMore()" id="load-btn" class="w-full mt-6 bg-slate-100 text-blue-600 py-4 rounded-2xl font-black border-2 border-dashed border-blue-200 text-xs">LOAD MORE VACANCIES ↓</button>
-            </div>
-
-            <div id="exam-results-container" class="hidden">
-                <div id="results-list" class="space-y-6"></div>
-            </div>
-
-            <div id="loader" class="hidden text-center py-10 font-black text-blue-600 animate-bounce text-sm uppercase">Loading Data...</div>
         </div>
-    </div>
 
-    <div class="ai-btn">
-        <button onclick="toggleAI()" class="bg-blue-900 text-white w-14 h-14 rounded-full shadow-2xl flex items-center justify-center border-4 border-white animate-pulse">
-            <span class="text-xl">🤖</span>
+        <div id="main-dashboard" class="hidden flex-1 flex flex-col">
+            <div class="p-5 bg-white border-b sticky top-0 z-10 shadow-sm">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-black text-blue-900 italic">ROZGAR</h2>
+                    <button onclick="clearUser()" class="text-red-500 text-[10px] font-bold bg-red-50 px-3 py-1 rounded-full border border-red-100">RESET</button>
+                </div>
+                <div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+                    <button onclick="setFilter('all')" id="f-all" class="px-5 py-2 text-xs font-black tab-active whitespace-nowrap uppercase">All Jobs</button>
+                    <button onclick="setFilter('central')" id="f-central" class="px-5 py-2 text-xs font-black bg-slate-100 rounded-xl whitespace-nowrap uppercase">Central</button>
+                    <button onclick="setFilter('state')" id="f-state" class="px-5 py-2 text-xs font-black bg-slate-100 rounded-xl whitespace-nowrap uppercase">State</button>
+                    <button onclick="fetchData('results')" id="f-results" class="px-5 py-2 text-xs font-black bg-slate-100 rounded-xl whitespace-nowrap uppercase">Results</button>
+                </div>
+            </div>
+
+            <div class="bg-blue-900 text-white text-[9px] py-2 overflow-hidden whitespace-nowrap font-bold uppercase tracking-widest">
+                <div class="inline-block animate-marquee">
+                    🔥 Latest Update: SSC GD Notification Out | Bihar Police Exam Date | Railway Recruitment 2026 | New ITI Jobs in Bihar | Stay Updated with ROZGAR App 
+                </div>
+            </div>
+
+            <div id="content-list" class="p-4 space-y-6 pb-24"></div>
+            <div id="loader" class="hidden text-center py-20 font-black text-blue-600 animate-pulse text-xs uppercase tracking-tighter">Searching Official Jobs...</div>
+        </div>
+
+        <div id="ai-window" class="ai-window animate-up">
+            <div class="p-5 bg-slate-900 text-white flex justify-between items-center">
+                <div>
+                    <h2 class="text-xl font-black italic">ROZGAR AI</h2>
+                    <div class="flex items-center gap-1">
+                        <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                        <p class="text-[8px] text-slate-400 font-bold uppercase">Active Assistant</p>
+                    </div>
+                </div>
+                <button onclick="closeAI()" class="text-white text-xs font-bold bg-slate-800 px-4 py-2 rounded-xl border border-slate-700">EXIT CHAT</button>
+            </div>
+            <div id="ai-messages" class="flex-1 p-5 overflow-y-auto space-y-4 bg-slate-50">
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 text-sm leading-relaxed">
+                    👋 <b>Namaste!</b> Main aapka AI assistant hoon. <br><br>Aap mujhse kisi bhi job ki eligibility, form kaise bhare, ya documents ke baare mein puch sakte hain.
+                </div>
+            </div>
+            <div class="p-4 border-t bg-white flex gap-2">
+                <input id="ai-input" type="text" placeholder="Apna sawal likhiye..." class="flex-1 p-4 bg-slate-100 rounded-2xl outline-none focus:ring-2 ring-blue-500">
+                <button onclick="aiChat()" class="bg-blue-700 text-white px-6 rounded-2xl font-black italic shadow-lg">ASK</button>
+            </div>
+        </div>
+
+        <button onclick="openAI()" class="fixed bottom-6 right-6 w-16 h-16 bg-blue-900 text-white rounded-full shadow-2xl flex items-center justify-center text-3xl border-4 border-white z-[150] active:scale-90 transition-all">
+            🤖
         </button>
     </div>
 
-    <div id="ai-chat" class="hidden fixed inset-0 bg-black/50 z-[101] flex items-end sm:items-center justify-center p-4">
-        <div class="bg-white w-full max-w-sm rounded-[2rem] p-6 shadow-2xl">
-            <div class="flex justify-between mb-4 border-b pb-2">
-                <h2 class="font-black text-blue-900">ROZGAR AI</h2>
-                <button onclick="toggleAI()" class="text-red-500 font-bold">Close</button>
-            </div>
-            <p class="text-sm text-gray-600 mb-4">Puchhiye mujhse kuch bhi (Exam details, Document help, etc.)</p>
-            <input id="ai-input" type="text" placeholder="Type your message..." class="w-full p-4 bg-slate-50 border rounded-2xl mb-4">
-            <button class="w-full bg-blue-600 text-white p-3 rounded-xl font-bold">Send Message</button>
-        </div>
-    </div>
-
     <script>
+        let currentFilter = 'all';
         let currentPage = 1;
-        let currentTab = 'jobs';
 
         window.onload = function() {
-            const savedName = localStorage.getItem('rozgar_name');
-            const savedState = localStorage.getItem('rozgar_state');
-            const savedInterest = localStorage.getItem('rozgar_interest');
-
-            if(savedName) {
-                document.getElementById('u_name').value = savedName;
-                document.getElementById('u_state').value = savedState;
-                document.getElementById('u_interest').value = savedInterest;
-            }
+            if(localStorage.getItem('r_name')) showDashboard();
         };
 
-        function switchTab(tab) {
-            currentTab = tab;
-            document.getElementById('tab-jobs').classList.remove('active-tab');
-            document.getElementById('tab-results').classList.remove('active-tab');
-            document.getElementById('jobs-container').classList.add('hidden');
-            document.getElementById('exam-results-container').classList.add('hidden');
-
-            if(tab === 'jobs') {
-                document.getElementById('tab-jobs').classList.add('active-tab');
-                document.getElementById('jobs-container').classList.remove('hidden');
-            } else {
-                document.getElementById('tab-results').classList.add('active-tab');
-                document.getElementById('exam-results-container').classList.remove('hidden');
-                if(document.getElementById('results-list').innerHTML === '') fetchResults();
-            }
-        }
-
-        function startSearch() {
+        function saveUser() {
             const name = document.getElementById('u_name').value;
             const state = document.getElementById('u_state').value;
-            const interest = document.getElementById('u_interest').value;
+            const dob = document.getElementById('u_dob').value;
+            if(!name || !state || !dob) return alert("Bhai saari details bharo!");
+            localStorage.setItem('r_name', name);
+            localStorage.setItem('r_state', state);
+            localStorage.setItem('r_dob', dob);
+            showDashboard();
+        }
 
-            if(!name || !state || !interest) return alert("Pura detail bharo bhai!");
-
-            localStorage.setItem('rozgar_name', name);
-            localStorage.setItem('rozgar_state', state);
-            localStorage.setItem('rozgar_interest', interest);
-
+        function showDashboard() {
             document.getElementById('setup-section').classList.add('hidden');
-            document.getElementById('results-section').classList.remove('hidden');
-            document.getElementById('nav-tabs').classList.remove('hidden');
-            document.getElementById('greet').innerText = name;
-            document.getElementById('loc-display').innerText = "📍 " + state + " | " + interest;
-
-            fetchJobs();
+            document.getElementById('main-dashboard').classList.remove('hidden');
+            fetchData();
         }
 
-        async function fetchJobs() {
-            const state = localStorage.getItem('rozgar_state');
-            const interest = localStorage.getItem('rozgar_interest');
-            toggleLoader(true);
+        function setFilter(type) {
+            currentFilter = type;
+            document.querySelectorAll('#main-dashboard button').forEach(b => b.classList.remove('tab-active', 'bg-slate-100'));
+            document.getElementById('f-' + type).classList.add('tab-active');
+            document.getElementById('content-list').innerHTML = '';
+            fetchData();
+        }
 
-            const res = await fetch('/search', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({state, interest, page: currentPage})
-            });
-            const data = await res.json();
-            toggleLoader(false);
+        async function fetchData(specialType = null) {
+            const state = localStorage.getItem('r_state');
+            const loader = document.getElementById('loader');
+            loader.classList.remove('hidden');
             
-            data.forEach(j => {
-                document.getElementById('jobs-list').innerHTML += `
-                    <div class="job-card p-5 bg-white shadow-sm border-l-8 border-blue-600">
-                        <h2 class="text-xl font-black text-blue-900 leading-tight mb-3">${j.title}</h2>
-                        <div class="grid grid-cols-2 gap-2 mb-4">
-                            <div class="bg-blue-50 p-2 rounded-lg text-center"><p class="text-[9px] font-bold text-blue-400">FEES</p><p class="text-xs font-black">Check Link</p></div>
-                            <div class="bg-green-50 p-2 rounded-lg text-center"><p class="text-[9px] font-bold text-green-400">LAST DATE</p><p class="text-xs font-black">Latest</p></div>
-                        </div>
-                        <p class="text-xs text-gray-500 mb-4 font-medium">${j.snippet}</p>
-                        <a href="${j.link}" target="_blank" class="block w-full text-center bg-blue-900 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg">Apply Now / View Details</a>
-                    </div>`;
-            });
+            const interest = specialType === 'results' ? 'exam result sarkari' : 'latest jobs';
+
+            try {
+                const res = await fetch('/search', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({state, type: currentFilter, page: currentPage, interest: interest})
+                });
+                const data = await res.json();
+                loader.classList.add('hidden');
+                
+                data.forEach(j => {
+                    const isCentral = currentFilter === 'central' || j.title.toLowerCase().includes('india') || j.title.toLowerCase().includes('ssc') || j.title.toLowerCase().includes('railway');
+                    const color = isCentral ? 'blue' : 'green';
+                    const tag = isCentral ? 'CENTRAL JOB' : 'STATE JOB';
+                    
+                    document.getElementById('content-list').innerHTML += `
+                        <div class="job-card p-6 border-l-[12px] border-${color}-600 shadow-md">
+                            <div class="flex justify-between items-center mb-3">
+                                <span class="text-[8px] font-black bg-${color}-50 text-${color}-700 px-3 py-1 rounded-full uppercase tracking-widest border border-${color}-100">${tag}</span>
+                                <button onclick="window.open('https://api.whatsapp.com/send?text=Bhai ye job dekh: ${j.title} Link: ${j.link}')" class="text-green-600 text-[10px] font-black uppercase">Share 📲</button>
+                            </div>
+                            <h2 class="text-lg font-black text-slate-800 leading-tight mb-2 uppercase">${j.title}</h2>
+                            <p class="text-[10px] text-slate-500 mb-5 font-medium leading-relaxed">${j.snippet}</p>
+                            <a href="${j.link}" target="_blank" class="block w-full text-center bg-slate-900 text-white py-4 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-lg active:bg-blue-900">Open Official Details</a>
+                        </div>`;
+                });
+            } catch (e) { loader.innerText = "Error Loading!"; }
         }
 
-        async function fetchResults() {
-            const state = localStorage.getItem('rozgar_state');
-            toggleLoader(true);
-            const res = await fetch('/search', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({interest: "exam result sarkari", state: state, page: 1})
-            });
-            const data = await res.json();
-            toggleLoader(false);
-
-            data.forEach(r => {
-                document.getElementById('results-list').innerHTML += `
-                    <div class="job-card p-5 bg-white border-l-8 border-green-500">
-                        <p class="text-[10px] font-black text-green-500 uppercase">Latest Result 2026</p>
-                        <h2 class="text-lg font-black text-slate-800 mb-3">${r.title}</h2>
-                        <a href="${r.link}" target="_blank" class="inline-block text-blue-600 font-bold text-sm underline">Download Result Link</a>
-                    </div>`;
-            });
+        function openAI() { document.getElementById('ai-window').style.display = 'flex'; }
+        function closeAI() { document.getElementById('ai-window').style.display = 'none'; }
+        
+        function aiChat() {
+            const input = document.getElementById('ai-input');
+            const box = document.getElementById('ai-messages');
+            if(!input.value) return;
+            box.innerHTML += `<div class="bg-blue-600 text-white p-4 rounded-2xl rounded-tr-none text-sm font-bold ml-12 shadow-sm">${input.value}</div>`;
+            const userMsg = input.value;
+            input.value = '';
+            
+            setTimeout(() => {
+                box.innerHTML += `<div class="bg-white p-4 rounded-2xl rounded-tl-none shadow-sm border border-slate-200 text-sm italic text-slate-400 animate-pulse">Thinking...</div>`;
+                box.scrollTop = box.scrollHeight;
+                
+                // Demo Response
+                setTimeout(() => {
+                    const lastMsg = box.lastElementChild;
+                    lastMsg.classList.remove('animate-pulse', 'italic', 'text-slate-400');
+                    lastMsg.innerHTML = `Bhai, ${localStorage.getItem('r_name')}, main search kar raha hoon. Aapke age ke hisab se ye best option ho sakta hai. Kya aapko Bihar ki jobs dekhni hain ya Central ki?`;
+                    box.scrollTop = box.scrollHeight;
+                }, 1000);
+            }, 500);
         }
 
-        function toggleLoader(show) { document.getElementById('loader').classList = show ? "block" : "hidden"; }
-        function toggleAI() { document.getElementById('ai-chat').classList.toggle('hidden'); }
-        function clearData() { localStorage.clear(); location.reload(); }
-        function loadMore() { currentPage++; fetchJobs(); }
+        function clearUser() { localStorage.clear(); location.reload(); }
     </script>
 </body>
 </html>
