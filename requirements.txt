@@ -1,6 +1,4 @@
 flask
-requests
 flask-cors
-flask-caching
+requests
 groq
-gunicorn
