@@ -8,6 +8,7 @@
     <style>
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .active-btn { background-color: #172554 !important; color: white !important; border-color: #172554 !important; transform: scale(1.05); }
+        .active-sub-btn { background-color: #fbbf24 !important; color: black !important; border-color: #fbbf24 !important; }
         .marquee-live { animation: scroll 20s linear infinite; }
         @keyframes scroll { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
         .job-card { transition: all 0.2s ease; }
@@ -39,6 +40,12 @@
                 <button id="tab-central" onclick="switchTab('central')" class="px-5 py-2.5 border-2 border-blue-950 rounded-xl text-[10px] font-black uppercase whitespace-nowrap active-btn">Central Jobs</button>
                 <button id="tab-state" onclick="switchTab('state')" class="px-5 py-2.5 border-2 border-blue-950 rounded-xl text-[10px] font-black uppercase whitespace-nowrap">State Jobs</button>
                 <button id="tab-results" onclick="switchTab('results')" class="px-5 py-2.5 border-2 border-blue-950 rounded-xl text-[10px] font-black uppercase whitespace-nowrap">Results</button>
+            </div>
+
+            <div id="aggregator-tabs" class="bg-slate-50 p-2 flex gap-2 overflow-x-auto no-scrollbar border-b">
+                <button id="sub-all" onclick="loadData('latest jobs', 'all')" class="px-4 py-1.5 border border-slate-300 rounded-lg text-[8px] font-bold uppercase whitespace-nowrap active-sub-btn">All Platforms</button>
+                <button id="sub-private" onclick="loadData('private company jobs', 'private')" class="px-4 py-1.5 border border-slate-300 rounded-lg text-[8px] font-bold uppercase whitespace-nowrap">Private (Naukri/LinkedIn)</button>
+                <button id="sub-iti" onclick="loadData('ITI apprentice technical jobs', 'iti')" class="px-4 py-1.5 border border-slate-300 rounded-lg text-[8px] font-bold uppercase whitespace-nowrap">ITI Special 🛠️</button>
             </div>
 
             <div id="result-cats" class="hidden p-3 grid grid-cols-2 gap-2 bg-blue-50 border-b">
@@ -122,12 +129,24 @@
         function hideChat() { document.getElementById('chat-ui').style.display = 'none'; }
         window.onpopstate = () => hideChat();
 
-        async function loadData(q, isMore = false) {
+        async function loadData(q, subType = 'all', isMore = false) {
             const box = document.getElementById('results-box');
             const ldr = document.getElementById('loader');
             const lm = document.getElementById('load-more-div');
 
-            if(!isMore) { box.innerHTML = ""; pageNum = 1; }
+            // Sub-tab highlight logic
+            if(!isMore) {
+                const subs = ['sub-all', 'sub-private', 'sub-iti'];
+                subs.forEach(s => {
+                    const el = document.getElementById(s);
+                    if(el) el.classList.remove('active-sub-btn');
+                });
+                const activeSub = document.getElementById('sub-' + subType);
+                if(activeSub) activeSub.classList.add('active-sub-btn');
+                
+                box.innerHTML = ""; pageNum = 1; 
+            }
+
             currentQ = q;
             ldr.classList.remove('hidden');
             lm.classList.add('hidden');
@@ -147,7 +166,7 @@
                 data.forEach(item => {
                     box.innerHTML += `
                     <div class="job-card p-6 bg-white border-2 rounded-[2rem] shadow-xl border-l-[12px] border-blue-950">
-                        <span class="text-[8px] font-black text-slate-300 uppercase tracking-widest">Update • 2026</span>
+                        <span class="text-[8px] font-black text-slate-300 uppercase tracking-widest">Platform Update • 2026</span>
                         <h3 class="font-black text-sm uppercase mb-3 mt-1 text-slate-900 leading-tight">${item.title}</h3>
                         <p class="text-[10px] text-slate-500 mb-6 line-clamp-2 italic">${item.snippet}</p>
                         <a href="${item.link}" target="_blank" class="block w-full text-center ${btnColor} text-white py-4 rounded-2xl font-black text-[10px] shadow-lg uppercase tracking-wider">${btnText}</a>
@@ -157,7 +176,7 @@
             } catch(e) { ldr.classList.add('hidden'); }
         }
 
-        function loadMore() { pageNum++; loadData(currentQ, true); }
+        function loadMore() { pageNum++; loadData(currentQ, 'all', true); }
 
         function switchTab(mode) {
             const tabs = ['tab-central', 'tab-state', 'tab-results'];
@@ -165,14 +184,18 @@
             document.getElementById('tab-' + mode).classList.add('active-btn');
             
             const resCats = document.getElementById('result-cats');
+            const aggTabs = document.getElementById('aggregator-tabs');
+
             if(mode === 'results') {
                 isResultsTab = true;
                 resCats.classList.remove('hidden');
-                loadData('latest sarkari result 2026');
+                aggTabs.classList.add('hidden');
+                loadData('latest sarkari result 2026', 'all');
             } else {
                 isResultsTab = false;
                 resCats.classList.add('hidden');
-                loadData(mode === 'central' ? 'central govt jobs 2026' : 'bihar govt vacancy 2026');
+                aggTabs.classList.remove('hidden');
+                loadData(mode === 'central' ? 'central govt jobs 2026' : 'bihar govt vacancy 2026', 'all');
             }
         }
 
@@ -190,13 +213,18 @@
             box.innerHTML += `<div class="bg-blue-950 text-white p-4 rounded-2xl ml-10 font-bold text-sm shadow-md">${msg}</div>`;
             inp.value = "";
             box.scrollTop = box.scrollHeight;
-            const res = await fetch('/chat', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ message: msg, name: localStorage.getItem('user_n') })
-            });
-            const d = await res.json();
-            box.innerHTML += `<div class="bg-white border-2 p-5 rounded-2xl mr-10 shadow-xl text-sm border-l-8 border-blue-950 font-medium whitespace-pre-line">${d.reply}</div>`;
+            
+            try {
+                const res = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ message: msg, name: localStorage.getItem('user_n') })
+                });
+                const d = await res.json();
+                box.innerHTML += `<div class="bg-white border-2 p-5 rounded-2xl mr-10 shadow-xl text-sm border-l-8 border-blue-950 font-medium whitespace-pre-line">${d.reply}</div>`;
+            } catch(e) {
+                box.innerHTML += `<div class="bg-red-50 text-red-600 p-4 rounded-2xl mr-10 text-[10px] font-bold">Network error! Server se baat nahi ho payi.</div>`;
+            }
             box.scrollTop = box.scrollHeight;
         }
 
