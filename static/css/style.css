@@ -6,29 +6,14 @@
     --primary-gradient: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
     --accent-gold: #fbbf24;
     --text-dark: #0f172a;
-    --card-shadow: rgba(31, 38, 135, 0.07);
 }
 
-/* --- DARK MODE OVERRIDE --- */
-.dark-mode {
-    --bg-main: #020617;
-    --glass: rgba(15, 23, 42, 0.8); /* Dark Glass Look */
-    --text-dark: #f8fafc;
-    --card-shadow: rgba(0, 0, 0, 0.4);
-}
-
-/* Background Animation */
+/* Background Animation: Halka sa movement jo premium lage */
 body {
     background: linear-gradient(-45deg, #e2e8f0, #f1f5f9, #dee2e6, #f8fafc);
     background-size: 400% 400%;
     animation: gradientBG 15s ease infinite;
     font-family: 'Inter', sans-serif;
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Dark Mode Background */
-body.dark-mode {
-    background: linear-gradient(-45deg, #020617, #0f172a, #1e1b4b, #020617);
 }
 
 @keyframes gradientBG {
@@ -37,19 +22,14 @@ body.dark-mode {
     100% { background-position: 0% 50%; }
 }
 
-/* Glassmorphism Card */
+/* Glassmorphism Card: Ye sabse zyada attractive lagta hai */
 .job-card {
     background: var(--glass);
     backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.4);
-    box-shadow: 0 8px 32px 0 var(--card-shadow);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
     border-radius: 28px !important;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    color: var(--text-dark);
-}
-
-.dark-mode .job-card {
-    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .job-card:hover {
@@ -58,7 +38,7 @@ body.dark-mode {
     border: 1px solid rgba(59, 130, 246, 0.5);
 }
 
-/* Floating Buttons & Tabs */
+/* Floating Buttons: Inka look ekdum soft aur premium hai */
 .active-btn {
     background: var(--primary-gradient) !important;
     color: white !important;
@@ -67,6 +47,7 @@ body.dark-mode {
     transform: translateY(-2px);
 }
 
+/* Sub-tabs (Aggregator) colors */
 .active-sub-btn {
     background: linear-gradient(90deg, #f59e0b, #fbbf24) !important;
     color: #000 !important;
@@ -75,26 +56,28 @@ body.dark-mode {
     box-shadow: 0 5px 15px rgba(245, 158, 11, 0.3);
 }
 
-/* Dashboard & App Container Dark Fix */
-.dark-mode #app-container, 
-.dark-mode #dash-view, 
-.dark-mode #chat-ui, 
-.dark-mode #profile-ui {
-    background: var(--bg-main) !important;
-    color: var(--text-dark);
-}
-
-.dark-mode .bg-white, 
-.dark-mode .bg-slate-50 {
-    background-color: transparent !important;
-}
-
-/* Apply Now Button */
+/* Apply Now Button: Vibrant energy */
 button.bg-blue-950, a.bg-blue-950 {
     background: var(--primary-gradient);
     border-radius: 20px;
     letter-spacing: 1px;
     transition: all 0.3s ease;
+}
+
+button.bg-blue-950:hover {
+    filter: brightness(1.1);
+    box-shadow: 0 8px 25px rgba(30, 58, 138, 0.3);
+}
+
+/* Custom UI Elements */
+#nav-pfp, #setting-pfp {
+    border: 3px solid white !important;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* Profile Section ka colour soft rakha hai */
+#profile-ui {
+    background: radial-gradient(circle at top, #ffffff, #f1f5f9);
 }
 
 /* Mobile Friendly Inputs */
@@ -105,25 +88,8 @@ input {
     transition: 0.3s;
 }
 
-.dark-mode input {
-    background: #1e293b !important;
-    color: white !important;
-    border: 2px solid #334155 !important;
-}
-
 input:focus {
     border-color: #3b82f6 !important;
     background: white !important;
     box-shadow: 0 0 15px rgba(59, 130, 246, 0.1);
-}
-
-/* Custom Nav/PFP */
-#nav-pfp, #setting-pfp {
-    border: 3px solid white !important;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-}
-
-/* Extra Tweaks for Dark Mode Visibility */
-.dark-mode .text-slate-500, .dark-mode .text-slate-400 {
-    color: #94a3b8 !important;
 }
