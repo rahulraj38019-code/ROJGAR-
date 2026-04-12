@@ -32,7 +32,7 @@
                 </div>
             </div>
 
-            <div class="p-3 grid grid-cols-2 gap-3 bg-white border-b shadow-sm main-tabs">
+            <div class="p-3 grid grid-cols-2 gap-3 bg-white border-b shadow-sm">
                 <button id="master-govt" onclick="switchMaster('govt')" class="py-4 border-2 border-blue-950 rounded-2xl text-[10px] font-black uppercase flex flex-col items-center gap-1 active-btn">
                     <span>🏛️ Government</span>
                 </button>
@@ -61,6 +61,35 @@
             </a>
         </div>
 
+        <div id="login-view" class="p-8 flex-1 flex flex-col justify-center bg-white hidden">
+            <h2 class="text-3xl font-black mb-2 italic uppercase text-blue-950">Welcome Dost ✍️</h2>
+            <p class="text-[10px] font-bold text-slate-400 mb-6 uppercase">Ek baar apni details bharo, phir hamesha ke liye relax!</p>
+            <div class="space-y-4">
+                <input id="un" type="text" placeholder="Apna Poora Naam" class="w-full p-4 rounded-xl border-2 font-bold outline-none bg-slate-50 focus:border-blue-950">
+                <input id="ue" type="email" placeholder="Email Address" class="w-full p-4 rounded-xl border-2 font-bold outline-none bg-slate-50 focus:border-blue-950">
+                <input id="u-phone" type="tel" placeholder="Mobile Number" class="w-full p-4 rounded-xl border-2 font-bold outline-none bg-slate-50 focus:border-blue-950">
+                <input id="u-resume" type="text" placeholder="Resume Link" class="w-full p-4 rounded-xl border-2 font-bold outline-none bg-slate-50 focus:border-blue-950">
+                <button onclick="doLogin()" class="w-full bg-blue-950 text-white p-5 rounded-xl font-black text-lg shadow-xl uppercase transition">Start Applying 🚀</button>
+            </div>
+        </div>
+
+        <div id="profile-ui" class="fixed inset-0 bg-white z-[3000] hidden flex-col">
+            <div class="p-5 bg-blue-950 text-white flex items-center justify-between">
+                <h2 class="font-black italic text-xl uppercase tracking-tighter text-yellow-400">My Job Profile</h2>
+                <button onclick="hideProfile()" class="text-[10px] font-black bg-white text-blue-950 px-5 py-2 rounded-xl uppercase">Close</button>
+            </div>
+            <div class="p-8 flex-1 space-y-4 overflow-y-auto">
+                <div class="p-6 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
+                    <div class="space-y-4">
+                        <div><label class="text-[9px] font-black text-blue-950 uppercase">Name</label><input id="p-name-in" class="w-full p-3 bg-white border rounded-xl font-bold"></div>
+                        <div><label class="text-[9px] font-black text-blue-950 uppercase">Email</label><input id="p-email-in" class="w-full p-3 bg-white border rounded-xl font-bold"></div>
+                        <button onclick="updateProfile()" class="w-full bg-emerald-600 text-white py-4 rounded-xl font-black text-[10px] uppercase">Save ✅</button>
+                    </div>
+                </div>
+                <button onclick="clearData()" class="w-full bg-red-600 text-white p-4 rounded-xl font-black text-[10px] uppercase">Logout</button>
+            </div>
+        </div>
+
         <div id="chat-ui" class="fixed inset-0 bg-white z-[2000] hidden flex-col">
             <div class="p-5 bg-blue-950 text-white flex justify-between items-center">
                 <h2 class="font-black italic text-xl">ROZGAR AI</h2>
@@ -75,8 +104,8 @@
 
     </div>
 
+    <script src="/static/script.js"></script>
     <script>
-        // Dark Mode Functionality
         function toggleDarkMode() {
             const body = document.body;
             const btn = document.getElementById('dark-btn');
@@ -91,12 +120,10 @@
             }
         }
 
-        // Load Theme on Start
         window.addEventListener('DOMContentLoaded', () => {
-            if(localStorage.getItem('theme') === 'dark') {
-                toggleDarkMode();
-            }
-            // Check Login Status
+            if(localStorage.getItem('theme') === 'dark') { toggleDarkMode(); }
+            
+            // Login check logic
             if(localStorage.getItem('user_n')) {
                 document.getElementById('dash-view').classList.remove('hidden');
                 document.getElementById('floating-support').classList.remove('hidden');
@@ -104,9 +131,6 @@
                 document.getElementById('login-view').classList.remove('hidden');
             }
         });
-
-        // --- Baaki purana JavaScript Logic yahan continue hoga ---
-        // (switchMaster, loadData, sendChat, etc.)
     </script>
 </body>
 </html>
