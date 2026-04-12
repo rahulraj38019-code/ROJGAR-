@@ -10,22 +10,18 @@
         body { background: var(--bg); font-family: 'Inter', sans-serif; margin: 0; padding: 0; padding-bottom: 80px; color: var(--main); }
         .container { max-width: 500px; margin: 0 auto; padding: 15px; }
         
-        /* Header Style */
         header { background: var(--white); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 100; }
         .logo-text { font-weight: 800; font-size: 20px; color: var(--blue); letter-spacing: -0.5px; }
         
-        /* Professional Form UI */
         .login-card { background: var(--white); padding: 30px 25px; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.04); border: 1px solid #f0f0f0; }
         .input-box { width: 100%; padding: 16px; border-radius: 14px; border: 1.5px solid #e2e8f0; font-size: 14px; font-weight: 600; box-sizing: border-box; outline: none; transition: 0.3s; margin-bottom: 18px; background: #fbfcfe; }
         .input-box:focus { border-color: var(--blue); background: #fff; box-shadow: 0 0 0 4px var(--light-blue); }
         label { display: block; font-size: 12px; font-weight: 800; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        /* Multi-Select Education Chips */
         .edu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px; }
         .edu-chip { border: 1.5px solid #e2e8f0; padding: 12px; border-radius: 12px; text-align: center; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.3s; background: #fff; color: var(--text-muted); }
         .edu-chip.selected { background: var(--blue); color: #fff; border-color: var(--blue); box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3); }
 
-        /* Dashboard Styles */
         .card { background: var(--white); padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); margin-bottom: 20px; }
         .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
         .dash-card { background: var(--white); padding: 15px; border-radius: 18px; text-align: center; border: 1px solid #f0f0f0; transition: 0.3s; cursor: pointer; }
@@ -36,7 +32,6 @@
         .pill { background: #fff; padding: 8px 16px; border-radius: 50px; border: 1px solid #ddd; font-size: 12px; font-weight: 600; white-space: nowrap; cursor: pointer; }
         .pill.active { background: var(--blue); color: #fff; border-color: var(--blue); }
 
-        /* Job & AI Plan Cards */
         .job-card { background: var(--white); padding: 18px; border-radius: 16px; margin-bottom: 12px; border: 1px solid #f0f0f0; }
         .job-title { font-size: 15px; font-weight: 700; color: #1e293b; margin: 0; }
         .company-name { font-size: 12px; color: #64748b; font-weight: 600; display: block; margin: 4px 0; }
@@ -46,7 +41,6 @@
         .btn-apply { display: block; text-align: center; background: var(--blue); color: white; padding: 12px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 13px; margin-top: 15px; }
         .btn-primary { width: 100%; background: var(--blue); color: white; padding: 18px; border: none; border-radius: 15px; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3); }
         
-        /* Bottom Nav */
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #eee; box-shadow: 0 -5px 15px rgba(0,0,0,0.03); max-width: 500px; margin: 0 auto; }
         .nav-item { text-align: center; color: #94a3b8; font-size: 10px; font-weight: 700; cursor: pointer; text-decoration: none;}
         .nav-item.active { color: var(--blue); }
@@ -71,13 +65,10 @@
         <div class="login-card">
             <label>Full Name</label>
             <input type="text" id="u-name" class="input-box" placeholder="e.g. Rahul Raj">
-            
             <label>Date of Birth</label>
             <input type="date" id="u-dob" class="input-box">
-            
             <label>Current State</label>
             <input type="text" id="u-state" class="input-box" placeholder="e.g. Bihar">
-            
             <label>Education (Multiple Select Karo)</label>
             <div class="edu-grid" id="edu-options">
                 <div class="edu-chip" onclick="toggleEdu(this, '10th')">10th Pass</div>
@@ -86,7 +77,6 @@
                 <div class="edu-chip" onclick="toggleEdu(this, 'UG')">Undergraduate</div>
                 <div class="edu-chip" onclick="toggleEdu(this, 'Graduate')">Graduation</div>
             </div>
-            
             <button onclick="saveLogin()" class="btn-primary">Create Professional Profile ⚡</button>
         </div>
     </div>
@@ -197,12 +187,11 @@
         window.open(`https://www.google.com/search?q=${encodeURIComponent(finalSearch)}`, '_blank');
     }
 
-    // UPDATED: Ab ye Google par nahi jayega balki app ke andar open hoga
     function getOfficialResult() {
         const query = document.getElementById('official-res-query').value;
         if(!query) return alert("Exam ya Board ka naam likhein!");
-        // Result search query ko openJobs me pass kar rahe hain
-        openJobs(query + " Result"); 
+        // Fix: Header mein user ka typed text hi dikhega
+        openJobs(query); 
     }
 
     function showDash() {
@@ -229,18 +218,12 @@
         fetchData();
     }
 
-    function searchRes() { const v = document.getElementById('res-inp').value; if(v) openJobs(v + " Result"); }
+    function searchRes() { const v = document.getElementById('res-inp').value; if(v) openJobs(v); }
 
     async function fetchData() {
         if(loading) return; loading = true;
         document.getElementById('loading').classList.remove('hidden');
         
-        // Button text logic: Result wali category ke liye Check Result dikhao
-        let btnText = "View Details & Apply";
-        if (currentCat.toLowerCase().includes('result')) {
-            btnText = "Check Result ✅";
-        }
-
         try {
             const res = await fetch('/fetch_jobs', {
                 method: 'POST',
@@ -249,6 +232,15 @@
             });
             const data = await res.json();
             data.forEach(i => {
+                // FIX: Title-based Button Logic (Case Insensitive)
+                let btnText = "View Details & Apply";
+                let checkTitle = i.title.toLowerCase();
+                let checkCat = currentCat.toLowerCase();
+
+                if (checkTitle.includes('result') || checkCat.includes('result')) {
+                    btnText = "Check Result ✅";
+                }
+
                 document.getElementById('list').innerHTML += `
                 <div class="job-card">
                     <p style="color:var(--blue); font-size:10px; font-weight:800; text-transform:uppercase;">Verified Source</p>
