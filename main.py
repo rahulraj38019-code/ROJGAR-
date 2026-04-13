@@ -1,9 +1,10 @@
-# [Line 1-5] Imports
+# [Line 1-6] Imports
 import requests
 from flask import Flask, render_template, request, jsonify, send_from_directory
 from flask_cors import CORS
+import os # [Fix] Directory path find karne ke liye
 
-# [Line 7-15] App Configuration & API Keys
+# [Line 8-16] App Configuration & API Keys
 app = Flask(__name__)
 CORS(app)
 
@@ -12,25 +13,25 @@ K1 = "268aa2e751d03f3d"
 K2 = "61ffa0fe6b46cd80bf6ec73d"
 SERPER_API_KEY = K1 + K2
 
-# [Line 17-25] PWA Routes (Naya Added: App install karne ke liye zaruri)
+# [Line 18-26] PWA Routes (Fix: Browser ko manifest aur sw files yahan se milengi)
 @app.route('/manifest.json')
 def serve_manifest():
-    return send_from_directory('.', 'manifest.json')
+    return send_from_directory(os.getcwd(), 'manifest.json')
 
 @app.route('/sw.js')
 def serve_sw():
-    return send_from_directory('.', 'sw.js')
+    return send_from_directory(os.getcwd(), 'sw.js')
 
-# [Line 27-30] WhatsApp Share Text Generator
+# [Line 28-31] WhatsApp Share Text Generator
 def get_share_text(title, link):
     return f"🚀 *Rozgar Hub Update* 🚀\n\n*Job:* {title}\n\nCheck Details here: {link}\n\nStay Updated with Rozgar Hub!"
 
-# [Line 32-35] Home Route
+# [Line 33-36] Home Route
 @app.route('/')
 def index():
     return render_template('index.html')
 
-# [Line 37-85] Job Fetching Logic (Main Function)
+# [Line 38-86] Job Fetching Logic (Main Function)
 @app.route('/fetch_jobs', methods=['POST'])
 def fetch_jobs():
     try:
@@ -73,7 +74,7 @@ def fetch_jobs():
     except Exception as e:
         return jsonify({"error": str(e)})
 
-# [Line 87-95] Extra Hooks & App Run
+# [Line 88-96] Extra Hooks & App Run
 @app.route('/auto_update_check')
 def auto_update():
     return jsonify({"status": "Scraper Bridge Ready", "next_sync": "Scheduled"})
