@@ -26,7 +26,24 @@
         .menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; display: none; }
         .menu-overlay.active { display: block; }
         .menu-item { padding: 15px 0; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 15px; cursor: pointer; font-weight: 600; font-size: 14px; }
-        .profile-banner { background: linear-gradient(135deg, #007bff, #0056b3); color: white; padding: 20px; border-radius: 24px; margin-bottom: 25px; box-shadow: 0 10px 20px rgba(0,123,255,0.2); }
+        
+        /* --- NAYA LIVE PANEL CSS --- */
+        .live-panel { background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 24px; padding: 18px; margin-bottom: 25px; border: 2px solid #334155; box-shadow: 0 10px 30px rgba(0,0,0,0.2); position: relative; }
+        .live-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
+        .live-dot { width: 12px; height: 12px; background: #ff4757; border-radius: 50%; animation: blink 1s infinite; box-shadow: 0 0 12px #ff4757; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+        
+        .ticker-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; height: 120px; overflow: hidden; }
+        .ticker-col { display: flex; flex-direction: column; }
+        .ticker-title { font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--blue); margin-bottom: 8px; text-align: center; background: rgba(0,123,255,0.1); padding: 4px; border-radius: 6px; }
+        .scroll-box { animation: scrollUp 20s linear infinite; }
+        .scroll-box:hover { animation-play-state: paused; }
+        @keyframes scrollUp { 0% { transform: translateY(0); } 100% { transform: translateY(-50%); } }
+        
+        .ticker-item { font-size: 12px; color: #cbd5e1; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); display: block; text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .ticker-item:hover { color: var(--blue); }
+        /* -------------------------- */
+
         .dark-mode header, .dark-mode .bottom-nav { border-color: #334155; }
         .dark-mode .input-box { background: #1e293b !important; border-color: #334155 !important; color: #ffffff !important; }
         .dark-mode .card, .dark-mode .job-card, .dark-mode .dash-card, .dark-mode .login-card { border-color: #334155; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
@@ -97,11 +114,24 @@
     </div>
 
     <div id="dash-sec" class="hidden">
-        <div class="profile-banner">
-            <h2 style="margin:0;">Hi, <span id="well-name">User</span>! 👋</h2>
-            <p style="margin:5px 0 0; font-size:13px; opacity:0.9;">Tayaari kaisi chal rahi hai <span id="well-state">Bihar</span> mein?</p>
-            <div style="display:flex; gap:10px; margin-top:15px;">
-                <div style="background:rgba(255,255,255,0.2); padding:5px 12px; border-radius:8px; font-size:11px; font-weight:700;" id="well-edu">Education</div>
+        <div class="live-panel">
+            <div class="live-header">
+                <div class="live-dot"></div>
+                <span style="color:white; font-weight:800; font-size:14px;">LIVE UPDATES 🛰️</span>
+            </div>
+            <div class="ticker-container">
+                <div class="ticker-col">
+                    <div class="ticker-title">New Jobs 🚀</div>
+                    <div id="job-ticker" class="scroll-box">
+                        <div class="ticker-item">Loading updates...</div>
+                    </div>
+                </div>
+                <div class="ticker-col">
+                    <div class="ticker-title">Admit Cards 🎫</div>
+                    <div id="admit-ticker" class="scroll-box">
+                        <div class="ticker-item">Loading updates...</div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -252,10 +282,35 @@
     function showDash() {
         document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
         document.getElementById('dash-sec').classList.remove('hidden');
-        document.getElementById('well-name').innerText = user.name;
-        document.getElementById('well-state').innerText = user.state;
-        document.getElementById('well-edu').innerText = user.edu;
         document.getElementById('user-initial').innerText = user.name[0].toUpperCase();
+        loadLiveUpdates(); // Naya function call
+    }
+
+    // --- NAYA FUNCTION: LIVE DATA FETCH KARNE KE LIYE ---
+    async function loadLiveUpdates() {
+        try {
+            const res = await fetch('/get_live_updates');
+            const data = await res.json();
+            
+            const jobBox = document.getElementById('job-ticker');
+            const admitBox = document.getElementById('admit-ticker');
+            
+            if(data.jobs.length > 0) {
+                jobBox.innerHTML = '';
+                data.jobs.forEach(j => {
+                    jobBox.innerHTML += `<a href="${j.link}" target="_blank" class="ticker-item">🔥 ${j.title}</a>`;
+                });
+                jobBox.innerHTML += jobBox.innerHTML; // Seamless loop ke liye
+            }
+            
+            if(data.admits.length > 0) {
+                admitBox.innerHTML = '';
+                data.admits.forEach(a => {
+                    admitBox.innerHTML += `<a href="${a.link}" target="_blank" class="ticker-item">🆕 ${a.title}</a>`;
+                });
+                admitBox.innerHTML += admitBox.innerHTML; // Seamless loop ke liye
+            }
+        } catch (e) { console.error("Live Update Error"); }
     }
 
     function showResults() {
@@ -274,7 +329,6 @@
         resType = val; 
         el.parentElement.querySelectorAll('.pill').forEach(p => p.classList.remove('active-pill'));
         el.classList.add('active-pill');
-        alert(val + " Selected!"); 
     }
 
     function finalResSearch(cat) {
@@ -311,15 +365,10 @@
             });
             const data = await res.json();
             
-            // Check if current view is a Result
-            let isResult = currentCat.toLowerCase().includes('result') || 
-                           currentCat.toLowerCase().includes('board') || 
-                           currentCat.toLowerCase().includes('police') || 
-                           currentCat.toLowerCase().includes('ssc');
+            let isResult = currentCat.toLowerCase().includes('result') || currentCat.toLowerCase().includes('board');
 
             data.forEach(i => {
                 let btnText = isResult ? "View Result 📄" : "View & Apply 🚀";
-                
                 document.getElementById('list').innerHTML += `
                 <div class="job-card">
                     <h3 class="job-title">${i.title}</h3>
