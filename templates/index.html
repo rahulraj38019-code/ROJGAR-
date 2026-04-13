@@ -26,6 +26,11 @@
         .menu-item { padding: 15px 0; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 15px; cursor: pointer; font-weight: 600; font-size: 14px; }
         .dark-mode .menu-item { border-color: #334155; }
 
+        /* --- UPDATE OVERLAY STYLES --- */
+        #update-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; text-align: center; padding: 20px; box-sizing: border-box; }
+        .progress-container { width: 100%; max-width: 300px; background: #333; height: 12px; border-radius: 20px; margin-top: 20px; overflow: hidden; border: 1px solid #444; }
+        .progress-bar { width: 0%; height: 100%; background: var(--blue); transition: 0.1s; box-shadow: 0 0 15px var(--blue); }
+
         /* Blue Banner Area */
         .profile-banner { background: linear-gradient(135deg, #007bff, #0056b3); color: white; padding: 20px; border-radius: 24px; margin-bottom: 25px; box-shadow: 0 10px 20px rgba(0,123,255,0.2); }
 
@@ -71,6 +76,18 @@
     </style>
 </head>
 <body id="app-body">
+
+<div id="update-overlay" class="hidden">
+    <h2 id="up-title" style="margin:0; font-size:24px;">New Update Available! 🚀</h2>
+    <p id="up-msg" style="opacity:0.8; margin-top:10px;">We've added new job listings and fixed bugs.</p>
+    
+    <div id="prog-box" class="hidden" style="width:100%; display:flex; flex-direction:column; align-items:center;">
+        <div class="progress-container"><div class="progress-bar" id="p-bar"></div></div>
+        <p id="p-text" style="margin-top:15px; font-weight:800; color:var(--blue); font-size:18px;">Updating: 0%</p>
+    </div>
+
+    <button id="up-btn" onclick="startUpdate()" class="btn-primary" style="width:220px; margin-top:30px; background:var(--blue);">Update Now ⚡</button>
+</div>
 
 <div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
 
@@ -190,6 +207,9 @@
 <script>
     let user = {}; let page = 1; let currentCat = ''; let loading = false;
     let selectedEdu = [];
+    
+    // --- APP VERSION CONTROL ---
+    const CURRENT_VERSION = "1.1"; // Isko hamesha backend ke APP_VERSION se match karein
 
     function toggleMenu() {
         document.getElementById('sideMenu').classList.toggle('active');
@@ -205,15 +225,49 @@
         btn.innerText = isDark ? '☀️' : '🌙';
     }
 
-    window.onload = () => {
+    window.onload = async () => {
         if(localStorage.getItem('darkMode') === 'true') {
             document.getElementById('app-body').classList.add('dark-mode');
             document.getElementById('mode-btn').innerText = '☀️';
         }
+        
+        // --- CHECK FOR UPDATES ---
+        try {
+            const upRes = await fetch('/check_app_update');
+            const upData = await upRes.json();
+            if(upData.version !== CURRENT_VERSION) {
+                document.getElementById('update-overlay').classList.remove('hidden');
+                window.latestVersion = upData.version;
+            }
+        } catch(e) { console.log("Update check skip"); }
+
         const saved = localStorage.getItem('rozgarUser');
         if(saved) { user = JSON.parse(saved); showDash(); } 
         else { document.getElementById('login-sec').classList.remove('hidden'); }
     };
+
+    // --- UPDATE LOGIC 1-100% ---
+    function startUpdate() {
+        document.getElementById('up-btn').classList.add('hidden');
+        document.getElementById('prog-box').classList.remove('hidden');
+        document.getElementById('up-title').innerText = "Installing Assets...";
+        
+        let progress = 0;
+        const speed = Math.floor(Math.random() * 40) + 20; // Random speed animation
+        
+        const updateInterval = setInterval(() => {
+            progress++;
+            document.getElementById('p-bar').style.width = progress + "%";
+            document.getElementById('p-text').innerText = "Updating: " + progress + "%";
+            
+            if(progress >= 100) {
+                clearInterval(updateInterval);
+                document.getElementById('p-text').innerText = "Update Complete! Restarting...";
+                document.getElementById('up-title').innerText = "Updated Successfully ✅";
+                setTimeout(() => { location.reload(); }, 1500);
+            }
+        }, speed);
+    }
 
     function triggerSearch() {
         const sQuery = document.getElementById('main-search-inp').value;
