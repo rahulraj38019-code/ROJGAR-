@@ -2,7 +2,7 @@ import requests
 from flask import Flask, render_template, request, jsonify, send_from_directory
 from flask_cors import CORS
 import os
-from bs4 import BeautifulSoup  # Naya library scrap karne ke liye
+from bs4 import BeautifulSoup
 
 app = Flask(__name__)
 CORS(app)
@@ -41,7 +41,6 @@ def get_live_updates():
             href = link.get('href', '')
             if not href or len(text) < 10: continue
 
-            # Filter logic: link ke andar keyword check karega
             if "job" in href.lower() or "recruit" in href.lower():
                 if len(jobs) < 15: jobs.append({"title": text, "link": href})
             elif "admit" in href.lower() or "hall-ticket" in href.lower():
@@ -50,7 +49,6 @@ def get_live_updates():
         return jsonify({"jobs": jobs, "admits": admits})
     except Exception as e:
         return jsonify({"jobs": [], "admits": []})
-# ------------------------------
 
 @app.route('/fetch_jobs', methods=['POST'])
 def fetch_jobs():
