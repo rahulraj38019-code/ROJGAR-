@@ -1,7 +1,9 @@
+# [Line 1-5] Imports
 import requests
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_from_directory
 from flask_cors import CORS
 
+# [Line 7-15] App Configuration & API Keys
 app = Flask(__name__)
 CORS(app)
 
@@ -10,15 +12,25 @@ K1 = "268aa2e751d03f3d"
 K2 = "61ffa0fe6b46cd80bf6ec73d"
 SERPER_API_KEY = K1 + K2
 
-# --- FEATURE 1: DYNAMIC SHARE TEXT GENERATOR ---
-# Ye function backend se hi WhatsApp ke liye mast text taiyar karke bhejega
+# [Line 17-25] PWA Routes (Naya Added: App install karne ke liye zaruri)
+@app.route('/manifest.json')
+def serve_manifest():
+    return send_from_directory('.', 'manifest.json')
+
+@app.route('/sw.js')
+def serve_sw():
+    return send_from_directory('.', 'sw.js')
+
+# [Line 27-30] WhatsApp Share Text Generator
 def get_share_text(title, link):
     return f"🚀 *Rozgar Hub Update* 🚀\n\n*Job:* {title}\n\nCheck Details here: {link}\n\nStay Updated with Rozgar Hub!"
 
+# [Line 32-35] Home Route
 @app.route('/')
 def index():
     return render_template('index.html')
 
+# [Line 37-85] Job Fetching Logic (Main Function)
 @app.route('/fetch_jobs', methods=['POST'])
 def fetch_jobs():
     try:
@@ -29,7 +41,6 @@ def fetch_jobs():
         page = data.get('page', 1)
         
         # --- FEATURE 2: SEARCH KEYWORD HANDLING ---
-        # Agar user kuch search karega toh hum query ko uske hisab se modify kar denge
         user_search = data.get('search_query', '')
 
         if user_search:
@@ -54,7 +65,6 @@ def fetch_jobs():
         results = response.json().get('organic', [])
 
         # --- FEATURE 3: DATA ENHANCEMENT ---
-        # Hum har result mein WhatsApp link add kar rahe hain taaki HTML mein sirf button dikhana pade
         for item in results:
             share_msg = get_share_text(item.get('title'), item.get('link'))
             item['whatsapp_url'] = f"https://api.whatsapp.com/send?text={requests.utils.quote(share_msg)}"
@@ -63,8 +73,7 @@ def fetch_jobs():
     except Exception as e:
         return jsonify({"error": str(e)})
 
-# --- FUTURE SCRAPER HOOK ---
-# Is route ko hum future mein auto-update ke liye use karenge
+# [Line 87-95] Extra Hooks & App Run
 @app.route('/auto_update_check')
 def auto_update():
     return jsonify({"status": "Scraper Bridge Ready", "next_sync": "Scheduled"})
