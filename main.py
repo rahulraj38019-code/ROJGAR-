@@ -44,20 +44,25 @@ def fetch_jobs():
         # --- FEATURE 2: SEARCH KEYWORD HANDLING ---
         user_search = data.get('search_query', '')
 
+        # Naya Result Logic Jo Frontend se sync hoga
         if user_search:
             query = f"{user_search} govt jobs results 2026 {state} site:sarkariresult.com"
-        elif category == "SSC Result":
-            query = f"SSC GD CGL CHSL MTS official result 2026 site:ssc.gov.in OR site:sarkariresult.com"
-        elif category == "Board Result":
-            query = f"{state} board 10th 12th exam results 2026 official link"
+        elif "Bihar Board" in category:
+            query = f"{category} sarkari result official link site:biharboardonline.bihar.gov.in OR site:sarkariresult.com"
+        elif "SSC" in category and "Result" in category:
+            query = f"{category} 2026 official merit list selection post site:ssc.gov.in OR site:sarkariresult.com"
+        elif "Railway" in category:
+            query = f"{category} group d ntpc alp technician result official site:indianrailways.gov.in"
+        elif "Bihar Police" in category:
+            query = f"{category} constable sub-inspector result merit list site:csbc.bih.nic.in"
         elif category == "govt":
             query = f"latest government jobs for {edu} pass in {state} 2026 site:sarkariresult.com"
         elif category == "railway":
             query = "Railway RRB Group D NTPC recruitment 2026 official notification"
-        elif "Result" in category:
-            query = f"latest {category} 2026 {state} official link"
+        elif category == "iti":
+            query = f"latest ITI pass apprentice and govt jobs 2026 site:sarkariresult.com"
         else:
-            query = f"{category} latest jobs updates 2026 {state}"
+            query = f"{category} latest updates 2026 {state}"
 
         headers = {'X-API-KEY': SERPER_API_KEY, 'Content-Type': 'application/json'}
         payload = {'q': query, 'num': 10, 'start': (page - 1) * 10, 'gl': 'in'}
