@@ -21,24 +21,25 @@
         .menu-item { padding: 15px 0; border-bottom: 1px solid #eee; cursor: pointer; font-weight: 600; font-size: 14px; }
         .profile-banner { background: linear-gradient(135deg, #007bff, #0056b3); color: white; padding: 20px; border-radius: 24px; margin-bottom: 25px; box-shadow: 0 10px 20px rgba(0,123,255,0.2); }
         .login-card { background: var(--white); padding: 30px 25px; border-radius: 24px; border: 1px solid #f0f0f0; }
-        .input-box { width: 100%; padding: 16px; border-radius: 14px; border: 1.5px solid #e2e8f0; font-size: 14px; box-sizing: border-box; margin-bottom: 18px; outline: none; }
+        .input-box { width: 100%; padding: 16px; border-radius: 14px; border: 1.5px solid #e2e8f0; font-size: 14px; box-sizing: border-box; margin-bottom: 18px; outline: none; background: var(--white); color: var(--main); }
         .edu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px; }
         .edu-chip { border: 1.5px solid #e2e8f0; padding: 12px; border-radius: 12px; text-align: center; cursor: pointer; font-weight: 700; font-size: 13px; }
         .edu-chip.selected { background: var(--blue); color: #fff; border-color: var(--blue); }
         .card { background: var(--white); padding: 20px; border-radius: 20px; border: 1px solid #f0f0f0; margin-bottom: 20px; }
         .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .dash-card { background: var(--white); padding: 15px; border-radius: 18px; text-align: center; border: 1px solid #f0f0f0; cursor: pointer; }
-        .dash-card i { font-size: 24px; display: block; margin-bottom: 5px; }
+        .dash-card { background: var(--white); padding: 15px; border-radius: 18px; text-align: center; border: 1px solid #f0f0f0; cursor: pointer; transition: 0.2s; }
+        .dash-card:active { transform: scale(0.95); }
+        .dash-card i { font-size: 24px; display: block; margin-bottom: 5px; font-style: normal; }
         .dash-card span { font-size: 13px; font-weight: 600; }
         .job-card { background: var(--white); padding: 18px; border-radius: 16px; margin-bottom: 12px; border: 1px solid #f0f0f0; }
         .btn-apply { display: block; text-align: center; background: var(--blue); color: white; padding: 12px; border-radius: 10px; text-decoration: none; font-weight: 700; margin-top: 10px; font-size: 13px; }
         .btn-primary { width: 100%; background: var(--blue); color: white; padding: 18px; border: none; border-radius: 15px; font-weight: 800; cursor: pointer; font-size: 16px; }
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #eee; max-width: 500px; margin: 0 auto; z-index: 99; }
         .nav-item { text-align: center; color: #94a3b8; font-size: 10px; font-weight: 700; cursor: pointer; }
-        .nav-item i { font-size: 20px; display: block; margin-bottom: 3px; }
+        .nav-item i { font-size: 20px; display: block; margin-bottom: 3px; font-style: normal; }
         .nav-item.active { color: var(--blue); }
         .hidden { display: none; }
-        .pill { background: #fff; padding: 8px 16px; border-radius: 50px; border: 1px solid #ddd; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.3s; }
+        .pill { background: #fff; padding: 8px 16px; border-radius: 50px; border: 1px solid #ddd; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.3s; color: #121212; }
         .pill.active-pill { background: var(--blue) !important; color: white !important; border-color: var(--blue) !important; }
     </style>
 </head>
@@ -47,6 +48,7 @@
 <div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
 <div class="side-menu" id="sideMenu">
     <h3 style="color:var(--blue); margin-top:0;">Settings ⚙️</h3>
+    <div class="menu-item" onclick="editProfile()">👤 Edit Profile</div>
     <div class="menu-item" onclick="toggleDarkMode()">🌓 Switch Theme</div>
     <div class="menu-item" onclick="logout()">🚪 Logout</div>
 </div>
@@ -84,7 +86,7 @@
         <div class="dash-grid">
             <div class="dash-card" onclick="openJobs('govt')"><i>🏛️</i><span>Govt Jobs</span></div>
             <div class="dash-card" onclick="openJobs('railway')"><i>🚂</i><span>Railway</span></div>
-            <div class="dash-card" onclick="openJobs('iti')"><i>⚙️</i><span>ITI Specialist</span></div>
+            <div class="dash-card" onclick="openJobs('iti')"><i>⚙️</i><span>ITI Special</span></div>
             <div class="dash-card" onclick="showResults()"><i>📄</i><span>Results</span></div>
         </div>
 
@@ -102,6 +104,8 @@
         <div class="dash-grid">
             <div class="dash-card" onclick="toggleResSub('bihar')"><i>🎓</i><span>Bihar Board</span></div>
             <div class="dash-card" onclick="toggleResSub('ssc')"><i>🦁</i><span>SSC</span></div>
+            <div class="dash-card" onclick="toggleResSub('police')"><i>👮</i><span>Police</span></div>
+            <div class="dash-card" onclick="toggleResSub('rail-bpsc')"><i>🏛️</i><span>Railway/BPSC</span></div>
         </div>
         
         <div id="sub-bihar" class="card hidden">
@@ -120,6 +124,24 @@
                 <button onclick="setResType(this, 'SSC CHSL')" class="pill">CHSL</button>
             </div>
             <button onclick="openJobs(resType + ' Result')" class="btn-primary" style="padding:12px;">Find Result</button>
+        </div>
+
+        <div id="sub-police" class="card hidden">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:15px;">
+                <button onclick="setResType(this, 'Bihar Police')" class="pill">Bihar Police</button>
+                <button onclick="setResType(this, 'UP Police')" class="pill">UP Police</button>
+                <button onclick="setResType(this, 'Delhi Police')" class="pill">Delhi Police</button>
+            </div>
+            <button onclick="openJobs(resType + ' Result 2026')" class="btn-primary" style="padding:12px;">Check Police Result</button>
+        </div>
+
+        <div id="sub-rail-bpsc" class="card hidden">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:15px;">
+                <button onclick="setResType(this, 'RRB NTPC')" class="pill">Railway NTPC</button>
+                <button onclick="setResType(this, 'RRB Group D')" class="pill">Group D</button>
+                <button onclick="setResType(this, 'BPSC')" class="pill">BPSC</button>
+            </div>
+            <button onclick="openJobs(resType + ' Official Result')" class="btn-primary" style="padding:12px;">Get Result</button>
         </div>
     </div>
 
@@ -140,21 +162,40 @@
 
 <script>
     let user = {name:'', state:'', edu:''}; let resType = '';
+    
+    // Toggle side menu
     function toggleMenu() { document.getElementById('sideMenu').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
+    
+    // Dark Mode with Persistence
     function toggleDarkMode() { 
         document.body.classList.toggle('dark-mode'); 
         const isDark = document.body.classList.contains('dark-mode');
+        localStorage.setItem('rozgarDarkMode', isDark);
         document.getElementById('mode-btn').innerText = isDark ? '☀️' : '🌙';
     }
-    
+
+    // Load Dark Mode State
+    if(localStorage.getItem('rozgarDarkMode') === 'true') {
+        document.body.classList.add('dark-mode');
+        document.getElementById('mode-btn').innerText = '☀️';
+    }
+
+    function editProfile() {
+        toggleMenu();
+        document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
+        document.getElementById('login-sec').classList.remove('hidden');
+        document.getElementById('u-name').value = user.name;
+        document.getElementById('u-state').value = user.state;
+    }
+
     function toggleEdu(el, val) { 
         document.querySelectorAll('.edu-chip').forEach(c => c.classList.remove('selected'));
         el.classList.add('selected'); user.edu = val; 
     }
 
     function setResType(el, t) { 
-        const parent = el.parentElement;
-        parent.querySelectorAll('.pill').forEach(p => p.classList.remove('active-pill'));
+        const parentDiv = el.closest('.card');
+        parentDiv.querySelectorAll('.pill').forEach(p => p.classList.remove('active-pill'));
         el.classList.add('active-pill');
         resType = t; 
     }
@@ -190,14 +231,13 @@
     }
 
     function toggleResSub(id) {
-        document.getElementById('sub-bihar').classList.add('hidden');
-        document.getElementById('sub-ssc').classList.add('hidden');
-        if(id === 'bihar') document.getElementById('sub-bihar').classList.remove('hidden');
-        if(id === 'ssc') document.getElementById('sub-ssc').classList.remove('hidden');
+        document.querySelectorAll('#res-sec .card').forEach(c => c.classList.add('hidden'));
+        document.getElementById('sub-' + id).classList.remove('hidden');
+        resType = ''; // Reset selection on switch
     }
 
     async function openJobs(cat) {
-        if(!resType && cat.includes('undefined')) { alert('Pehle exam select karein!'); return; }
+        if(!resType && (cat.includes('undefined') || cat === '')) { alert('Pehle exam select karein!'); return; }
         document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
         document.getElementById('feed-sec').classList.remove('hidden');
         document.getElementById('f-title').innerText = cat;
