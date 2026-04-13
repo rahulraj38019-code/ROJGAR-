@@ -33,18 +33,21 @@ def fetch_jobs():
         page = data.get('page', 1)
         
         # Optimized Logic for Search
+        # Note: Frontend se ab dynamic category + year aa raha hai
         if "Bihar Board" in category:
-            query = f"{category} official result 2026 site:biharboardonline.bihar.gov.in OR site:sarkariresult.com"
+            query = f"{category} official result site:biharboardonline.bihar.gov.in OR site:sarkariresult.com"
         elif "SSC" in category:
-            query = f"{category} result 2026 merit list site:ssc.gov.in"
+            query = f"{category} merit list site:ssc.gov.in OR site:sarkariresult.com"
         elif "Railway" in category:
-            query = f"RRB {category} result 2026 official notice"
+            # Ab ye user ke selected post aur year dono ko search karega
+            query = f"RRB {category} official result notice site:indianrailways.gov.in OR site:sarkariresult.com"
         elif "Police" in category:
-            query = f"Bihar Police constable result 2026 site:csbc.bih.nic.in"
+            query = f"{category} result official updates site:csbc.bih.nic.in OR site:sarkariresult.com"
         elif category == "govt":
             query = f"latest govt jobs for {edu} pass in {state} 2026"
         else:
-            query = f"{category} job updates 2026 {state}"
+            # Normal search ya direct query ke liye
+            query = f"{category}"
 
         headers = {'X-API-KEY': SERPER_API_KEY, 'Content-Type': 'application/json'}
         payload = {'q': query, 'num': 10, 'start': (page - 1) * 10, 'gl': 'in'}
