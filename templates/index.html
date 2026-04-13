@@ -30,18 +30,28 @@
         .profile-banner { background: linear-gradient(135deg, #007bff, #0056b3); color: white; padding: 20px; border-radius: 24px; margin-bottom: 25px; box-shadow: 0 10px 20px rgba(0,123,255,0.2); }
 
         .dark-mode header, .dark-mode .bottom-nav { border-color: #334155; }
-        .dark-mode .input-box { background: #0f172a; border-color: #334155; color: white; }
+        
+        /* --- DARK MODE INPUT FIX --- */
+        .dark-mode .input-box { 
+            background: #1e293b !important; 
+            border-color: #334155 !important; 
+            color: #ffffff !important; 
+        }
+        .dark-mode .input-box::placeholder { color: #94a3b8; }
+        .dark-mode .input-box::-webkit-calendar-picker-indicator { filter: invert(1); } /* Date icon fix */
+
         .dark-mode .card, .dark-mode .job-card, .dark-mode .dash-card, .dark-mode .login-card { border-color: #334155; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
         .dark-mode .pill { background: #1e293b; border-color: #334155; color: white; }
+        .dark-mode .edu-chip { background: #1e293b; border-color: #334155; color: #94a3b8; }
 
         .login-card { background: var(--white); padding: 30px 25px; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.04); border: 1px solid #f0f0f0; }
-        .input-box { width: 100%; padding: 16px; border-radius: 14px; border: 1.5px solid #e2e8f0; font-size: 14px; font-weight: 600; box-sizing: border-box; outline: none; transition: 0.3s; margin-bottom: 18px; background: #fbfcfe; }
+        .input-box { width: 100%; padding: 16px; border-radius: 14px; border: 1.5px solid #e2e8f0; font-size: 14px; font-weight: 600; box-sizing: border-box; outline: none; transition: 0.3s; margin-bottom: 18px; background: #fbfcfe; color: #121212; }
         .input-box:focus { border-color: var(--blue); background: #fff; box-shadow: 0 0 0 4px var(--light-blue); }
         label { display: block; font-size: 12px; font-weight: 800; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
 
         .edu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px; }
         .edu-chip { border: 1.5px solid #e2e8f0; padding: 12px; border-radius: 12px; text-align: center; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.3s; background: var(--white); color: var(--text-muted); }
-        .edu-chip.selected { background: var(--blue); color: #fff; border-color: var(--blue); box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3); }
+        .edu-chip.selected { background: var(--blue) !important; color: #fff !important; border-color: var(--blue) !important; box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3); }
 
         .card { background: var(--white); padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); margin-bottom: 20px; border: 1px solid #f0f0f0; }
         .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
