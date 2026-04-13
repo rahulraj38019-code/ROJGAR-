@@ -8,40 +8,41 @@
     <style>
         :root { --main: #121212; --blue: #007bff; --light-blue: #e7f1ff; --bg: #f8fafc; --white: #ffffff; --text-muted: #64748b; }
         
-        /* --- NAYA ADDED: DARK MODE COLORS --- */
         body.dark-mode {
-            --bg: #0f172a;
-            --white: #1e293b;
-            --main: #f1f5f9;
-            --text-muted: #94a3b8;
-            --light-blue: #1e3a8a;
+            --bg: #0f172a; --white: #1e293b; --main: #f1f5f9; --text-muted: #94a3b8; --light-blue: #1e3a8a;
         }
 
-        body { background: var(--bg); font-family: 'Inter', sans-serif; margin: 0; padding: 0; padding-bottom: 80px; color: var(--main); transition: 0.3s; }
+        body { background: var(--bg); font-family: 'Inter', sans-serif; margin: 0; padding: 0; padding-bottom: 80px; color: var(--main); transition: 0.3s; overflow-x: hidden; }
         .container { max-width: 500px; margin: 0 auto; padding: 15px; }
         
-        /* Header Style */
         header { background: var(--white); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 100; }
-        .logo-text { font-weight: 800; font-size: 20px; color: var(--blue); letter-spacing: -0.5px; }
+        .logo-text { font-weight: 800; font-size: 20px; color: var(--blue); letter-spacing: -0.5px; cursor: pointer; }
         
-        /* Dark Mode UI Fixes */
+        /* --- NAYA: SIDE SETTINGS MENU --- */
+        .side-menu { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: var(--white); z-index: 1000; transition: 0.3s; box-shadow: 10px 0 30px rgba(0,0,0,0.1); padding: 25px; box-sizing: border-box; }
+        .side-menu.active { left: 0; }
+        .menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; display: none; }
+        .menu-overlay.active { display: block; }
+        .menu-item { padding: 15px 0; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 15px; cursor: pointer; font-weight: 600; font-size: 14px; }
+        .dark-mode .menu-item { border-color: #334155; }
+
+        /* Blue Banner Area */
+        .profile-banner { background: linear-gradient(135deg, #007bff, #0056b3); color: white; padding: 20px; border-radius: 24px; margin-bottom: 25px; box-shadow: 0 10px 20px rgba(0,123,255,0.2); }
+
         .dark-mode header, .dark-mode .bottom-nav { border-color: #334155; }
         .dark-mode .input-box { background: #0f172a; border-color: #334155; color: white; }
         .dark-mode .card, .dark-mode .job-card, .dark-mode .dash-card, .dark-mode .login-card { border-color: #334155; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
         .dark-mode .pill { background: #1e293b; border-color: #334155; color: white; }
 
-        /* Professional Form UI */
         .login-card { background: var(--white); padding: 30px 25px; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.04); border: 1px solid #f0f0f0; }
         .input-box { width: 100%; padding: 16px; border-radius: 14px; border: 1.5px solid #e2e8f0; font-size: 14px; font-weight: 600; box-sizing: border-box; outline: none; transition: 0.3s; margin-bottom: 18px; background: #fbfcfe; }
         .input-box:focus { border-color: var(--blue); background: #fff; box-shadow: 0 0 0 4px var(--light-blue); }
         label { display: block; font-size: 12px; font-weight: 800; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        /* Multi-Select Education Chips */
         .edu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px; }
         .edu-chip { border: 1.5px solid #e2e8f0; padding: 12px; border-radius: 12px; text-align: center; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.3s; background: var(--white); color: var(--text-muted); }
         .edu-chip.selected { background: var(--blue); color: #fff; border-color: var(--blue); box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3); }
 
-        /* Dashboard Styles */
         .card { background: var(--white); padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); margin-bottom: 20px; border: 1px solid #f0f0f0; }
         .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
         .dash-card { background: var(--white); padding: 15px; border-radius: 18px; text-align: center; border: 1px solid #f0f0f0; transition: 0.3s; cursor: pointer; }
@@ -52,7 +53,6 @@
         .pill { background: #fff; padding: 8px 16px; border-radius: 50px; border: 1px solid #ddd; font-size: 12px; font-weight: 600; white-space: nowrap; cursor: pointer; }
         .pill.active { background: var(--blue); color: #fff; border-color: var(--blue); }
 
-        /* Job & AI Plan Cards */
         .job-card { background: var(--white); padding: 18px; border-radius: 16px; margin-bottom: 12px; border: 1px solid #f0f0f0; }
         .job-title { font-size: 15px; font-weight: 700; color: var(--main); margin: 0; }
         .company-name { font-size: 12px; color: var(--text-muted); font-weight: 600; display: block; margin: 4px 0; }
@@ -63,8 +63,7 @@
         .btn-result { background: #22c55e !important; }
         .btn-primary { width: 100%; background: var(--blue); color: white; padding: 18px; border: none; border-radius: 15px; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3); }
         
-        /* Bottom Nav */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #eee; box-shadow: 0 -5px 15px rgba(0,0,0,0.03); max-width: 500px; margin: 0 auto; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #eee; box-shadow: 0 -5px 15px rgba(0,0,0,0.03); max-width: 500px; margin: 0 auto; z-index: 99; }
         .nav-item { text-align: center; color: #94a3b8; font-size: 10px; font-weight: 700; cursor: pointer; text-decoration: none;}
         .nav-item.active { color: var(--blue); }
         .nav-item i { font-size: 20px; display: block; margin-bottom: 3px; }
@@ -73,8 +72,20 @@
 </head>
 <body id="app-body">
 
+<div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
+
+<div class="side-menu" id="sideMenu">
+    <h3 style="margin-top:0; color:var(--blue);">App Settings ⚙️</h3>
+    <div class="menu-item" onclick="editProfile()">👤 Edit Profile</div>
+    <div class="menu-item" onclick="toggleDarkMode()">🌓 Switch Theme</div>
+    <div class="menu-item">🔔 Notifications: ON</div>
+    <div class="menu-item" onclick="location.reload()">🔄 Refresh Updates</div>
+    <div class="menu-item" onclick="alert('Rozgar Hub v2.0 - Arwal Special')">ℹ️ About App</div>
+    <div class="menu-item" style="color:red; border:none;" onclick="logout()">🚪 Logout</div>
+</div>
+
 <header>
-    <div class="logo-text">ROZGAR HUB</div>
+    <div class="logo-text" onclick="toggleMenu()">ROZGAR HUB</div>
     <div style="display: flex; align-items: center; gap: 15px;">
         <div onclick="toggleDarkMode()" id="mode-btn" style="cursor:pointer; font-size: 20px; background: var(--light-blue); width: 35px; height: 35px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">🌙</div>
         <div id="user-initial" style="background:var(--light-blue); color:var(--blue); width:35px; height:35px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px;">U</div>
@@ -102,11 +113,20 @@
                 <div class="edu-chip" onclick="toggleEdu(this, 'ITI')">ITI Pass</div>
                 <div class="edu-chip" onclick="toggleEdu(this, 'UG')">Undergraduate</div>
             </div>
-            <button onclick="saveLogin()" class="btn-primary">Create Professional Profile ⚡</button>
+            <button onclick="saveLogin()" class="btn-primary">Save Profile ⚡</button>
         </div>
     </div>
 
     <div id="dash-sec" class="hidden">
+        <div class="profile-banner">
+            <h2 style="margin:0; font-size:22px;">Hi, <span id="well-name">User</span>! 👋</h2>
+            <p style="margin:5px 0 0; font-size:13px; opacity:0.9;">Tayaari kaisi chal rahi hai <span id="well-state">Bihar</span> mein?</p>
+            <div style="display:flex; gap:10px; margin-top:15px;">
+                <div style="background:rgba(255,255,255,0.2); padding:5px 12px; border-radius:8px; font-size:11px; font-weight:700;" id="well-edu">Education</div>
+                <div style="background:rgba(255,255,255,0.2); padding:5px 12px; border-radius:8px; font-size:11px; font-weight:700;">Status: Active</div>
+            </div>
+        </div>
+
         <div class="card" style="margin-bottom: 25px; border-radius: 15px; border: 1.5px solid var(--blue); padding: 5px;">
             <div style="display: flex; gap: 10px; align-items: center;">
                 <input type="text" id="main-search-inp" placeholder="Search Jobs or Results..." style="flex:1; padding:12px; border:none; outline:none; font-weight:600; font-size:14px; background:transparent; color:var(--main);">
@@ -133,20 +153,11 @@
             </div>
         </div>
 
-        <h3 style="margin-top:25px; font-weight:800;">Trending Search</h3>
-        <div class="pill-row">
-            <div class="pill active" onclick="openJobs('latest jobs')">All Jobs</div>
-            <div class="pill" onclick="openJobs('BPSC')">BPSC</div>
-            <div class="pill" onclick="openJobs('Police Result')">Police Result</div>
-            <div class="pill" onclick="showResults()">Check Results</div>
-        </div>
-
         <div style="background:linear-gradient(135deg, #1e3a8a, #2563eb); padding:20px; border-radius:20px; color:white; margin-top:20px; position:relative;">
             <h4 style="margin:0;">Career Support</h4>
             <p style="font-size:11px; opacity:0.8;">Join our WhatsApp channel for alerts</p>
             <div style="display: flex; gap: 10px;">
                 <a href="https://whatsapp.com/channel/0029VbCL3cTElagwBiU2aJ2N" target="_blank" style="background:white; color:var(--blue); padding:8px 15px; border-radius:8px; font-size:12px; font-weight:800; text-decoration:none; display:inline-block; margin-top:10px;">Join Channel</a>
-                <a href="https://www.instagram.com/___rahul_yadav_._?igsh=b3ltc2FwaDd4bzB1" target="_blank" style="background:#f97316; color:white; padding:8px 15px; border-radius:8px; font-size:12px; font-weight:800; text-decoration:none; display:inline-block; margin-top:10px;">Instagram Profile</a>
             </div>
         </div>
     </div>
@@ -172,32 +183,33 @@
 <div class="bottom-nav">
     <div class="nav-item active" onclick="showDash()"><i>🏠</i>Home</div>
     <div class="nav-item" onclick="showResults()"><i>📄</i>Results</div>
-    <div class="nav-item" onclick="openJobs('Internship')"><i>🎓</i>Internship</div>
-    <div class="nav-item" onclick="logout()"><i>👤</i>Logout</div>
+    <div class="nav-item" onclick="toggleMenu()"><i>⚙️</i>Settings</div>
 </div>
 
 <script>
     let user = {}; let page = 1; let currentCat = ''; let loading = false;
     let selectedEdu = [];
 
-    // --- NAYA ADDED: Dark Mode Function ---
+    // --- Side Menu Toggle ---
+    function toggleMenu() {
+        document.getElementById('sideMenu').classList.toggle('active');
+        document.getElementById('overlay').classList.toggle('active');
+    }
+
     function toggleDarkMode() {
         const body = document.getElementById('app-body');
         const btn = document.getElementById('mode-btn');
         body.classList.toggle('dark-mode');
-        
         const isDark = body.classList.contains('dark-mode');
         localStorage.setItem('darkMode', isDark);
         btn.innerText = isDark ? '☀️' : '🌙';
     }
 
     window.onload = () => {
-        // Dark Mode Check
         if(localStorage.getItem('darkMode') === 'true') {
             document.getElementById('app-body').classList.add('dark-mode');
             document.getElementById('mode-btn').innerText = '☀️';
         }
-
         const saved = localStorage.getItem('rozgarUser');
         if(saved) { user = JSON.parse(saved); showDash(); } 
         else { document.getElementById('login-sec').classList.remove('hidden'); }
@@ -209,36 +221,38 @@
     }
 
     function toggleEdu(el, val) {
-        if(selectedEdu.includes(val)) {
-            selectedEdu = selectedEdu.filter(item => item !== val);
-            el.classList.remove('selected');
-        } else {
-            selectedEdu.push(val);
-            el.classList.add('selected');
-        }
+        document.querySelectorAll('.edu-chip').forEach(c => c.classList.remove('selected'));
+        el.classList.add('selected');
+        selectedEdu = [val]; 
     }
 
     function saveLogin() {
         const n = document.getElementById('u-name').value;
         const s = document.getElementById('u-state').value;
-        const d = document.getElementById('u-dob').value;
-        if(!n || !s || selectedEdu.length === 0) return alert("Please fill all details!");
-        user = {name:n, state:s, dob:d, edu: selectedEdu.join(', ')};
+        if(!n || !s || selectedEdu.length === 0) return alert("Details bharo bhai!");
+        user = {name:n, state:s, edu: selectedEdu[0]};
         localStorage.setItem('rozgarUser', JSON.stringify(user));
         showDash();
     }
 
-    function getStudyPlan() {
-        const query = document.getElementById('study-query').value;
-        if(!query) return alert("Pehle exam ka naam likhein!");
-        const finalSearch = "study plan for " + query + " preparation 2026 in hindi";
-        window.open(`https://www.google.com/search?q=${encodeURIComponent(finalSearch)}`, '_blank');
+    function editProfile() {
+        toggleMenu();
+        document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
+        document.getElementById('login-sec').classList.remove('hidden');
+        document.getElementById('u-name').value = user.name;
+        document.getElementById('u-state').value = user.state;
     }
 
     function showDash() {
         document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
         document.getElementById('dash-sec').classList.remove('hidden');
         document.getElementById('user-initial').innerText = user.name[0].toUpperCase();
+        
+        // Update Banner Details
+        document.getElementById('well-name').innerText = user.name;
+        document.getElementById('well-state').innerText = user.state;
+        document.getElementById('well-edu').innerText = user.edu;
+
         document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
         document.querySelector('.nav-item:nth-child(1)').classList.add('active');
     }
