@@ -49,9 +49,9 @@
         .nav-item.active { color: var(--blue); }
         .nav-item i { font-size: 20px; display: block; margin-bottom: 3px; font-style: normal; }
         .hidden { display: none; }
-        .pill { background: #fff; padding: 8px 16px; border-radius: 50px; border: 1px solid #ddd; font-size: 12px; font-weight: 600; cursor: pointer; }
+        .pill { background: #fff; padding: 8px 16px; border-radius: 50px; border: 1px solid #ddd; font-size: 12px; font-weight: 600; cursor: pointer; margin-bottom: 5px; color: var(--text-muted); }
+        .pill.active-pill { background: var(--blue) !important; color: white !important; border-color: var(--blue) !important; }
         
-        /* New Social Link Styles */
         .social-link-card { display: flex; align-items: center; justify-content: space-between; background: var(--white); padding: 15px; border-radius: 18px; margin-top: 10px; border: 1px solid #eee; text-decoration: none; transition: 0.3s; }
         .social-link-card:active { transform: scale(0.98); }
         .social-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
@@ -156,20 +156,50 @@
         <div id="sub-bihar-board" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
             <label>Exam Type</label>
             <div style="display:flex; gap:10px; margin-bottom:12px;">
-                <button onclick="setResType('Matric')" class="pill" style="flex:1;">Matric (10th)</button>
-                <button onclick="setResType('Inter')" class="pill" style="flex:1;">Inter (12th)</button>
+                <button onclick="setResType(this, 'Matric')" class="pill" style="flex:1;">Matric (10th)</button>
+                <button onclick="setResType(this, 'Inter')" class="pill" style="flex:1;">Inter (12th)</button>
             </div>
             <button onclick="finalResSearch('Bihar Board')" class="btn-primary" style="padding:12px;">Get Result</button>
+        </div>
+
+        <div id="sub-railway" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
+            <label>Select Railway Post</label>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:12px;">
+                <button onclick="setResType(this, 'Railway Group D')" class="pill">Group D</button>
+                <button onclick="setResType(this, 'Railway ALP')" class="pill">ALP</button>
+                <button onclick="setResType(this, 'Railway Technician')" class="pill">Technician</button>
+                <button onclick="setResType(this, 'Railway NTPC')" class="pill">NTPC</button>
+            </div>
+            <label>Select Year</label>
+            <select id="rail-year" class="input-box">
+                <option value="2026">2026</option>
+                <option value="2025">2025</option>
+                <option value="2024">2024</option>
+            </select>
+            <button onclick="finalResSearch('Railway')" class="btn-primary" style="padding:12px;">Search Result</button>
         </div>
 
         <div id="sub-ssc" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
             <label>Choose SSC Exam</label>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
-                <button onclick="setResType('SSC MTS')" class="pill">MTS</button>
-                <button onclick="setResType('SSC CGL')" class="pill">CGL</button>
-                <button onclick="setResType('SSC CHSL')" class="pill">CHSL</button>
-                <button onclick="setResType('SSC GD')" class="pill">GD</button>
+                <button onclick="setResType(this, 'SSC MTS')" class="pill">MTS</button>
+                <button onclick="setResType(this, 'SSC CGL')" class="pill">CGL</button>
+                <button onclick="setResType(this, 'SSC CHSL')" class="pill">CHSL</button>
+                <button onclick="setResType(this, 'SSC GD')" class="pill">GD</button>
             </div>
+            <button onclick="finalResSearch('SSC')" class="btn-primary" style="padding:12px; margin-top:10px;">Find Result</button>
+        </div>
+
+        <div id="sub-police" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
+            <label>Select Post</label>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:12px;">
+                <button onclick="setResType(this, 'Bihar Police Constable')" class="pill">Constable</button>
+                <button onclick="setResType(this, 'Bihar Police SI')" class="pill">SI (Daroga)</button>
+                <button onclick="setResType(this, 'Bihar Police Driver')" class="pill">Driver</button>
+            </div>
+            <label>Select Year</label>
+            <input type="number" id="police-year" class="input-box" value="2026">
+            <button onclick="finalResSearch('Bihar Police')" class="btn-primary" style="padding:12px;">Check Result</button>
         </div>
     </div>
 
@@ -236,9 +266,27 @@
     function toggleResSub(id) {
         ['bihar-board', 'railway', 'ssc', 'police'].forEach(k => document.getElementById('sub-'+k)?.classList.add('hidden'));
         document.getElementById('sub-'+id)?.classList.remove('hidden');
+        resType = ''; // Reset selection
+        document.querySelectorAll('.pill').forEach(p => p.classList.remove('active-pill'));
     }
 
-    function setResType(val) { resType = val; alert(val + " Selected!"); }
+    function setResType(el, val) { 
+        resType = val; 
+        // Remove active class from other pills in the same section
+        el.parentElement.querySelectorAll('.pill').forEach(p => p.classList.remove('active-pill'));
+        el.classList.add('active-pill');
+        alert(val + " Selected!"); 
+    }
+
+    function finalResSearch(cat) {
+        if(!resType) return alert("Pehle post select karein!");
+        let year = "2026";
+        if(cat === 'Railway') year = document.getElementById('rail-year').value;
+        if(cat === 'Bihar Police') year = document.getElementById('police-year').value;
+        
+        let query = `${resType} Result ${year} official link`;
+        openJobs(query);
+    }
 
     function openJobs(cat) {
         currentCat = cat;
@@ -247,6 +295,11 @@
         document.getElementById('f-title').innerText = cat;
         document.getElementById('list').innerHTML = '';
         fetchData();
+    }
+
+    function triggerSearch() {
+        const sQuery = document.getElementById('main-search-inp').value;
+        if(sQuery) openJobs(sQuery);
     }
 
     async function fetchData() {
