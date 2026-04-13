@@ -209,7 +209,7 @@
     let selectedEdu = [];
     
     // --- APP VERSION CONTROL ---
-    const CURRENT_VERSION = "1.1"; // Isko hamesha backend ke APP_VERSION se match karein
+    const CURRENT_VERSION = "1.1"; 
 
     function toggleMenu() {
         document.getElementById('sideMenu').classList.toggle('active');
@@ -231,11 +231,15 @@
             document.getElementById('mode-btn').innerText = '☀️';
         }
         
-        // --- CHECK FOR UPDATES ---
+        // --- FIXED UPDATE CHECK LOGIC ---
         try {
             const upRes = await fetch('/check_app_update');
             const upData = await upRes.json();
-            if(upData.version !== CURRENT_VERSION) {
+            
+            // LocalStorage se version check karein
+            const savedV = localStorage.getItem('app_v') || CURRENT_VERSION;
+
+            if(upData.version !== savedV) {
                 document.getElementById('update-overlay').classList.remove('hidden');
                 window.latestVersion = upData.version;
             }
@@ -246,14 +250,14 @@
         else { document.getElementById('login-sec').classList.remove('hidden'); }
     };
 
-    // --- UPDATE LOGIC 1-100% ---
+    // --- FIXED UPDATE LOGIC 1-100% ---
     function startUpdate() {
         document.getElementById('up-btn').classList.add('hidden');
         document.getElementById('prog-box').classList.remove('hidden');
         document.getElementById('up-title').innerText = "Installing Assets...";
         
         let progress = 0;
-        const speed = Math.floor(Math.random() * 40) + 20; // Random speed animation
+        const speed = Math.floor(Math.random() * 40) + 20; 
         
         const updateInterval = setInterval(() => {
             progress++;
@@ -262,6 +266,10 @@
             
             if(progress >= 100) {
                 clearInterval(updateInterval);
+                
+                // ASLI FIX: Reload se pehle naya version save karo
+                localStorage.setItem('app_v', window.latestVersion || CURRENT_VERSION);
+                
                 document.getElementById('p-text').innerText = "Update Complete! Restarting...";
                 document.getElementById('up-title').innerText = "Updated Successfully ✅";
                 setTimeout(() => { location.reload(); }, 1500);
