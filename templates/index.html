@@ -181,13 +181,58 @@
     </div>
 
     <div id="res-sec" class="hidden">
-        <h3 style="font-weight:800;">Results Portal</h3>
-        <div class="card">
-            <input type="text" id="res-inp" placeholder="Type Exam Name (SSC GD, etc.)" style="width:100%; padding:15px; border-radius:12px; border:1px solid #ddd; box-sizing:border-box; background:transparent; color:var(--main);">
-            <button onclick="searchRes()" class="btn-primary" style="margin-top:10px; padding:12px;">Find Result</button>
+        <h3 style="font-weight:800; margin-bottom:15px;">Results Portal 📄</h3>
+        
+        <div class="dash-grid" style="margin-bottom: 20px;">
+            <div class="dash-card" onclick="toggleResSub('bihar-board')" style="border: 1px solid #e2e8f0;"><i>🎓</i><span>Bihar Board</span></div>
+            <div class="dash-card" onclick="toggleResSub('railway')" style="border: 1px solid #e2e8f0;"><i>🚂</i><span>Railway</span></div>
+            <div class="dash-card" onclick="toggleResSub('ssc')" style="border: 1px solid #e2e8f0;"><i>🦁</i><span>SSC</span></div>
+            <div class="dash-card" onclick="toggleResSub('police')" style="border: 1px solid #e2e8f0;"><i>👮</i><span>Bihar Police</span></div>
+        </div>
+
+        <div id="sub-bihar-board" class="card hidden" style="background: var(--light-blue); border-radius: 15px;">
+            <label>Exam Type</label>
+            <div style="display:flex; gap:10px; margin-bottom:12px;">
+                <button onclick="setResType('Matric')" class="pill" style="flex:1;">Matric (10th)</button>
+                <button onclick="setResType('Inter')" class="pill" style="flex:1;">Inter (12th)</button>
+            </div>
+            <label>Select Year</label>
+            <select id="bb-year" class="input-box">
+                <option value="2026">2026</option><option value="2025">2025</option><option value="2024">2024</option>
+            </select>
+            <button onclick="finalResSearch('Bihar Board')" class="btn-primary" style="padding:12px;">Get Result</button>
+        </div>
+
+        <div id="sub-railway" class="card hidden" style="background: var(--light-blue); border-radius: 15px;">
+            <label>Railway Details</label>
+            <select id="rail-year" class="input-box">
+                <option value="2026">2026</option><option value="2025">2025</option><option value="2024">2024</option>
+            </select>
+            <button onclick="finalResSearch('Railway')" class="btn-primary" style="padding:12px;">Search Results</button>
+        </div>
+
+        <div id="sub-ssc" class="card hidden" style="background: var(--light-blue); border-radius: 15px;">
+            <label>Choose SSC Exam</label>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:12px;">
+                <button onclick="setResType('SSC MTS')" class="pill">MTS</button>
+                <button onclick="setResType('SSC CGL')" class="pill">CGL</button>
+                <button onclick="setResType('SSC CHSL')" class="pill">CHSL</button>
+                <button onclick="setResType('SSC GD')" class="pill">GD</button>
+            </div>
+            <button onclick="finalResSearch('SSC')" class="btn-primary" style="padding:12px;">Find Result</button>
+        </div>
+
+        <div id="sub-police" class="card hidden" style="background: var(--light-blue); border-radius: 15px;">
+            <label>Select Year</label>
+            <input type="number" id="police-year" class="input-box" value="2026">
+            <button onclick="finalResSearch('Bihar Police')" class="btn-primary" style="padding:12px;">Check Result</button>
+        </div>
+
+        <div class="card" style="margin-top:20px;">
+            <input type="text" id="res-inp" placeholder="Type Exam Name (SSC GD, etc.)" class="input-box">
+            <button onclick="searchRes()" class="btn-primary" style="padding:10px;">Find Result</button>
         </div>
     </div>
-
     <div id="feed-sec" class="hidden">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
             <h3 id="f-title" style="margin:0; text-transform:uppercase; font-size:16px; font-weight:800;">Listing</h3>
@@ -205,9 +250,9 @@
 </div>
 
 <script>
-    /* [Line 315-350] Navigation and Theme Logic */
+    /* Navigation and Theme Logic */
     let user = {}; let page = 1; let currentCat = ''; let loading = false;
-    let selectedEdu = [];
+    let selectedEdu = []; let resType = '';
 
     function toggleMenu() {
         document.getElementById('sideMenu').classList.toggle('active');
@@ -233,7 +278,6 @@
         else { document.getElementById('login-sec').classList.remove('hidden'); }
     };
 
-    /* [Line 352-400] User Profile and Education Logic */
     function triggerSearch() {
         const sQuery = document.getElementById('main-search-inp').value;
         if(sQuery) { currentCat = sQuery; openJobs(sQuery); }
@@ -262,7 +306,6 @@
         document.getElementById('u-state').value = user.state;
     }
 
-    /* [Line 402-450] Page Display Functions */
     function showDash() {
         document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
         document.getElementById('dash-sec').classList.remove('hidden');
@@ -279,6 +322,28 @@
         document.getElementById('res-sec').classList.remove('hidden');
         document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
         document.querySelector('.nav-item:nth-child(2)').classList.add('active');
+    }
+
+    function toggleResSub(id) {
+        ['bihar-board', 'railway', 'ssc', 'police'].forEach(key => {
+            document.getElementById('sub-' + key).classList.add('hidden');
+        });
+        document.getElementById('sub-' + id).classList.remove('hidden');
+        resType = ''; 
+    }
+
+    function setResType(val) {
+        resType = val;
+        alert(val + " Selected!");
+    }
+
+    function finalResSearch(cat) {
+        let q = cat;
+        if(cat === 'Bihar Board') q = `Bihar Board ${resType} Result ${document.getElementById('bb-year').value} official link`;
+        else if(cat === 'Railway') q = `Railway recruitment result ${document.getElementById('rail-year').value} vacancy post details`;
+        else if(cat === 'SSC') q = `${resType} result 2026 vacancy details official`;
+        else if(cat === 'Bihar Police') q = `Bihar Police result ${document.getElementById('police-year').value} vacancy details`;
+        openJobs(q);
     }
 
     function openJobs(cat) {
@@ -299,7 +364,6 @@
         window.open(`https://www.google.com/search?q=${encodeURIComponent(finalSearch)}`, '_blank');
     }
 
-    /* [Line 452-500] Data Fetching Logic */
     async function fetchData() {
         if(loading) return; loading = true;
         document.getElementById('loading').classList.remove('hidden');
