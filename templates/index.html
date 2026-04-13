@@ -93,6 +93,13 @@
     </div>
 
     <div id="dash-sec" class="hidden">
+        <div class="card" style="margin-bottom: 25px; border-radius: 15px; border: 1.5px solid #e2e8f0;">
+            <div style="display: flex; gap: 10px; align-items: center; padding: 5px;">
+                <input type="text" id="main-search-inp" placeholder="Search Jobs or Results (e.g. SSC, BPSC)" style="flex:1; padding:12px; border:none; outline:none; font-weight:600; font-size:14px;">
+                <button onclick="triggerSearch()" style="background:var(--blue); color:white; border:none; border-radius:10px; padding:10px 15px; cursor:pointer;">🔍</button>
+            </div>
+        </div>
+
         <h3 style="font-weight:800; margin-bottom:5px;">Top Categories</h3>
         <p style="color:gray; font-size:12px; margin-bottom:15px;">Verified listings for you</p>
         
@@ -165,6 +172,15 @@
         else { document.getElementById('login-sec').classList.remove('hidden'); }
     };
 
+    // NAYA ADDED: Search trigger function
+    function triggerSearch() {
+        const sQuery = document.getElementById('main-search-inp').value;
+        if(sQuery) {
+            currentCat = sQuery;
+            openJobs(sQuery);
+        }
+    }
+
     function toggleEdu(el, val) {
         if(selectedEdu.includes(val)) {
             selectedEdu = selectedEdu.filter(item => item !== val);
@@ -225,15 +241,21 @@
             const res = await fetch('/fetch_jobs', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({category: currentCat, state: user.state, edu: user.edu, page: page})
+                body: JSON.stringify({
+                    category: currentCat, 
+                    state: user.state, 
+                    edu: user.edu, 
+                    page: page,
+                    search_query: document.getElementById('main-search-inp').value // NAYA ADDED: Search query parameter
+                })
             });
             const data = await res.json();
             data.forEach(i => {
-                // Logic to check if title contains "Result"
                 const isResult = i.title.toLowerCase().includes('result') || currentCat.toLowerCase().includes('result');
                 const btnText = isResult ? "Check Result ✅" : "View Details & Apply";
                 const btnClass = isResult ? "btn-apply btn-result" : "btn-apply";
 
+                // NAYA ADDED: WhatsApp Button layout in card
                 document.getElementById('list').innerHTML += `
                 <div class="job-card">
                     <p style="color:var(--blue); font-size:10px; font-weight:800; text-transform:uppercase;">Verified Source</p>
@@ -244,7 +266,12 @@
                         <div class="meta-item">📅 2026</div>
                         <div class="meta-item">🎓 ${user.edu}</div>
                     </div>
-                    <a href="${i.link}" target="_blank" class="${btnClass}">${btnText}</a>
+                    <div style="display:flex; gap:10px;">
+                        <a href="${i.link}" target="_blank" class="${btnClass}" style="flex:4;">${btnText}</a>
+                        <a href="${i.whatsapp_url}" target="_blank" class="btn-apply" style="flex:1; background:#22c55e; border:none; display:flex; align-items:center; justify-content:center;">
+                           <span style="font-size:18px;">💬</span>
+                        </a>
+                    </div>
                 </div>`;
             });
             page++;
