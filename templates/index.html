@@ -208,7 +208,7 @@
     let user = {}; let page = 1; let currentCat = ''; let loading = false;
     let selectedEdu = [];
     
-    // --- APP VERSION CONTROL ---
+    // --- APP VERSION CONTROL (Fix: Memory Lock) ---
     const CURRENT_VERSION = "1.1"; 
 
     function toggleMenu() {
@@ -231,15 +231,15 @@
             document.getElementById('mode-btn').innerText = '☀️';
         }
         
-        // --- FIXED UPDATE CHECK LOGIC ---
+        // --- CHECK FOR UPDATES (Fixed Logic) ---
         try {
             const upRes = await fetch('/check_app_update');
             const upData = await upRes.json();
             
-            // LocalStorage se version check karein
-            const savedV = localStorage.getItem('app_v') || CURRENT_VERSION;
+            // Local memory se check karein ki naya version install hua ya nahi
+            const installedVersion = localStorage.getItem('last_installed_v') || CURRENT_VERSION;
 
-            if(upData.version !== savedV) {
+            if(upData.version !== installedVersion) {
                 document.getElementById('update-overlay').classList.remove('hidden');
                 window.latestVersion = upData.version;
             }
@@ -250,15 +250,12 @@
         else { document.getElementById('login-sec').classList.remove('hidden'); }
     };
 
-    // --- FIXED UPDATE LOGIC 1-100% ---
     function startUpdate() {
         document.getElementById('up-btn').classList.add('hidden');
         document.getElementById('prog-box').classList.remove('hidden');
         document.getElementById('up-title').innerText = "Installing Assets...";
         
         let progress = 0;
-        const speed = Math.floor(Math.random() * 40) + 20; 
-        
         const updateInterval = setInterval(() => {
             progress++;
             document.getElementById('p-bar').style.width = progress + "%";
@@ -267,14 +264,14 @@
             if(progress >= 100) {
                 clearInterval(updateInterval);
                 
-                // ASLI FIX: Reload se pehle naya version save karo
-                localStorage.setItem('app_v', window.latestVersion || CURRENT_VERSION);
+                // --- FIX: Reload se pehle memory update karein ---
+                localStorage.setItem('last_installed_v', window.latestVersion || CURRENT_VERSION);
                 
                 document.getElementById('p-text').innerText = "Update Complete! Restarting...";
                 document.getElementById('up-title').innerText = "Updated Successfully ✅";
                 setTimeout(() => { location.reload(); }, 1500);
             }
-        }, speed);
+        }, 30);
     }
 
     function triggerSearch() {
