@@ -15,80 +15,46 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        /* [Line 25-45] Colors and Theme Variables */
         :root { --main: #121212; --blue: #007bff; --light-blue: #e7f1ff; --bg: #f8fafc; --white: #ffffff; --text-muted: #64748b; }
-        
-        body.dark-mode {
-            --bg: #0f172a; --white: #1e293b; --main: #f1f5f9; --text-muted: #94a3b8; --light-blue: #1e3a8a;
-        }
-
-        body { background: var(--bg); font-family: 'Inter', sans-serif; margin: 0; padding: 0; padding-bottom: 80px; color: var(--main); transition: 0.3s; overflow-x: hidden; }
+        body.dark-mode { --bg: #0f172a; --white: #1e293b; --main: #f1f5f9; --text-muted: #94a3b8; --light-blue: #1e3a8a; }
+        body { background: var(--bg); font-family: 'Inter', sans-serif; margin: 0; padding: 0; padding-bottom: 120px; color: var(--main); transition: 0.3s; overflow-x: hidden; }
         .container { max-width: 500px; margin: 0 auto; padding: 15px; }
-        
         header { background: var(--white); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 100; }
         .logo-text { font-weight: 800; font-size: 20px; color: var(--blue); letter-spacing: -0.5px; cursor: pointer; }
-        
-        /* [Line 47-60] Side Menu CSS */
         .side-menu { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: var(--white); z-index: 1000; transition: 0.3s; box-shadow: 10px 0 30px rgba(0,0,0,0.1); padding: 25px; box-sizing: border-box; }
         .side-menu.active { left: 0; }
         .menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; display: none; }
         .menu-overlay.active { display: block; }
         .menu-item { padding: 15px 0; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 15px; cursor: pointer; font-weight: 600; font-size: 14px; }
-        .dark-mode .menu-item { border-color: #334155; }
-
         .profile-banner { background: linear-gradient(135deg, #007bff, #0056b3); color: white; padding: 20px; border-radius: 24px; margin-bottom: 25px; box-shadow: 0 10px 20px rgba(0,123,255,0.2); }
-
-        /* [Line 63-80] Dark Mode Fixes for Inputs */
         .dark-mode header, .dark-mode .bottom-nav { border-color: #334155; }
-        
-        .dark-mode .input-box { 
-            background: #1e293b !important; 
-            border-color: #334155 !important; 
-            color: #ffffff !important; 
-        }
-        .dark-mode .input-box::placeholder { color: #94a3b8; }
-        .dark-mode .input-box::-webkit-calendar-picker-indicator { filter: invert(1); }
-
+        .dark-mode .input-box { background: #1e293b !important; border-color: #334155 !important; color: #ffffff !important; }
         .dark-mode .card, .dark-mode .job-card, .dark-mode .dash-card, .dark-mode .login-card { border-color: #334155; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-        .dark-mode .pill { background: #1e293b; border-color: #334155; color: white; }
-        .dark-mode .edu-chip { background: #1e293b; border-color: #334155; color: #94a3b8; }
-
-        /* [Line 82-100] Card and Input Styles */
         .login-card { background: var(--white); padding: 30px 25px; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.04); border: 1px solid #f0f0f0; }
         .input-box { width: 100%; padding: 16px; border-radius: 14px; border: 1.5px solid #e2e8f0; font-size: 14px; font-weight: 600; box-sizing: border-box; outline: none; transition: 0.3s; margin-bottom: 18px; background: #fbfcfe; color: #121212; }
-        .input-box:focus { border-color: var(--blue); background: #fff; box-shadow: 0 0 0 4px var(--light-blue); }
         label { display: block; font-size: 12px; font-weight: 800; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-
         .edu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px; }
         .edu-chip { border: 1.5px solid #e2e8f0; padding: 12px; border-radius: 12px; text-align: center; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.3s; background: var(--white); color: var(--text-muted); }
-        .edu-chip.selected { background: var(--blue) !important; color: #fff !important; border-color: var(--blue) !important; box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3); }
-
-        /* [Line 102-140] Dashboard and Job Cards CSS */
+        .edu-chip.selected { background: var(--blue) !important; color: #fff !important; border-color: var(--blue) !important; }
         .card { background: var(--white); padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); margin-bottom: 20px; border: 1px solid #f0f0f0; }
         .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
         .dash-card { background: var(--white); padding: 15px; border-radius: 18px; text-align: center; border: 1px solid #f0f0f0; transition: 0.3s; cursor: pointer; }
-        .dash-card i { font-size: 24px; display: block; margin-bottom: 5px; }
-        .dash-card span { font-size: 13px; font-weight: 600; }
-        
-        .pill-row { display: flex; gap: 8px; overflow-x: auto; padding: 10px 0; scrollbar-width: none; }
-        .pill { background: #fff; padding: 8px 16px; border-radius: 50px; border: 1px solid #ddd; font-size: 12px; font-weight: 600; white-space: nowrap; cursor: pointer; }
-        .pill.active { background: var(--blue); color: #fff; border-color: var(--blue); }
-
+        .dash-card i { font-size: 24px; display: block; margin-bottom: 5px; font-style: normal; }
         .job-card { background: var(--white); padding: 18px; border-radius: 16px; margin-bottom: 12px; border: 1px solid #f0f0f0; }
         .job-title { font-size: 15px; font-weight: 700; color: var(--main); margin: 0; }
-        .company-name { font-size: 12px; color: var(--text-muted); font-weight: 600; display: block; margin: 4px 0; }
-        .job-meta { display: flex; gap: 10px; margin-top: 10px; }
-        .meta-item { background: var(--light-blue); color: var(--blue); font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 4px; }
-        
         .btn-apply { display: block; text-align: center; background: var(--blue); color: white; padding: 12px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 13px; margin-top: 15px; }
-        .btn-result { background: #22c55e !important; }
-        .btn-primary { width: 100%; background: var(--blue); color: white; padding: 18px; border: none; border-radius: 15px; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3); }
-        
+        .btn-primary { width: 100%; background: var(--blue); color: white; padding: 18px; border: none; border-radius: 15px; font-size: 16px; font-weight: 800; cursor: pointer; }
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #eee; box-shadow: 0 -5px 15px rgba(0,0,0,0.03); max-width: 500px; margin: 0 auto; z-index: 99; }
         .nav-item { text-align: center; color: #94a3b8; font-size: 10px; font-weight: 700; cursor: pointer; text-decoration: none;}
         .nav-item.active { color: var(--blue); }
-        .nav-item i { font-size: 20px; display: block; margin-bottom: 3px; }
+        .nav-item i { font-size: 20px; display: block; margin-bottom: 3px; font-style: normal; }
         .hidden { display: none; }
+        .pill { background: #fff; padding: 8px 16px; border-radius: 50px; border: 1px solid #ddd; font-size: 12px; font-weight: 600; cursor: pointer; }
+        
+        /* New Social Link Styles */
+        .social-link-card { display: flex; align-items: center; justify-content: space-between; background: var(--white); padding: 15px; border-radius: 18px; margin-top: 10px; border: 1px solid #eee; text-decoration: none; transition: 0.3s; }
+        .social-link-card:active { transform: scale(0.98); }
+        .social-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
     </style>
 </head>
 <body id="app-body">
@@ -99,9 +65,7 @@
     <h3 style="margin-top:0; color:var(--blue);">App Settings ⚙️</h3>
     <div class="menu-item" onclick="editProfile()">👤 Edit Profile</div>
     <div class="menu-item" onclick="toggleDarkMode()">🌓 Switch Theme</div>
-    <div class="menu-item">🔔 Notifications: ON</div>
     <div class="menu-item" onclick="location.reload()">🔄 Refresh Updates</div>
-    <div class="menu-item" onclick="alert('Rozgar Hub v2.0 - Arwal Special')">ℹ️ About App</div>
     <div class="menu-item" style="color:red; border:none;" onclick="logout()">🚪 Logout</div>
 </div>
 
@@ -115,16 +79,10 @@
 
 <div class="container">
     <div id="login-sec" class="hidden">
-        <div style="text-align:center; margin: 20px 0 30px;">
-            <h1 style="font-weight:900; font-size: 28px; margin:0;">Welcome! 🚀</h1>
-            <p style="color:var(--text-muted); font-size:14px; font-weight:600;">Let's set up your career profile</p>
-        </div>
-        
         <div class="login-card">
+            <h1 style="text-align:center; font-weight:900;">Welcome! 🚀</h1>
             <label>Full Name</label>
             <input type="text" id="u-name" class="input-box" placeholder="e.g. Rahul Raj">
-            <label>Date of Birth</label>
-            <input type="date" id="u-dob" class="input-box">
             <label>Current State</label>
             <input type="text" id="u-state" class="input-box" placeholder="e.g. Bihar">
             <label>Education</label>
@@ -140,99 +98,81 @@
 
     <div id="dash-sec" class="hidden">
         <div class="profile-banner">
-            <h2 style="margin:0; font-size:22px;">Hi, <span id="well-name">User</span>! 👋</h2>
+            <h2 style="margin:0;">Hi, <span id="well-name">User</span>! 👋</h2>
             <p style="margin:5px 0 0; font-size:13px; opacity:0.9;">Tayaari kaisi chal rahi hai <span id="well-state">Bihar</span> mein?</p>
             <div style="display:flex; gap:10px; margin-top:15px;">
                 <div style="background:rgba(255,255,255,0.2); padding:5px 12px; border-radius:8px; font-size:11px; font-weight:700;" id="well-edu">Education</div>
-                <div style="background:rgba(255,255,255,0.2); padding:5px 12px; border-radius:8px; font-size:11px; font-weight:700;">Status: Active</div>
             </div>
         </div>
 
-        <div class="card" style="margin-bottom: 25px; border-radius: 15px; border: 1.5px solid var(--blue); padding: 5px;">
-            <div style="display: flex; gap: 10px; align-items: center;">
-                <input type="text" id="main-search-inp" placeholder="Search Jobs or Results..." style="flex:1; padding:12px; border:none; outline:none; font-weight:600; font-size:14px; background:transparent; color:var(--main);">
+        <div class="card" style="padding: 5px; border: 1.5px solid var(--blue);">
+            <div style="display: flex; align-items: center;">
+                <input type="text" id="main-search-inp" placeholder="Search Jobs or Results..." style="flex:1; padding:12px; border:none; outline:none; font-weight:600; background:transparent; color:var(--main);">
                 <button onclick="triggerSearch()" style="background:var(--blue); color:white; border:none; border-radius:10px; padding:10px 15px; cursor:pointer;">🔍</button>
             </div>
         </div>
 
-        <h3 style="font-weight:800; margin-bottom:5px;">Top Categories</h3>
+        <h3 style="font-weight:800;">Top Categories</h3>
         <div class="dash-grid">
-            <div class="dash-card" onclick="openJobs('govt')"><i>🏛️</i><span>Govt Jobs</span></div>
-            <div class="dash-card" onclick="openJobs('railway')"><i>🚂</i><span>Railway</span></div>
-            <div class="dash-card" onclick="openJobs('iti')"><i>⚙️</i><span>ITI Specialist</span></div>
-            <div class="dash-card" onclick="openJobs('wfh')"><i>🏠</i><span>Remote/WFH</span></div>
+            <div class="dash-card" onclick="openJobs('Govt Jobs')"><i>🏛️</i><span>Govt Jobs</span></div>
+            <div class="dash-card" onclick="openJobs('Railway Jobs')"><i>🚂</i><span>Railway</span></div>
+            <div class="dash-card" onclick="openJobs('ITI Jobs')"><i>⚙️</i><span>ITI Specialist</span></div>
+            <div class="dash-card" onclick="openJobs('Remote Work from Home Jobs')"><i>🏠</i><span>Remote/WFH</span></div>
         </div>
 
-        <div class="card" style="border: 1.5px dashed var(--blue); margin-top: 25px; background: var(--light-blue);">
-            <h4 style="margin:0; color: var(--blue); font-weight: 800;">📚 AI Study Planner</h4>
-            <div style="display: flex; gap: 10px; margin-top:10px;">
-                <input type="text" id="study-query" placeholder="Exam Name..." style="flex:1; padding:12px; border-radius:12px; border:1.5px solid #e2e8f0; outline:none; font-weight:600; background: var(--white); color: var(--main);">
-                <button onclick="getStudyPlan()" style="background:var(--blue); color:white; border:none; border-radius:12px; padding:0 15px; font-weight:800; cursor:pointer;">Get Plan</button>
+        <h3 style="font-weight:800; margin-top:30px;">Direct Support</h3>
+        <a href="https://whatsapp.com/channel/0029VbCL3cTElagwBiU2aJ2N" target="_blank" class="social-link-card">
+            <div style="display:flex; align-items:center; gap:12px;">
+                <div class="social-icon" style="background:#e7fbf0; color:#22c55e;">💬</div>
+                <div>
+                    <div style="font-weight:800; font-size:14px;">WhatsApp Channel</div>
+                    <div style="font-size:11px; color:var(--text-muted);">Get daily updates on phone</div>
+                </div>
             </div>
-        </div>
+            <div style="color:var(--blue); font-weight:800;">JOIN</div>
+        </a>
 
-        <div style="background:linear-gradient(135deg, #1e3a8a, #2563eb); padding:20px; border-radius:20px; color:white; margin-top:20px; position:relative;">
-            <h4 style="margin:0;">Career Support</h4>
-            <div style="display: flex; gap: 10px;">
-                <a href="https://whatsapp.com/channel/0029VbCL3cTElagwBiU2aJ2N" target="_blank" style="background:white; color:var(--blue); padding:8px 15px; border-radius:8px; font-size:12px; font-weight:800; text-decoration:none; display:inline-block; margin-top:10px;">Join Channel</a>
-                <a href="https://www.instagram.com/___rahul_yadav_._?igsh=b3ltc2FwaDd4bzB1" target="_blank" style="background:#f97316; color:white; padding:8px 15px; border-radius:8px; font-size:12px; font-weight:800; text-decoration:none; display:inline-block; margin-top:10px;">Instagram Profile</a>
+        <a href="https://www.instagram.com/___rahul_yadav_._?igsh=b3ltc2FwaDd4bzB1" target="_blank" class="social-link-card">
+            <div style="display:flex; align-items:center; gap:12px;">
+                <div class="social-icon" style="background:#fff0f6; color:#e1306c;">📸</div>
+                <div>
+                    <div style="font-weight:800; font-size:14px;">Instagram Profile</div>
+                    <div style="font-size:11px; color:var(--text-muted);">Follow for latest tips</div>
+                </div>
             </div>
-        </div>
+            <div style="color:var(--blue); font-weight:800;">FOLLOW</div>
+        </a>
     </div>
 
     <div id="res-sec" class="hidden">
         <h3 style="font-weight:800; margin-bottom:15px;">Results Portal 📄</h3>
-        
-        <div class="dash-grid" style="margin-bottom: 20px;">
-            <div class="dash-card" onclick="toggleResSub('bihar-board')" style="border: 1px solid #e2e8f0;"><i>🎓</i><span>Bihar Board</span></div>
-            <div class="dash-card" onclick="toggleResSub('railway')" style="border: 1px solid #e2e8f0;"><i>🚂</i><span>Railway</span></div>
-            <div class="dash-card" onclick="toggleResSub('ssc')" style="border: 1px solid #e2e8f0;"><i>🦁</i><span>SSC</span></div>
-            <div class="dash-card" onclick="toggleResSub('police')" style="border: 1px solid #e2e8f0;"><i>👮</i><span>Bihar Police</span></div>
+        <div class="dash-grid">
+            <div class="dash-card" onclick="toggleResSub('bihar-board')"><i>🎓</i><span>Bihar Board</span></div>
+            <div class="dash-card" onclick="toggleResSub('railway')"><i>🚂</i><span>Railway</span></div>
+            <div class="dash-card" onclick="toggleResSub('ssc')"><i>🦁</i><span>SSC</span></div>
+            <div class="dash-card" onclick="toggleResSub('police')"><i>👮</i><span>Bihar Police</span></div>
         </div>
 
-        <div id="sub-bihar-board" class="card hidden" style="background: var(--light-blue); border-radius: 15px;">
+        <div id="sub-bihar-board" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
             <label>Exam Type</label>
             <div style="display:flex; gap:10px; margin-bottom:12px;">
                 <button onclick="setResType('Matric')" class="pill" style="flex:1;">Matric (10th)</button>
                 <button onclick="setResType('Inter')" class="pill" style="flex:1;">Inter (12th)</button>
             </div>
-            <label>Select Year</label>
-            <select id="bb-year" class="input-box">
-                <option value="2026">2026</option><option value="2025">2025</option><option value="2024">2024</option>
-            </select>
             <button onclick="finalResSearch('Bihar Board')" class="btn-primary" style="padding:12px;">Get Result</button>
         </div>
 
-        <div id="sub-railway" class="card hidden" style="background: var(--light-blue); border-radius: 15px;">
-            <label>Railway Details</label>
-            <select id="rail-year" class="input-box">
-                <option value="2026">2026</option><option value="2025">2025</option><option value="2024">2024</option>
-            </select>
-            <button onclick="finalResSearch('Railway')" class="btn-primary" style="padding:12px;">Search Results</button>
-        </div>
-
-        <div id="sub-ssc" class="card hidden" style="background: var(--light-blue); border-radius: 15px;">
+        <div id="sub-ssc" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
             <label>Choose SSC Exam</label>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:12px;">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
                 <button onclick="setResType('SSC MTS')" class="pill">MTS</button>
                 <button onclick="setResType('SSC CGL')" class="pill">CGL</button>
                 <button onclick="setResType('SSC CHSL')" class="pill">CHSL</button>
                 <button onclick="setResType('SSC GD')" class="pill">GD</button>
             </div>
-            <button onclick="finalResSearch('SSC')" class="btn-primary" style="padding:12px;">Find Result</button>
-        </div>
-
-        <div id="sub-police" class="card hidden" style="background: var(--light-blue); border-radius: 15px;">
-            <label>Select Year</label>
-            <input type="number" id="police-year" class="input-box" value="2026">
-            <button onclick="finalResSearch('Bihar Police')" class="btn-primary" style="padding:12px;">Check Result</button>
-        </div>
-
-        <div class="card" style="margin-top:20px;">
-            <input type="text" id="res-inp" placeholder="Type Exam Name (SSC GD, etc.)" class="input-box">
-            <button onclick="searchRes()" class="btn-primary" style="padding:10px;">Find Result</button>
         </div>
     </div>
+
     <div id="feed-sec" class="hidden">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
             <h3 id="f-title" style="margin:0; text-transform:uppercase; font-size:16px; font-weight:800;">Listing</h3>
@@ -250,104 +190,58 @@
 </div>
 
 <script>
-    /* Navigation and Theme Logic */
-    let user = {}; let page = 1; let currentCat = ''; let loading = false;
-    let selectedEdu = []; let resType = '';
+    let user = {}; let currentCat = ''; let loading = false; let resType = '';
 
-    function toggleMenu() {
-        document.getElementById('sideMenu').classList.toggle('active');
-        document.getElementById('overlay').classList.toggle('active');
-    }
-
+    function toggleMenu() { document.getElementById('sideMenu').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
+    
     function toggleDarkMode() {
-        const body = document.getElementById('app-body');
-        const btn = document.getElementById('mode-btn');
-        body.classList.toggle('dark-mode');
-        const isDark = body.classList.contains('dark-mode');
-        localStorage.setItem('darkMode', isDark);
-        btn.innerText = isDark ? '☀️' : '🌙';
+        document.body.classList.toggle('dark-mode');
+        localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
     }
 
     window.onload = () => {
-        if(localStorage.getItem('darkMode') === 'true') {
-            document.getElementById('app-body').classList.add('dark-mode');
-            document.getElementById('mode-btn').innerText = '☀️';
-        }
+        if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
         const saved = localStorage.getItem('rozgarUser');
         if(saved) { user = JSON.parse(saved); showDash(); } 
         else { document.getElementById('login-sec').classList.remove('hidden'); }
     };
 
-    function triggerSearch() {
-        const sQuery = document.getElementById('main-search-inp').value;
-        if(sQuery) { currentCat = sQuery; openJobs(sQuery); }
-    }
-
     function toggleEdu(el, val) {
         document.querySelectorAll('.edu-chip').forEach(c => c.classList.remove('selected'));
-        el.classList.add('selected');
-        selectedEdu = [val]; 
+        el.classList.add('selected'); user.edu = val;
     }
 
     function saveLogin() {
-        const n = document.getElementById('u-name').value;
-        const s = document.getElementById('u-state').value;
-        if(!n || !s || selectedEdu.length === 0) return alert("Details bharo bhai!");
-        user = {name:n, state:s, edu: selectedEdu[0]};
+        user.name = document.getElementById('u-name').value;
+        user.state = document.getElementById('u-state').value;
+        if(!user.name || !user.edu) return alert("Details bharo bhai!");
         localStorage.setItem('rozgarUser', JSON.stringify(user));
         showDash();
-    }
-
-    function editProfile() {
-        toggleMenu();
-        document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
-        document.getElementById('login-sec').classList.remove('hidden');
-        document.getElementById('u-name').value = user.name;
-        document.getElementById('u-state').value = user.state;
     }
 
     function showDash() {
         document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
         document.getElementById('dash-sec').classList.remove('hidden');
-        document.getElementById('user-initial').innerText = user.name[0].toUpperCase();
         document.getElementById('well-name').innerText = user.name;
         document.getElementById('well-state').innerText = user.state;
         document.getElementById('well-edu').innerText = user.edu;
-        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-        document.querySelector('.nav-item:nth-child(1)').classList.add('active');
+        document.getElementById('user-initial').innerText = user.name[0].toUpperCase();
     }
 
     function showResults() {
         document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
         document.getElementById('res-sec').classList.remove('hidden');
-        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-        document.querySelector('.nav-item:nth-child(2)').classList.add('active');
     }
 
     function toggleResSub(id) {
-        ['bihar-board', 'railway', 'ssc', 'police'].forEach(key => {
-            document.getElementById('sub-' + key).classList.add('hidden');
-        });
-        document.getElementById('sub-' + id).classList.remove('hidden');
-        resType = ''; 
+        ['bihar-board', 'railway', 'ssc', 'police'].forEach(k => document.getElementById('sub-'+k)?.classList.add('hidden'));
+        document.getElementById('sub-'+id)?.classList.remove('hidden');
     }
 
-    function setResType(val) {
-        resType = val;
-        alert(val + " Selected!");
-    }
-
-    function finalResSearch(cat) {
-        let q = cat;
-        if(cat === 'Bihar Board') q = `Bihar Board ${resType} Result ${document.getElementById('bb-year').value} official link`;
-        else if(cat === 'Railway') q = `Railway recruitment result ${document.getElementById('rail-year').value} vacancy post details`;
-        else if(cat === 'SSC') q = `${resType} result 2026 vacancy details official`;
-        else if(cat === 'Bihar Police') q = `Bihar Police result ${document.getElementById('police-year').value} vacancy details`;
-        openJobs(q);
-    }
+    function setResType(val) { resType = val; alert(val + " Selected!"); }
 
     function openJobs(cat) {
-        currentCat = cat; page = 1;
+        currentCat = cat;
         document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
         document.getElementById('feed-sec').classList.remove('hidden');
         document.getElementById('f-title').innerText = cat;
@@ -355,59 +249,28 @@
         fetchData();
     }
 
-    function searchRes() { const v = document.getElementById('res-inp').value; if(v) openJobs(v); }
-
-    function getStudyPlan() {
-        const query = document.getElementById('study-query').value;
-        if(!query) return alert("Pehle exam ka naam likhein!");
-        const finalSearch = "study plan for " + query + " preparation 2026 in hindi";
-        window.open(`https://www.google.com/search?q=${encodeURIComponent(finalSearch)}`, '_blank');
-    }
-
     async function fetchData() {
-        if(loading) return; loading = true;
         document.getElementById('loading').classList.remove('hidden');
         try {
             const res = await fetch('/fetch_jobs', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    category: currentCat, 
-                    state: user.state, 
-                    edu: user.edu, 
-                    page: page,
-                    search_query: document.getElementById('main-search-inp').value
-                })
+                body: JSON.stringify({ category: currentCat, state: user.state, edu: user.edu })
             });
             const data = await res.json();
             data.forEach(i => {
-                const isResult = i.title.toLowerCase().includes('result') || currentCat.toLowerCase().includes('result');
-                const btnText = isResult ? "Check Result ✅" : "View Details & Apply";
-                const btnClass = isResult ? "btn-apply btn-result" : "btn-apply";
-
                 document.getElementById('list').innerHTML += `
                 <div class="job-card">
-                    <p style="color:var(--blue); font-size:10px; font-weight:800; text-transform:uppercase;">Verified Source</p>
                     <h3 class="job-title">${i.title}</h3>
-                    <div class="job-meta">
-                        <div class="meta-item">📍 ${user.state}</div>
-                        <div class="meta-item">🎓 ${user.edu}</div>
-                    </div>
-                    <div style="display:flex; gap:10px;">
-                        <a href="${i.link}" target="_blank" class="${btnClass}" style="flex:4;">${btnText}</a>
-                        <a href="${i.whatsapp_url}" target="_blank" class="btn-apply" style="flex:1; background:#22c55e; border:none; display:flex; align-items:center; justify-content:center;">
-                           <span style="font-size:18px;">💬</span>
-                        </a>
+                    <div style="display:flex; gap:10px; margin-top:10px;">
+                        <a href="${i.link}" target="_blank" class="btn-apply" style="flex:1;">View & Apply</a>
                     </div>
                 </div>`;
             });
-            page++;
-        } catch(e) {} 
-        loading = false;
+        } catch(e) {}
         document.getElementById('loading').classList.add('hidden');
     }
 
-    window.onscroll = () => { if((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) fetchData(); };
     function logout() { localStorage.removeItem('rozgarUser'); location.reload(); }
 </script>
 </body>
