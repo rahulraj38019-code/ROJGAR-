@@ -266,13 +266,12 @@
     function toggleResSub(id) {
         ['bihar-board', 'railway', 'ssc', 'police'].forEach(k => document.getElementById('sub-'+k)?.classList.add('hidden'));
         document.getElementById('sub-'+id)?.classList.remove('hidden');
-        resType = ''; // Reset selection
+        resType = ''; 
         document.querySelectorAll('.pill').forEach(p => p.classList.remove('active-pill'));
     }
 
     function setResType(el, val) { 
         resType = val; 
-        // Remove active class from other pills in the same section
         el.parentElement.querySelectorAll('.pill').forEach(p => p.classList.remove('active-pill'));
         el.classList.add('active-pill');
         alert(val + " Selected!"); 
@@ -311,12 +310,21 @@
                 body: JSON.stringify({ category: currentCat, state: user.state, edu: user.edu })
             });
             const data = await res.json();
+            
+            // Check if current view is a Result
+            let isResult = currentCat.toLowerCase().includes('result') || 
+                           currentCat.toLowerCase().includes('board') || 
+                           currentCat.toLowerCase().includes('police') || 
+                           currentCat.toLowerCase().includes('ssc');
+
             data.forEach(i => {
+                let btnText = isResult ? "View Result 📄" : "View & Apply 🚀";
+                
                 document.getElementById('list').innerHTML += `
                 <div class="job-card">
                     <h3 class="job-title">${i.title}</h3>
                     <div style="display:flex; gap:10px; margin-top:10px;">
-                        <a href="${i.link}" target="_blank" class="btn-apply" style="flex:1;">View & Apply</a>
+                        <a href="${i.link}" target="_blank" class="btn-apply" style="flex:1;">${btnText}</a>
                     </div>
                 </div>`;
             });
