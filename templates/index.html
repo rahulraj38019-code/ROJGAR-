@@ -4,15 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ROZGAR HUB - Professional Portal</title>
-    
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#007bff">
-    <script>
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js');
-      }
-    </script>
-
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { --main: #121212; --blue: #007bff; --light-blue: #e7f1ff; --bg: #f8fafc; --white: #ffffff; --text-muted: #64748b; }
@@ -25,185 +18,205 @@
         .side-menu.active { left: 0; }
         .menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; display: none; }
         .menu-overlay.active { display: block; }
-        .menu-item { padding: 15px 0; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 15px; cursor: pointer; font-weight: 600; font-size: 14px; }
-        .dark-mode .menu-item { border-color: #334155; }
+        .menu-item { padding: 15px 0; border-bottom: 1px solid #eee; cursor: pointer; font-weight: 600; font-size: 14px; }
         .profile-banner { background: linear-gradient(135deg, #007bff, #0056b3); color: white; padding: 20px; border-radius: 24px; margin-bottom: 25px; box-shadow: 0 10px 20px rgba(0,123,255,0.2); }
-        .dark-mode header, .dark-mode .bottom-nav { border-color: #334155; }
-        .dark-mode .input-box { background: #1e293b !important; border-color: #334155 !important; color: #ffffff !important; }
-        .dark-mode .card, .dark-mode .job-card, .dark-mode .dash-card { border-color: #334155; }
-        .login-card { background: var(--white); padding: 30px 25px; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.04); border: 1px solid #f0f0f0; }
-        .input-box { width: 100%; padding: 16px; border-radius: 14px; border: 1.5px solid #e2e8f0; font-size: 14px; font-weight: 600; box-sizing: border-box; outline: none; margin-bottom: 18px; background: #fbfcfe; color: #121212; }
-        label { display: block; font-size: 12px; font-weight: 800; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; }
+        .login-card { background: var(--white); padding: 30px 25px; border-radius: 24px; border: 1px solid #f0f0f0; }
+        .input-box { width: 100%; padding: 16px; border-radius: 14px; border: 1.5px solid #e2e8f0; font-size: 14px; box-sizing: border-box; margin-bottom: 18px; outline: none; }
         .edu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px; }
-        .edu-chip { border: 1.5px solid #e2e8f0; padding: 12px; border-radius: 12px; text-align: center; font-size: 13px; font-weight: 700; cursor: pointer; background: var(--white); color: var(--text-muted); }
-        .edu-chip.selected { background: var(--blue) !important; color: #fff !important; border-color: var(--blue) !important; }
-        .card { background: var(--white); padding: 20px; border-radius: 20px; margin-bottom: 20px; border: 1px solid #f0f0f0; }
+        .edu-chip { border: 1.5px solid #e2e8f0; padding: 12px; border-radius: 12px; text-align: center; cursor: pointer; font-weight: 700; font-size: 13px; }
+        .edu-chip.selected { background: var(--blue); color: #fff; border-color: var(--blue); }
+        .card { background: var(--white); padding: 20px; border-radius: 20px; border: 1px solid #f0f0f0; margin-bottom: 20px; }
         .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .dash-card { background: var(--white); padding: 15px; border-radius: 18px; text-align: center; border: 1px solid #f0f0f0; cursor: pointer; }
+        .dash-card i { font-size: 24px; display: block; margin-bottom: 5px; }
+        .dash-card span { font-size: 13px; font-weight: 600; }
         .job-card { background: var(--white); padding: 18px; border-radius: 16px; margin-bottom: 12px; border: 1px solid #f0f0f0; }
-        .job-title { font-size: 15px; font-weight: 700; margin: 0; }
-        .job-meta { display: flex; gap: 10px; margin-top: 10px; }
-        .meta-item { background: var(--light-blue); color: var(--blue); font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 4px; }
-        .btn-apply { display: block; text-align: center; background: var(--blue); color: white; padding: 12px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 13px; margin-top: 15px; }
-        .btn-result { background: #22c55e !important; }
-        .btn-primary { width: 100%; background: var(--blue); color: white; padding: 18px; border: none; border-radius: 15px; font-size: 16px; font-weight: 800; cursor: pointer; }
+        .btn-apply { display: block; text-align: center; background: var(--blue); color: white; padding: 12px; border-radius: 10px; text-decoration: none; font-weight: 700; margin-top: 10px; font-size: 13px; }
+        .btn-primary { width: 100%; background: var(--blue); color: white; padding: 18px; border: none; border-radius: 15px; font-weight: 800; cursor: pointer; font-size: 16px; }
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #eee; max-width: 500px; margin: 0 auto; z-index: 99; }
         .nav-item { text-align: center; color: #94a3b8; font-size: 10px; font-weight: 700; cursor: pointer; }
+        .nav-item i { font-size: 20px; display: block; margin-bottom: 3px; }
         .nav-item.active { color: var(--blue); }
         .hidden { display: none; }
-        .pill { background: #fff; padding: 8px 16px; border-radius: 50px; border: 1px solid #ddd; font-size: 12px; font-weight: 600; cursor: pointer; }
+        .pill { background: #fff; padding: 8px 16px; border-radius: 50px; border: 1px solid #ddd; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.3s; }
+        .pill.active-pill { background: var(--blue) !important; color: white !important; border-color: var(--blue) !important; }
     </style>
 </head>
 <body id="app-body">
 
 <div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
 <div class="side-menu" id="sideMenu">
-    <h3 style="margin-top:0; color:var(--blue);">App Settings ⚙️</h3>
-    <div class="menu-item" onclick="editProfile()">👤 Edit Profile</div>
+    <h3 style="color:var(--blue); margin-top:0;">Settings ⚙️</h3>
     <div class="menu-item" onclick="toggleDarkMode()">🌓 Switch Theme</div>
-    <div class="menu-item" onclick="location.reload()">🔄 Refresh Updates</div>
-    <div class="menu-item" style="color:red; border:none;" onclick="logout()">🚪 Logout</div>
+    <div class="menu-item" onclick="logout()">🚪 Logout</div>
 </div>
 
 <header>
     <div class="logo-text" onclick="toggleMenu()">ROZGAR HUB</div>
     <div style="display: flex; align-items: center; gap: 15px;">
         <div onclick="toggleDarkMode()" id="mode-btn" style="cursor:pointer; font-size: 20px; background: var(--light-blue); width: 35px; height: 35px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">🌙</div>
-        <div id="user-initial" style="background:var(--light-blue); color:var(--blue); width:35px; height:35px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px;">U</div>
     </div>
 </header>
 
 <div class="container">
     <div id="login-sec" class="hidden">
         <div class="login-card">
-            <label>Full Name</label><input type="text" id="u-name" class="input-box" placeholder="e.g. Rahul Raj">
-            <label>Current State</label><input type="text" id="u-state" class="input-box" placeholder="e.g. Bihar">
-            <label>Education</label>
+            <h2 style="text-align:center; font-weight:900;">Welcome! 🚀</h2>
+            <input type="text" id="u-name" class="input-box" placeholder="Full Name">
+            <input type="text" id="u-state" class="input-box" placeholder="Your State">
             <div class="edu-grid">
                 <div class="edu-chip" onclick="toggleEdu(this, '10th')">10th Pass</div>
                 <div class="edu-chip" onclick="toggleEdu(this, '12th')">12th Pass</div>
                 <div class="edu-chip" onclick="toggleEdu(this, 'ITI')">ITI Pass</div>
                 <div class="edu-chip" onclick="toggleEdu(this, 'UG')">Undergraduate</div>
             </div>
-            <button onclick="saveLogin()" class="btn-primary">Save Profile ⚡</button>
+            <button onclick="saveLogin()" class="btn-primary">Start Exploring⚡</button>
         </div>
     </div>
 
     <div id="dash-sec" class="hidden">
         <div class="profile-banner">
-            <h2 style="margin:0;">Hi, <span id="well-name">User</span>! 👋</h2>
-            <p style="margin:5px 0 0; font-size:13px; opacity:0.9;">Tayaari kaisi chal rahi hai <span id="well-state">Bihar</span> mein?</p>
+            <h2 style="margin:0; font-size: 22px;">Hi, <span id="well-name">User</span>! 👋</h2>
+            <p style="margin:5px 0 0; font-size:13px; opacity:0.9;">Tayaari kaisi chal rahi hai?</p>
         </div>
-        <div class="card" style="margin: 20px 0; border: 1.5px solid var(--blue); padding: 5px;">
-            <div style="display: flex; gap: 10px;">
-                <input type="text" id="main-search-inp" placeholder="Search Jobs or Results..." style="flex:1; padding:12px; border:none; outline:none; background:transparent;">
-                <button onclick="triggerSearch()" style="background:var(--blue); color:white; border:none; border-radius:10px; padding:10px 15px;">🔍</button>
-            </div>
-        </div>
-        <h3 style="font-weight:800;">Top Categories</h3>
+        
+        <h3 style="font-weight:800; margin-bottom:10px;">Top Categories</h3>
         <div class="dash-grid">
             <div class="dash-card" onclick="openJobs('govt')"><i>🏛️</i><span>Govt Jobs</span></div>
             <div class="dash-card" onclick="openJobs('railway')"><i>🚂</i><span>Railway</span></div>
             <div class="dash-card" onclick="openJobs('iti')"><i>⚙️</i><span>ITI Specialist</span></div>
-            <div class="dash-card" onclick="openJobs('wfh')"><i>🏠</i><span>Remote/WFH</span></div>
+            <div class="dash-card" onclick="showResults()"><i>📄</i><span>Results</span></div>
+        </div>
+
+        <div style="background:linear-gradient(135deg, #1e3a8a, #2563eb); padding:20px; border-radius:20px; color:white; margin-top:20px;">
+            <h4 style="margin:0;">Career Support</h4>
+            <div style="display: flex; gap: 10px;">
+                <a href="https://whatsapp.com/channel/0029VbCL3cTElagwBiU2aJ2N" target="_blank" style="background:white; color:var(--blue); padding:8px 15px; border-radius:8px; font-size:12px; font-weight:800; text-decoration:none; display:inline-block; margin-top:10px;">Join Channel</a>
+                <a href="https://www.instagram.com/___rahul_yadav_._?igsh=b3ltc2FwaDd4bzB1" target="_blank" style="background:#f97316; color:white; padding:8px 15px; border-radius:8px; font-size:12px; font-weight:800; text-decoration:none; display:inline-block; margin-top:10px;">Instagram Profile</a>
+            </div>
         </div>
     </div>
 
     <div id="res-sec" class="hidden">
         <h3 style="font-weight:800; margin-bottom:15px;">Results Portal 📄</h3>
-        <div class="dash-grid" style="margin-bottom: 20px;">
-            <div class="dash-card" onclick="toggleResSub('bihar-board')"><i>🎓</i><span>Bihar Board</span></div>
-            <div class="dash-card" onclick="toggleResSub('railway')"><i>🚂</i><span>Railway</span></div>
+        <div class="dash-grid">
+            <div class="dash-card" onclick="toggleResSub('bihar')"><i>🎓</i><span>Bihar Board</span></div>
             <div class="dash-card" onclick="toggleResSub('ssc')"><i>🦁</i><span>SSC</span></div>
-            <div class="dash-card" onclick="toggleResSub('police')"><i>👮</i><span>Bihar Police</span></div>
         </div>
-
-        <div id="sub-bihar-board" class="card hidden" style="background: var(--light-blue);">
-            <label>Exam Type</label>
-            <div style="display:flex; gap:10px; margin-bottom:12px;">
-                <button onclick="setResType('Matric')" class="pill" style="flex:1;">Matric (10th)</button>
-                <button onclick="setResType('Inter')" class="pill" style="flex:1;">Inter (12th)</button>
+        
+        <div id="sub-bihar" class="card hidden">
+            <div style="display:flex; gap:10px; margin-bottom:15px;">
+                <button onclick="setResType(this, 'Matric')" class="pill" style="flex:1;">Matric (10th)</button>
+                <button onclick="setResType(this, 'Inter')" class="pill" style="flex:1;">Inter (12th)</button>
             </div>
-            <label>Select Year</label>
-            <select id="bb-year" class="input-box"><option value="2026">2026</option><option value="2025">2025</option></select>
-            <button onclick="finalResSearch('Bihar Board')" class="btn-primary">Get Result</button>
+            <button onclick="openJobs('Bihar Board '+resType)" class="btn-primary" style="padding:12px;">Get Result</button>
         </div>
 
-        <div id="sub-railway" class="card hidden" style="background: var(--light-blue);"><label>Select Year</label>
-            <select id="rail-year" class="input-box"><option value="2026">2026</option><option value="2025">2025</option></select>
-            <button onclick="finalResSearch('Railway')" class="btn-primary">Search Railway</button>
-        </div>
-
-        <div id="sub-ssc" class="card hidden" style="background: var(--light-blue);"><label>SSC Exam</label>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:12px;">
-                <button onclick="setResType('SSC MTS')" class="pill">MTS</button>
-                <button onclick="setResType('SSC CGL')" class="pill">CGL</button>
-                <button onclick="setResType('SSC GD')" class="pill">GD</button>
+        <div id="sub-ssc" class="card hidden">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:15px;">
+                <button onclick="setResType(this, 'SSC GD')" class="pill">SSC GD</button>
+                <button onclick="setResType(this, 'SSC MTS')" class="pill">SSC MTS</button>
+                <button onclick="setResType(this, 'SSC CGL')" class="pill">SSC CGL</button>
+                <button onclick="setResType(this, 'SSC CHSL')" class="pill">CHSL</button>
             </div>
-            <button onclick="finalResSearch('SSC')" class="btn-primary">Find SSC</button>
-        </div>
-
-        <div id="sub-police" class="card hidden" style="background: var(--light-blue);"><label>Police Year</label>
-            <input type="number" id="police-year" class="input-box" value="2026">
-            <button onclick="finalResSearch('Bihar Police')" class="btn-primary">Check Police</button>
+            <button onclick="openJobs(resType + ' Result')" class="btn-primary" style="padding:12px;">Find Result</button>
         </div>
     </div>
 
     <div id="feed-sec" class="hidden">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-            <h3 id="f-title" style="margin:0;">Listing</h3><button onclick="showDash()" style="color:var(--blue); border:none; background:none; font-weight:800;">Home</button>
+            <h3 id="f-title" style="margin:0; font-size:16px; font-weight:800;">Updates</h3>
+            <button onclick="showDash()" style="color:var(--blue); border:none; background:none; font-weight:800;">Home</button>
         </div>
         <div id="list"></div>
-        <div id="loading" class="hidden" style="text-align:center; padding:20px;">Fetching...</div>
+        <div id="loading" class="hidden" style="text-align:center; padding:20px; font-weight:700; color:var(--blue);">Fetching...</div>
     </div>
 </div>
 
 <div class="bottom-nav">
-    <div class="nav-item active" onclick="showDash()"><i>🏠</i>Home</div>
-    <div class="nav-item" onclick="showResults()"><i>📄</i>Results</div>
-    <div class="nav-item" onclick="toggleMenu()"><i>⚙️</i>Settings</div>
+    <div class="nav-item active" id="nav-home" onclick="showDash()"><i>🏠</i>Home</div>
+    <div class="nav-item" id="nav-res" onclick="showResults()"><i>📄</i>Results</div>
 </div>
 
 <script>
-    let user = {}; let page = 1; let currentCat = ''; let loading = false; let resType = '';
+    let user = {name:'', state:'', edu:''}; let resType = '';
     function toggleMenu() { document.getElementById('sideMenu').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
-    function toggleDarkMode() { document.body.classList.toggle('dark-mode'); localStorage.setItem('darkMode', document.body.classList.contains('dark-mode')); }
+    function toggleDarkMode() { 
+        document.body.classList.toggle('dark-mode'); 
+        const isDark = document.body.classList.contains('dark-mode');
+        document.getElementById('mode-btn').innerText = isDark ? '☀️' : '🌙';
+    }
+    
+    function toggleEdu(el, val) { 
+        document.querySelectorAll('.edu-chip').forEach(c => c.classList.remove('selected'));
+        el.classList.add('selected'); user.edu = val; 
+    }
+
+    function setResType(el, t) { 
+        const parent = el.parentElement;
+        parent.querySelectorAll('.pill').forEach(p => p.classList.remove('active-pill'));
+        el.classList.add('active-pill');
+        resType = t; 
+    }
+
+    function saveLogin() {
+        user.name = document.getElementById('u-name').value;
+        user.state = document.getElementById('u-state').value;
+        if(!user.name || !user.edu) return alert("Details bharo!");
+        localStorage.setItem('rozgarUser', JSON.stringify(user)); showDash();
+    }
+
     window.onload = () => {
-        if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
         const saved = localStorage.getItem('rozgarUser');
         if(saved) { user = JSON.parse(saved); showDash(); } else { document.getElementById('login-sec').classList.remove('hidden'); }
     };
-    function triggerSearch() { const q = document.getElementById('main-search-inp').value; if(q) openJobs(q); }
-    function toggleEdu(el, val) { document.querySelectorAll('.edu-chip').forEach(c => c.classList.remove('selected')); el.classList.add('selected'); user.edu = val; }
-    function saveLogin() { 
-        user.name = document.getElementById('u-name').value; user.state = document.getElementById('u-state').value;
-        if(!user.name || !user.state) return alert("Fill details!");
-        localStorage.setItem('rozgarUser', JSON.stringify(user)); showDash();
+
+    function showDash() {
+        document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
+        document.getElementById('dash-sec').classList.remove('hidden');
+        document.getElementById('well-name').innerText = user.name;
+        updateNav('nav-home');
     }
-    function showDash() { document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden')); document.getElementById('dash-sec').classList.remove('hidden'); document.getElementById('well-name').innerText = user.name; }
-    function showResults() { document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden')); document.getElementById('res-sec').classList.remove('hidden'); }
-    function toggleResSub(id) { ['bihar-board', 'railway', 'ssc', 'police'].forEach(k => document.getElementById('sub-'+k).classList.add('hidden')); document.getElementById('sub-'+id).classList.remove('hidden'); }
-    function setResType(v) { resType = v; alert(v + " Selected!"); }
-    function finalResSearch(cat) { 
-        let q = cat;
-        if(cat === 'Bihar Board') q = `Bihar Board ${resType} Result ${document.getElementById('bb-year').value}`;
-        else if(cat === 'Railway') q = `Railway result ${document.getElementById('rail-year').value}`;
-        else if(cat === 'SSC') q = `${resType} Result 2026`;
-        else if(cat === 'Bihar Police') q = `Bihar Police Result ${document.getElementById('police-year').value}`;
-        openJobs(q);
+
+    function showResults() {
+        document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
+        document.getElementById('res-sec').classList.remove('hidden');
+        updateNav('nav-res');
     }
-    function openJobs(cat) { currentCat = cat; page = 1; document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden')); document.getElementById('feed-sec').classList.remove('hidden'); document.getElementById('f-title').innerText = cat; document.getElementById('list').innerHTML = ''; fetchData(); }
-    async function fetchData() {
-        if(loading) return; loading = true; document.getElementById('loading').classList.remove('hidden');
+
+    function updateNav(id) {
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+
+    function toggleResSub(id) {
+        document.getElementById('sub-bihar').classList.add('hidden');
+        document.getElementById('sub-ssc').classList.add('hidden');
+        if(id === 'bihar') document.getElementById('sub-bihar').classList.remove('hidden');
+        if(id === 'ssc') document.getElementById('sub-ssc').classList.remove('hidden');
+    }
+
+    async function openJobs(cat) {
+        if(!resType && cat.includes('undefined')) { alert('Pehle exam select karein!'); return; }
+        document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
+        document.getElementById('feed-sec').classList.remove('hidden');
+        document.getElementById('f-title').innerText = cat;
+        document.getElementById('list').innerHTML = '';
+        document.getElementById('loading').classList.remove('hidden');
         try {
-            const res = await fetch('/fetch_jobs', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({category: currentCat, state: user.state, edu: user.edu, page: page}) });
-            const data = await res.json();
-            data.forEach(i => {
-                document.getElementById('list').innerHTML += `<div class="job-card"><h3 class="job-title">${i.title}</h3><a href="${i.link}" target="_blank" class="btn-apply">View Details</a></div>`;
+            const res = await fetch('/fetch_jobs', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({category: cat, state: user.state, edu: user.edu})
             });
-            page++;
-        } catch(e) {} loading = false; document.getElementById('loading').classList.add('hidden');
+            const data = await res.json();
+            data.forEach(item => {
+                document.getElementById('list').innerHTML += `<div class="job-card"><h4>${item.title}</h4><p style="font-size:12px; color:var(--text-muted);">${item.snippet.substring(0, 100)}...</p><a href="${item.link}" target="_blank" class="btn-apply">View Now</a></div>`;
+            });
+        } catch(e) { alert("Error loading data"); }
+        document.getElementById('loading').classList.add('hidden');
     }
+
     function logout() { localStorage.removeItem('rozgarUser'); location.reload(); }
 </script>
 </body>
