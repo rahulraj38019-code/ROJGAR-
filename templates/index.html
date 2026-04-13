@@ -7,13 +7,29 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { --main: #121212; --blue: #007bff; --light-blue: #e7f1ff; --bg: #f8fafc; --white: #ffffff; --text-muted: #64748b; }
-        body { background: var(--bg); font-family: 'Inter', sans-serif; margin: 0; padding: 0; padding-bottom: 80px; color: var(--main); }
+        
+        /* --- NAYA ADDED: DARK MODE COLORS --- */
+        body.dark-mode {
+            --bg: #0f172a;
+            --white: #1e293b;
+            --main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --light-blue: #1e3a8a;
+        }
+
+        body { background: var(--bg); font-family: 'Inter', sans-serif; margin: 0; padding: 0; padding-bottom: 80px; color: var(--main); transition: 0.3s; }
         .container { max-width: 500px; margin: 0 auto; padding: 15px; }
         
         /* Header Style */
         header { background: var(--white); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 100; }
         .logo-text { font-weight: 800; font-size: 20px; color: var(--blue); letter-spacing: -0.5px; }
         
+        /* Dark Mode UI Fixes */
+        .dark-mode header, .dark-mode .bottom-nav { border-color: #334155; }
+        .dark-mode .input-box { background: #0f172a; border-color: #334155; color: white; }
+        .dark-mode .card, .dark-mode .job-card, .dark-mode .dash-card, .dark-mode .login-card { border-color: #334155; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .dark-mode .pill { background: #1e293b; border-color: #334155; color: white; }
+
         /* Professional Form UI */
         .login-card { background: var(--white); padding: 30px 25px; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.04); border: 1px solid #f0f0f0; }
         .input-box { width: 100%; padding: 16px; border-radius: 14px; border: 1.5px solid #e2e8f0; font-size: 14px; font-weight: 600; box-sizing: border-box; outline: none; transition: 0.3s; margin-bottom: 18px; background: #fbfcfe; }
@@ -22,11 +38,11 @@
 
         /* Multi-Select Education Chips */
         .edu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px; }
-        .edu-chip { border: 1.5px solid #e2e8f0; padding: 12px; border-radius: 12px; text-align: center; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.3s; background: #fff; color: var(--text-muted); }
+        .edu-chip { border: 1.5px solid #e2e8f0; padding: 12px; border-radius: 12px; text-align: center; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.3s; background: var(--white); color: var(--text-muted); }
         .edu-chip.selected { background: var(--blue); color: #fff; border-color: var(--blue); box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3); }
 
         /* Dashboard Styles */
-        .card { background: var(--white); padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); margin-bottom: 20px; }
+        .card { background: var(--white); padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); margin-bottom: 20px; border: 1px solid #f0f0f0; }
         .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
         .dash-card { background: var(--white); padding: 15px; border-radius: 18px; text-align: center; border: 1px solid #f0f0f0; transition: 0.3s; cursor: pointer; }
         .dash-card i { font-size: 24px; display: block; margin-bottom: 5px; }
@@ -38,13 +54,13 @@
 
         /* Job & AI Plan Cards */
         .job-card { background: var(--white); padding: 18px; border-radius: 16px; margin-bottom: 12px; border: 1px solid #f0f0f0; }
-        .job-title { font-size: 15px; font-weight: 700; color: #1e293b; margin: 0; }
-        .company-name { font-size: 12px; color: #64748b; font-weight: 600; display: block; margin: 4px 0; }
+        .job-title { font-size: 15px; font-weight: 700; color: var(--main); margin: 0; }
+        .company-name { font-size: 12px; color: var(--text-muted); font-weight: 600; display: block; margin: 4px 0; }
         .job-meta { display: flex; gap: 10px; margin-top: 10px; }
         .meta-item { background: var(--light-blue); color: var(--blue); font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 4px; }
         
         .btn-apply { display: block; text-align: center; background: var(--blue); color: white; padding: 12px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 13px; margin-top: 15px; }
-        .btn-result { background: #22c55e !important; } /* Green color for results */
+        .btn-result { background: #22c55e !important; }
         .btn-primary { width: 100%; background: var(--blue); color: white; padding: 18px; border: none; border-radius: 15px; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3); }
         
         /* Bottom Nav */
@@ -55,11 +71,14 @@
         .hidden { display: none; }
     </style>
 </head>
-<body>
+<body id="app-body">
 
 <header>
     <div class="logo-text">ROZGAR HUB</div>
-    <div id="user-initial" style="background:var(--light-blue); color:var(--blue); width:35px; height:35px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px;">U</div>
+    <div style="display: flex; align-items: center; gap: 15px;">
+        <div onclick="toggleDarkMode()" id="mode-btn" style="cursor:pointer; font-size: 20px; background: var(--light-blue); width: 35px; height: 35px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">🌙</div>
+        <div id="user-initial" style="background:var(--light-blue); color:var(--blue); width:35px; height:35px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px;">U</div>
+    </div>
 </header>
 
 <div class="container">
@@ -72,36 +91,31 @@
         <div class="login-card">
             <label>Full Name</label>
             <input type="text" id="u-name" class="input-box" placeholder="e.g. Rahul Raj">
-            
             <label>Date of Birth</label>
             <input type="date" id="u-dob" class="input-box">
-            
             <label>Current State</label>
             <input type="text" id="u-state" class="input-box" placeholder="e.g. Bihar">
-            
-            <label>Education (Multiple Select Karo)</label>
+            <label>Education</label>
             <div class="edu-grid" id="edu-options">
                 <div class="edu-chip" onclick="toggleEdu(this, '10th')">10th Pass</div>
                 <div class="edu-chip" onclick="toggleEdu(this, '12th')">12th Pass</div>
                 <div class="edu-chip" onclick="toggleEdu(this, 'ITI')">ITI Pass</div>
                 <div class="edu-chip" onclick="toggleEdu(this, 'UG')">Undergraduate</div>
-                <div class="edu-chip" onclick="toggleEdu(this, 'Graduate')">Graduation</div>
             </div>
-            
             <button onclick="saveLogin()" class="btn-primary">Create Professional Profile ⚡</button>
         </div>
     </div>
 
     <div id="dash-sec" class="hidden">
-        <div class="card" style="margin-bottom: 25px; border-radius: 15px; border: 1.5px solid #e2e8f0;">
-            <div style="display: flex; gap: 10px; align-items: center; padding: 5px;">
-                <input type="text" id="main-search-inp" placeholder="Search Jobs or Results (e.g. SSC, BPSC)" style="flex:1; padding:12px; border:none; outline:none; font-weight:600; font-size:14px;">
+        <div class="card" style="margin-bottom: 25px; border-radius: 15px; border: 1.5px solid var(--blue); padding: 5px;">
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <input type="text" id="main-search-inp" placeholder="Search Jobs or Results..." style="flex:1; padding:12px; border:none; outline:none; font-weight:600; font-size:14px; background:transparent; color:var(--main);">
                 <button onclick="triggerSearch()" style="background:var(--blue); color:white; border:none; border-radius:10px; padding:10px 15px; cursor:pointer;">🔍</button>
             </div>
         </div>
 
         <h3 style="font-weight:800; margin-bottom:5px;">Top Categories</h3>
-        <p style="color:gray; font-size:12px; margin-bottom:15px;">Verified listings for you</p>
+        <p style="color:var(--text-muted); font-size:12px; margin-bottom:15px;">Verified listings for you</p>
         
         <div class="dash-grid">
             <div class="dash-card" onclick="openJobs('govt')"><i>🏛️</i><span>Govt Jobs</span></div>
@@ -110,11 +124,11 @@
             <div class="dash-card" onclick="openJobs('wfh')"><i>🏠</i><span>Remote/WFH</span></div>
         </div>
 
-        <div class="card" style="border: 1.5px dashed var(--blue); margin-top: 25px; background: #f0f7ff;">
+        <div class="card" style="border: 1.5px dashed var(--blue); margin-top: 25px; background: var(--light-blue);">
             <h4 style="margin:0; color: var(--blue); font-weight: 800;">📚 AI Study Planner</h4>
-            <p style="font-size:11px; color:var(--text-muted); margin: 8px 0;">Apne exam ka naam likhein (e.g. SSC GD, Railway)</p>
+            <p style="font-size:11px; color:var(--text-muted); margin: 8px 0;">Apne exam ka naam likhein</p>
             <div style="display: flex; gap: 10px;">
-                <input type="text" id="study-query" placeholder="Exam Name..." style="flex:1; padding:12px; border-radius:12px; border:1.5px solid #e2e8f0; outline:none; font-weight:600;">
+                <input type="text" id="study-query" placeholder="Exam Name..." style="flex:1; padding:12px; border-radius:12px; border:1.5px solid #e2e8f0; outline:none; font-weight:600; background: var(--white); color: var(--main);">
                 <button onclick="getStudyPlan()" style="background:var(--blue); color:white; border:none; border-radius:12px; padding:0 15px; font-weight:800; cursor:pointer;">Get Plan</button>
             </div>
         </div>
@@ -140,7 +154,7 @@
     <div id="res-sec" class="hidden">
         <h3 style="font-weight:800;">Results Portal</h3>
         <div class="card">
-            <input type="text" id="res-inp" placeholder="Type Exam Name (SSC GD, etc.)" style="width:100%; padding:15px; border-radius:12px; border:1px solid #ddd; box-sizing:border-box;">
+            <input type="text" id="res-inp" placeholder="Type Exam Name (SSC GD, etc.)" style="width:100%; padding:15px; border-radius:12px; border:1px solid #ddd; box-sizing:border-box; background:transparent; color:var(--main);">
             <button onclick="searchRes()" class="btn-primary" style="margin-top:10px; padding:12px;">Find Result</button>
         </div>
     </div>
@@ -166,19 +180,32 @@
     let user = {}; let page = 1; let currentCat = ''; let loading = false;
     let selectedEdu = [];
 
+    // --- NAYA ADDED: Dark Mode Function ---
+    function toggleDarkMode() {
+        const body = document.getElementById('app-body');
+        const btn = document.getElementById('mode-btn');
+        body.classList.toggle('dark-mode');
+        
+        const isDark = body.classList.contains('dark-mode');
+        localStorage.setItem('darkMode', isDark);
+        btn.innerText = isDark ? '☀️' : '🌙';
+    }
+
     window.onload = () => {
+        // Dark Mode Check
+        if(localStorage.getItem('darkMode') === 'true') {
+            document.getElementById('app-body').classList.add('dark-mode');
+            document.getElementById('mode-btn').innerText = '☀️';
+        }
+
         const saved = localStorage.getItem('rozgarUser');
         if(saved) { user = JSON.parse(saved); showDash(); } 
         else { document.getElementById('login-sec').classList.remove('hidden'); }
     };
 
-    // NAYA ADDED: Search trigger function
     function triggerSearch() {
         const sQuery = document.getElementById('main-search-inp').value;
-        if(sQuery) {
-            currentCat = sQuery;
-            openJobs(sQuery);
-        }
+        if(sQuery) { currentCat = sQuery; openJobs(sQuery); }
     }
 
     function toggleEdu(el, val) {
@@ -246,7 +273,7 @@
                     state: user.state, 
                     edu: user.edu, 
                     page: page,
-                    search_query: document.getElementById('main-search-inp').value // NAYA ADDED: Search query parameter
+                    search_query: document.getElementById('main-search-inp').value
                 })
             });
             const data = await res.json();
@@ -255,7 +282,6 @@
                 const btnText = isResult ? "Check Result ✅" : "View Details & Apply";
                 const btnClass = isResult ? "btn-apply btn-result" : "btn-apply";
 
-                // NAYA ADDED: WhatsApp Button layout in card
                 document.getElementById('list').innerHTML += `
                 <div class="job-card">
                     <p style="color:var(--blue); font-size:10px; font-weight:800; text-transform:uppercase;">Verified Source</p>
