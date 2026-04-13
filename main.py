@@ -2,6 +2,7 @@ import requests
 from flask import Flask, render_template, request, jsonify, send_from_directory
 from flask_cors import CORS
 import os
+from bs4 import BeautifulSoup  # Naya library scrap karne ke liye
 
 app = Flask(__name__)
 CORS(app)
@@ -23,6 +24,34 @@ def serve_sw():
 def index():
     return render_template('index.html')
 
+# --- NAYA LIVE UPDATES ROUTE ---
+@app.route('/get_live_updates')
+def get_live_updates():
+    try:
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+        response = requests.get('https://sarkariresult.com.cm/', headers=headers, timeout=10)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        
+        jobs = []
+        admits = []
+        all_links = soup.find_all('a')
+        
+        for link in all_links:
+            text = link.text.strip()
+            href = link.get('href', '')
+            if not href or len(text) < 10: continue
+
+            # Filter logic: link ke andar keyword check karega
+            if "job" in href.lower() or "recruit" in href.lower():
+                if len(jobs) < 15: jobs.append({"title": text, "link": href})
+            elif "admit" in href.lower() or "hall-ticket" in href.lower():
+                if len(admits) < 15: admits.append({"title": text, "link": href})
+
+        return jsonify({"jobs": jobs, "admits": admits})
+    except Exception as e:
+        return jsonify({"jobs": [], "admits": []})
+# ------------------------------
+
 @app.route('/fetch_jobs', methods=['POST'])
 def fetch_jobs():
     try:
@@ -32,21 +61,17 @@ def fetch_jobs():
         edu = data.get('edu', '')
         page = data.get('page', 1)
         
-        # Optimized Logic for Search
-        # Note: Frontend se ab dynamic category + year aa raha hai
         if "Bihar Board" in category:
             query = f"{category} official result site:biharboardonline.bihar.gov.in OR site:sarkariresult.com"
         elif "SSC" in category:
             query = f"{category} merit list site:ssc.gov.in OR site:sarkariresult.com"
         elif "Railway" in category:
-            # Ab ye user ke selected post aur year dono ko search karega
             query = f"RRB {category} official result notice site:indianrailways.gov.in OR site:sarkariresult.com"
         elif "Police" in category:
             query = f"{category} result official updates site:csbc.bih.nic.in OR site:sarkariresult.com"
         elif category == "govt":
             query = f"latest govt jobs for {edu} pass in {state} 2026"
         else:
-            # Normal search ya direct query ke liye
             query = f"{category}"
 
         headers = {'X-API-KEY': SERPER_API_KEY, 'Content-Type': 'application/json'}
