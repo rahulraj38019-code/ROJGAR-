@@ -18,7 +18,7 @@
         header { background: var(--white); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 100; }
         .logo-text { font-weight: 800; font-size: 20px; color: var(--blue); letter-spacing: -0.5px; cursor: pointer; }
         
-        /* --- NAYA: SIDE SETTINGS MENU --- */
+        /* --- SIDE SETTINGS MENU --- */
         .side-menu { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: var(--white); z-index: 1000; transition: 0.3s; box-shadow: 10px 0 30px rgba(0,0,0,0.1); padding: 25px; box-sizing: border-box; }
         .side-menu.active { left: 0; }
         .menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; display: none; }
@@ -155,9 +155,10 @@
 
         <div style="background:linear-gradient(135deg, #1e3a8a, #2563eb); padding:20px; border-radius:20px; color:white; margin-top:20px; position:relative;">
             <h4 style="margin:0;">Career Support</h4>
-            <p style="font-size:11px; opacity:0.8;">Join our WhatsApp channel for alerts</p>
+            <p style="font-size:11px; opacity:0.8;">Join our Social channels for alerts</p>
             <div style="display: flex; gap: 10px;">
                 <a href="https://whatsapp.com/channel/0029VbCL3cTElagwBiU2aJ2N" target="_blank" style="background:white; color:var(--blue); padding:8px 15px; border-radius:8px; font-size:12px; font-weight:800; text-decoration:none; display:inline-block; margin-top:10px;">Join Channel</a>
+                <a href="https://www.instagram.com/___rahul_yadav_._?igsh=b3ltc2FwaDd4bzB1" target="_blank" style="background:#f97316; color:white; padding:8px 15px; border-radius:8px; font-size:12px; font-weight:800; text-decoration:none; display:inline-block; margin-top:10px;">Instagram Profile</a>
             </div>
         </div>
     </div>
@@ -190,7 +191,6 @@
     let user = {}; let page = 1; let currentCat = ''; let loading = false;
     let selectedEdu = [];
 
-    // --- Side Menu Toggle ---
     function toggleMenu() {
         document.getElementById('sideMenu').classList.toggle('active');
         document.getElementById('overlay').classList.toggle('active');
@@ -247,12 +247,9 @@
         document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
         document.getElementById('dash-sec').classList.remove('hidden');
         document.getElementById('user-initial').innerText = user.name[0].toUpperCase();
-        
-        // Update Banner Details
         document.getElementById('well-name').innerText = user.name;
         document.getElementById('well-state').innerText = user.state;
         document.getElementById('well-edu').innerText = user.edu;
-
         document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
         document.querySelector('.nav-item:nth-child(1)').classList.add('active');
     }
@@ -274,6 +271,13 @@
     }
 
     function searchRes() { const v = document.getElementById('res-inp').value; if(v) openJobs(v); }
+
+    function getStudyPlan() {
+        const query = document.getElementById('study-query').value;
+        if(!query) return alert("Pehle exam ka naam likhein!");
+        const finalSearch = "study plan for " + query + " preparation 2026 in hindi";
+        window.open(`https://www.google.com/search?q=${encodeURIComponent(finalSearch)}`, '_blank');
+    }
 
     async function fetchData() {
         if(loading) return; loading = true;
