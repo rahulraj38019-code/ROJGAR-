@@ -311,4 +311,21 @@
                         <div class="meta-item">🎓 ${user.edu}</div>
                     </div>
                     <div style="display:flex; gap:10px;">
-                        <a href="${i.link}" target="_blank" class="$
+                        <a href="${i.link}" target="_blank" class="${btnClass}" style="flex:4;">${btnText}</a>
+                        <a href="${i.whatsapp_url}" target="_blank" class="btn-apply" style="flex:1; background:#22c55e; border:none; display:flex; align-items:center; justify-content:center;">
+                           <span style="font-size:18px;">💬</span>
+                        </a>
+                    </div>
+                </div>`;
+            });
+            page++;
+        } catch(e) {} 
+        loading = false;
+        document.getElementById('loading').classList.add('hidden');
+    }
+
+    window.onscroll = () => { if((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) fetchData(); };
+    function logout() { localStorage.removeItem('rozgarUser'); location.reload(); }
+</script>
+</body>
+</html>
