@@ -72,42 +72,23 @@
         .social-link-card:active { transform: scale(0.98); }
         .social-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
 
-        /* --- AI ASSISTANT CSS --- */
-        #ai-trigger { position: fixed; bottom: 85px; right: 20px; z-index: 1001; cursor: pointer; transition: 0.3s; }
+        /* --- NEW AI BUTTON CSS --- */
+        #ai-trigger { position: fixed; bottom: 85px; right: 20px; z-index: 1001; cursor: pointer; transition: 0.3s; text-decoration: none; display: flex; flex-direction: column; align-items: center; }
         .ai-robot { font-size: 40px; animation: float 3s ease-in-out infinite; display: block; }
         .hi-hand { position: absolute; top: 0; left: -10px; font-size: 20px; animation: wave 1.5s infinite; }
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
         @keyframes wave { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(30deg); } }
+        .ai-label { background: var(--blue); color: white; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 800; margin-top: -5px; box-shadow: 0 4px 10px rgba(0,123,255,0.3); }
 
-        #ai-box { position: fixed; bottom: 100px; right: 20px; width: 320px; height: 450px; background: var(--white); border-radius: 20px; box-shadow: 0 15px 50px rgba(0,0,0,0.2); z-index: 1002; display: none; flex-direction: column; overflow: hidden; border: 1px solid #eee; }
-        .ai-header { background: var(--blue); color: white; padding: 15px; font-weight: 800; display: flex; justify-content: space-between; align-items: center; }
-        #ai-messages { flex: 1; padding: 15px; overflow-y: auto; font-size: 13px; display: flex; flex-direction: column; gap: 10px; }
-        .msg { padding: 10px 14px; border-radius: 15px; max-width: 80%; line-height: 1.4; }
-        .msg.bot { background: var(--light-blue); color: var(--blue); align-self: flex-start; }
-        .msg.user { background: var(--blue); color: white; align-self: flex-end; }
-        .ai-input-area { padding: 10px; border-top: 1px solid #eee; display: flex; gap: 8px; }
     </style>
 </head>
 <body id="app-body">
 
-<div id="ai-trigger" onclick="toggleAI()">
+<a id="ai-trigger" href="https://gemini.google.com/" target="_blank">
     <span class="hi-hand">👋</span>
     <span class="ai-robot">🤖</span>
-</div>
-
-<div id="ai-box">
-    <div class="ai-header">
-        <span>Rozgar AI 🤖</span>
-        <span onclick="toggleAI()" style="cursor:pointer; font-size:20px;">×</span>
-    </div>
-    <div id="ai-messages">
-        <div class="msg bot">Namaste! Main Rozgar AI hoon. Main apki job ya result dhoondhne mein help kar sakta hoon. Poochiye?</div>
-    </div>
-    <div class="ai-input-area">
-        <input type="text" id="ai-input" class="input-box" placeholder="Sawal likhein..." style="margin:0; padding:10px;">
-        <button onclick="sendToAI()" style="background:var(--blue); color:white; border:none; border-radius:10px; padding:0 15px; cursor:pointer;">➡️</button>
-    </div>
-</div>
+    <div class="ai-label">ASK AI</div>
+</a>
 
 <div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
 
@@ -310,7 +291,7 @@
 
     function saveLogin() {
         user.name = document.getElementById('u-name').value;
-        user.contact = document.getElementById('u-contact').value; // Contact save kiya
+        user.contact = document.getElementById('u-contact').value; 
         user.state = document.getElementById('u-state').value;
         if(!user.name || !user.edu || !user.contact) return alert("Saari details bharo bhai!");
         localStorage.setItem('rozgarUser', JSON.stringify(user));
@@ -401,36 +382,6 @@
             });
         } catch(e) {}
         document.getElementById('loading').classList.add('hidden');
-    }
-
-    // --- AI FUNCTIONS ---
-    function toggleAI() {
-        const box = document.getElementById('ai-box');
-        box.style.display = (box.style.display === 'flex') ? 'none' : 'flex';
-    }
-
-    async function sendToAI() {
-        const input = document.getElementById('ai-input');
-        const msg = input.value;
-        if(!msg) return;
-        
-        const chat = document.getElementById('ai-messages');
-        chat.innerHTML += `<div class="msg user">${msg}</div>`;
-        input.value = '';
-        chat.scrollTop = chat.scrollHeight;
-
-        try {
-            const res = await fetch('/ask_ai', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ prompt: msg })
-            });
-            const data = await res.json();
-            chat.innerHTML += `<div class="msg bot">${data.answer}</div>`;
-            chat.scrollTop = chat.scrollHeight;
-        } catch(e) {
-            chat.innerHTML += `<div class="msg bot">Server error. Check API Key.</div>`;
-        }
     }
 
     function logout() { localStorage.removeItem('rozgarUser'); location.reload(); }
