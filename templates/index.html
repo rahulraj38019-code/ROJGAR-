@@ -20,11 +20,12 @@
         body { background: var(--bg); font-family: 'Inter', sans-serif; margin: 0; padding: 0; padding-bottom: 120px; color: var(--main); transition: 0.3s; overflow-x: hidden; }
         .container { max-width: 500px; margin: 0 auto; padding: 15px; }
         
+        /* --- ✨ NEON HEADER & SHADOWS --- */
         header { background: var(--white); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 100; box-shadow: 0 0 15px var(--neon-glow); }
         .logo-text { font-weight: 800; font-size: 20px; color: var(--blue); letter-spacing: -0.5px; cursor: pointer; text-shadow: 0 0 10px var(--blue); }
 
-        /* --- ✨ NEON GLOW EFFECTS (NEW) --- */
-        .live-panel, .dash-card, .social-link-card, .job-card, .card, .pill, .input-box {
+        /* --- ✨ GLOBAL NEON GLOW FOR CARDS --- */
+        .live-panel, .dash-card, .social-link-card, .job-card, .card, .pill, .input-box, .login-card, .edu-chip {
             border: 1px solid var(--blue) !important;
             box-shadow: 0 0 15px var(--neon-glow) !important;
             transition: 0.3s;
@@ -34,6 +35,12 @@
             box-shadow: 0 0 25px var(--blue) !important;
         }
 
+        .side-menu { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: var(--white); z-index: 1000; transition: 0.3s; box-shadow: 10px 0 30px rgba(0,0,0,0.1); padding: 25px; box-sizing: border-box; }
+        .side-menu.active { left: 0; }
+        .menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; display: none; }
+        .menu-overlay.active { display: block; }
+        .menu-item { padding: 15px 0; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 15px; cursor: pointer; font-weight: 600; font-size: 14px; }
+        
         /* --- LIVE PANEL CSS --- */
         .live-panel { background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 24px; padding: 18px; margin-bottom: 25px; position: relative; }
         .live-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
@@ -44,11 +51,37 @@
         .ticker-col { display: flex; flex-direction: column; }
         .ticker-title { font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--blue); margin-bottom: 8px; text-align: center; background: rgba(0,123,255,0.1); padding: 4px; border-radius: 6px; text-shadow: 0 0 5px var(--blue); }
         .scroll-box { animation: scrollUp 20s linear infinite; }
+        .scroll-box:hover { animation-play-state: paused; }
         @keyframes scrollUp { 0% { transform: translateY(0); } 100% { transform: translateY(-50%); } }
-        
         .ticker-item { font-size: 12px; color: #cbd5e1; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); display: block; text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* --- AI BUTTON (SUPER GLOWING) --- */
+        .login-card { background: var(--white); padding: 30px 25px; border-radius: 24px; }
+        .input-box { width: 100%; padding: 16px; border-radius: 14px; font-size: 14px; font-weight: 600; box-sizing: border-box; outline: none; margin-bottom: 18px; background: var(--white); color: var(--main); }
+        label { display: block; font-size: 12px; font-weight: 800; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .edu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px; }
+        .edu-chip { padding: 12px; border-radius: 12px; text-align: center; font-size: 13px; font-weight: 700; cursor: pointer; background: var(--white); color: var(--text-muted); }
+        .edu-chip.selected { background: var(--blue) !important; color: #fff !important; text-shadow: 0 0 5px white; }
+        .card { background: var(--white); padding: 20px; border-radius: 20px; margin-bottom: 20px; }
+        .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .dash-card { background: var(--white); padding: 15px; border-radius: 18px; text-align: center; cursor: pointer; }
+        .dash-card i { font-size: 24px; display: block; margin-bottom: 5px; font-style: normal; filter: drop-shadow(0 0 5px var(--blue)); }
+        .job-card { background: var(--white); padding: 18px; border-radius: 16px; margin-bottom: 12px; }
+        .job-title { font-size: 15px; font-weight: 700; color: var(--main); margin: 0; }
+        .btn-primary { width: 100%; background: var(--blue); color: white; padding: 18px; border: none; border-radius: 15px; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 0 20px var(--blue); }
+        
+        /* --- NEON BOTTOM NAV --- */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid var(--blue); box-shadow: 0 -5px 20px var(--neon-glow); max-width: 500px; margin: 0 auto; z-index: 99; }
+        .nav-item { text-align: center; color: #94a3b8; font-size: 10px; font-weight: 700; cursor: pointer; text-decoration: none;}
+        .nav-item.active { color: var(--blue); text-shadow: 0 0 10px var(--blue); }
+        .nav-item i { font-size: 20px; display: block; margin-bottom: 3px; font-style: normal; }
+        .hidden { display: none; }
+        .pill { background: #fff; padding: 8px 16px; border-radius: 50px; font-size: 12px; font-weight: 600; cursor: pointer; margin-bottom: 5px; color: var(--text-muted); }
+        .pill.active-pill { background: var(--blue) !important; color: white !important; box-shadow: 0 0 10px var(--blue) !important; }
+        
+        .social-link-card { display: flex; align-items: center; justify-content: space-between; background: var(--white); padding: 15px; border-radius: 18px; margin-top: 10px; text-decoration: none; }
+        .social-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; box-shadow: 0 0 10px currentColor; }
+
+        /* --- 🚀 ATTRACTIVE AI BUTTON --- */
         #ai-trigger { position: fixed; bottom: 85px; right: 20px; z-index: 1001; cursor: pointer; transition: 0.3s; text-decoration: none; display: flex; flex-direction: column; align-items: center; }
         .ai-robot { font-size: 45px; animation: float 3s ease-in-out infinite; display: block; filter: drop-shadow(0 0 15px var(--blue)); }
         .hi-hand { position: absolute; top: 0; left: -10px; font-size: 22px; animation: wave 1.5s infinite; }
@@ -61,22 +94,6 @@
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
         @keyframes wave { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(30deg); } }
 
-        /* General styles preserved */
-        .side-menu { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: var(--white); z-index: 1000; transition: 0.3s; box-shadow: 10px 0 30px rgba(0,0,0,0.1); padding: 25px; box-sizing: border-box; }
-        .side-menu.active { left: 0; }
-        .menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; display: none; }
-        .menu-overlay.active { display: block; }
-        .input-box { width: 100%; padding: 16px; border-radius: 14px; font-size: 14px; font-weight: 600; box-sizing: border-box; outline: none; margin-bottom: 18px; background: var(--white); color: var(--main); }
-        .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-        .dash-card { background: var(--white); padding: 15px; border-radius: 18px; text-align: center; cursor: pointer; }
-        .dash-card i { font-size: 28px; display: block; margin-bottom: 5px; font-style: normal; filter: drop-shadow(0 0 5px var(--blue)); }
-        .job-card { background: var(--white); padding: 18px; border-radius: 16px; margin-bottom: 12px; }
-        .btn-primary { width: 100%; background: var(--blue); color: white; padding: 18px; border: none; border-radius: 15px; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 0 20px var(--blue); }
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid var(--blue); box-shadow: 0 -5px 20px var(--neon-glow); max-width: 500px; margin: 0 auto; z-index: 99; }
-        .nav-item { text-align: center; color: #94a3b8; font-size: 10px; font-weight: 700; cursor: pointer; text-decoration: none;}
-        .nav-item.active { color: var(--blue); text-shadow: 0 0 10px var(--blue); }
-        .nav-item i { font-size: 20px; display: block; margin-bottom: 3px; font-style: normal; }
-        .hidden { display: none; }
     </style>
 </head>
 <body id="app-body">
@@ -101,18 +118,29 @@
     <div class="logo-text" onclick="toggleMenu()">ROZGAR HUB</div>
     <div style="display: flex; align-items: center; gap: 15px;">
         <div onclick="toggleDarkMode()" id="mode-btn" style="cursor:pointer; font-size: 20px; background: var(--light-blue); width: 35px; height: 35px; border-radius: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 10px var(--blue);">🌙</div>
-        <div id="user-initial" style="background:var(--light-blue); color:var(--blue); width:35px; height:35px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px; border: 1px solid var(--blue); box-shadow: 0 0 10px var(--blue);">U</div>
+        <div id="user-initial" style="background:var(--light-blue); color:var(--blue); width:35px; height:35px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px; border: 1px solid var(--blue);">U</div>
     </div>
 </header>
 
 <div class="container">
     <div id="login-sec" class="hidden">
-        <div class="card" style="padding: 30px;">
+        <div class="login-card">
             <h1 style="text-align:center; font-weight:900;">Welcome! 🚀</h1>
             <label>Full Name</label>
             <input type="text" id="u-name" class="input-box" placeholder="e.g. Rahul Raj">
-            <label>Email or Mobile</label>
+            
+            <label>Email or Mobile Number</label>
             <input type="text" id="u-contact" class="input-box" placeholder="e.g. +91 0000000000">
+            
+            <label>Current State</label>
+            <input type="text" id="u-state" class="input-box" placeholder="e.g. Bihar">
+            <label>Education</label>
+            <div class="edu-grid" id="edu-options">
+                <div class="edu-chip" onclick="toggleEdu(this, '10th')">10th Pass</div>
+                <div class="edu-chip" onclick="toggleEdu(this, '12th')">12th Pass</div>
+                <div class="edu-chip" onclick="toggleEdu(this, 'ITI')">ITI Pass</div>
+                <div class="edu-chip" onclick="toggleEdu(this, 'UG')">Undergraduate</div>
+            </div>
             <button onclick="saveLogin()" class="btn-primary">Save Profile ⚡</button>
         </div>
     </div>
@@ -126,16 +154,20 @@
             <div class="ticker-container">
                 <div class="ticker-col">
                     <div class="ticker-title">New Jobs 🚀</div>
-                    <div id="job-ticker" class="scroll-box"><div class="ticker-item">Loading updates...</div></div>
+                    <div id="job-ticker" class="scroll-box">
+                        <div class="ticker-item">Loading updates...</div>
+                    </div>
                 </div>
                 <div class="ticker-col">
                     <div class="ticker-title">Admit Cards 🎫</div>
-                    <div id="admit-ticker" class="scroll-box"><div class="ticker-item">Loading updates...</div></div>
+                    <div id="admit-ticker" class="scroll-box">
+                        <div class="ticker-item">Loading updates...</div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="card" style="padding: 5px; border: 2px solid var(--blue) !important;">
+        <div class="card" style="padding: 5px;">
             <div style="display: flex; align-items: center;">
                 <input type="text" id="main-search-inp" placeholder="Search Jobs or Results..." style="flex:1; padding:12px; border:none; outline:none; font-weight:600; background:transparent; color:var(--main);">
                 <button onclick="triggerSearch()" style="background:var(--blue); color:white; border:none; border-radius:10px; padding:10px 15px; cursor:pointer; box-shadow: 0 0 10px var(--blue);">🔍</button>
@@ -156,10 +188,21 @@
                 <div class="social-icon" style="background:#e7fbf0; color:#22c55e; border:1px solid #22c55e;">💬</div>
                 <div>
                     <div style="font-weight:800; font-size:14px;">WhatsApp Channel</div>
-                    <div style="font-size:11px; color:var(--text-muted);">Get daily updates</div>
+                    <div style="font-size:11px; color:var(--text-muted);">Get daily updates on phone</div>
                 </div>
             </div>
-            <div style="color:var(--blue); font-weight:800;">JOIN</div>
+            <div style="color:var(--blue); font-weight:800; border:1px solid var(--blue); padding:4px 10px; border-radius:8px;">JOIN</div>
+        </a>
+
+        <a href="https://www.instagram.com/___rahul_yadav_._?igsh=b3ltc2FwaDd4bzB1" target="_blank" class="social-link-card">
+            <div style="display:flex; align-items:center; gap:12px;">
+                <div class="social-icon" style="background:#fff0f6; color:#e1306c; border:1px solid #e1306c;">📸</div>
+                <div>
+                    <div style="font-weight:800; font-size:14px;">Instagram Profile</div>
+                    <div style="font-size:11px; color:var(--text-muted);">Follow for latest tips</div>
+                </div>
+            </div>
+            <div style="color:var(--blue); font-weight:800; border:1px solid var(--blue); padding:4px 10px; border-radius:8px;">FOLLOW</div>
         </a>
     </div>
 
@@ -171,8 +214,54 @@
             <div class="dash-card" onclick="toggleResSub('ssc')"><i>🦁</i><span>SSC</span></div>
             <div class="dash-card" onclick="toggleResSub('police')"><i>👮</i><span>Bihar Police</span></div>
         </div>
-        <div id="sub-bihar-board" class="card hidden" style="margin-top:15px;">
-            <button onclick="finalResSearch('Bihar Board')" class="btn-primary">Get Result</button>
+
+        <div id="sub-bihar-board" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
+            <label>Exam Type</label>
+            <div style="display:flex; gap:10px; margin-bottom:12px;">
+                <button onclick="setResType(this, 'Matric')" class="pill" style="flex:1;">Matric (10th)</button>
+                <button onclick="setResType(this, 'Inter')" class="pill" style="flex:1;">Inter (12th)</button>
+            </div>
+            <button onclick="finalResSearch('Bihar Board')" class="btn-primary" style="padding:12px;">Get Result</button>
+        </div>
+
+        <div id="sub-railway" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
+            <label>Select Railway Post</label>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:12px;">
+                <button onclick="setResType(this, 'Railway Group D')" class="pill">Group D</button>
+                <button onclick="setResType(this, 'Railway ALP')" class="pill">ALP</button>
+                <button onclick="setResType(this, 'Railway Technician')" class="pill">Technician</button>
+                <button onclick="setResType(this, 'Railway NTPC')" class="pill">NTPC</button>
+            </div>
+            <label>Select Year</label>
+            <select id="rail-year" class="input-box">
+                <option value="2026">2026</option>
+                <option value="2025">2025</option>
+                <option value="2024">2024</option>
+            </select>
+            <button onclick="finalResSearch('Railway')" class="btn-primary" style="padding:12px;">Search Result</button>
+        </div>
+
+        <div id="sub-ssc" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
+            <label>Choose SSC Exam</label>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                <button onclick="setResType(this, 'SSC MTS')" class="pill">MTS</button>
+                <button onclick="setResType(this, 'SSC CGL')" class="pill">CGL</button>
+                <button onclick="setResType(this, 'SSC CHSL')" class="pill">CHSL</button>
+                <button onclick="setResType(this, 'SSC GD')" class="pill">GD</button>
+            </div>
+            <button onclick="finalResSearch('SSC')" class="btn-primary" style="padding:12px; margin-top:10px;">Find Result</button>
+        </div>
+
+        <div id="sub-police" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
+            <label>Select Post</label>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:12px;">
+                <button onclick="setResType(this, 'Bihar Police Constable')" class="pill">Constable</button>
+                <button onclick="setResType(this, 'Bihar Police SI')" class="pill">SI (Daroga)</button>
+                <button onclick="setResType(this, 'Bihar Police Driver')" class="pill">Driver</button>
+            </div>
+            <label>Select Year</label>
+            <input type="number" id="police-year" class="input-box" value="2026">
+            <button onclick="finalResSearch('Bihar Police')" class="btn-primary" style="padding:12px;">Check Result</button>
         </div>
     </div>
 
@@ -193,7 +282,7 @@
 </div>
 
 <script>
-    let user = {}; let currentCat = ''; let resType = '';
+    let user = {}; let currentCat = ''; let loading = false; let resType = '';
 
     function toggleMenu() { document.getElementById('sideMenu').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
     
@@ -209,10 +298,16 @@
         else { document.getElementById('login-sec').classList.remove('hidden'); }
     };
 
+    function toggleEdu(el, val) {
+        document.querySelectorAll('.edu-chip').forEach(c => c.classList.remove('selected'));
+        el.classList.add('selected'); user.edu = val;
+    }
+
     function saveLogin() {
         user.name = document.getElementById('u-name').value;
-        user.contact = document.getElementById('u-contact').value; 
-        if(!user.name || !user.contact) return alert("Details bharo bhai!");
+        user.contact = document.getElementById('u-contact').value;
+        user.state = document.getElementById('u-state').value;
+        if(!user.name || !user.contact || !user.edu) return alert("Details bharo bhai!");
         localStorage.setItem('rozgarUser', JSON.stringify(user));
         showDash();
     }
@@ -221,7 +316,7 @@
         document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
         document.getElementById('dash-sec').classList.remove('hidden');
         document.getElementById('user-initial').innerText = user.name[0].toUpperCase();
-        loadLiveUpdates(); 
+        loadLiveUpdates();
     }
 
     async function loadLiveUpdates() {
@@ -246,6 +341,16 @@
         document.getElementById('res-sec').classList.remove('hidden');
     }
 
+    function toggleResSub(id) {
+        document.querySelectorAll('#res-sec .card').forEach(c => c.classList.add('hidden'));
+        document.getElementById('sub-' + id).classList.remove('hidden');
+    }
+
+    function setResType(el, val) {
+        el.parentElement.querySelectorAll('.pill').forEach(p => p.classList.remove('active-pill'));
+        el.classList.add('active-pill'); resType = val;
+    }
+
     function openJobs(cat) {
         currentCat = cat;
         document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
@@ -268,7 +373,7 @@
                 document.getElementById('list').innerHTML += `
                 <div class="job-card">
                     <h3 class="job-title">${i.title}</h3>
-                    <a href="${i.link}" target="_blank" class="btn-primary" style="padding:10px; font-size:12px; text-decoration:none; display:block; text-align:center;">View Details 🚀</a>
+                    <a href="${i.link}" target="_blank" class="btn-apply">View Details 🚀</a>
                 </div>`;
             });
         } catch(e) {}
