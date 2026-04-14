@@ -1,4 +1,4 @@
-Import requests
+import requests
 from flask import Flask, render_template, request, jsonify, send_from_directory
 from flask_cors import CORS
 import os
@@ -12,7 +12,7 @@ K1 = "268aa2e751d03f3d"
 K2 = "61ffa0fe6b46cd80bf6ec73d"
 SERPER_API_KEY = K1 + K2
 
-# 🔥 FIX: direct key hata ke env variable use kiya (kuch remove nahi kiya)
+# 🔥 FIX: direct key hata ke env variable use kiya
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 @app.route('/manifest.json')
@@ -76,7 +76,7 @@ def fetch_jobs():
             query = f"{category}"
 
         headers = {'X-API-KEY': SERPER_API_KEY, 'Content-Type': 'application/json'}
-        payload = {'q': query, 'num': 10, 'start': (page - 1) * 10, 'gl': 'in'}
+        payload = {'q': query, 'num': 40, 'start': (page - 1) * 10, 'gl': 'in'}
 
         response = requests.post('https://google.serper.dev/search', headers=headers, json=payload)
         results = response.json().get('organic', [])
@@ -85,7 +85,7 @@ def fetch_jobs():
     except Exception as e:
         return jsonify({"error": str(e)})
 
-# 🔥 NEW AI ROUTE ADD KIYA (ye bhi extra hai, kuch delete nahi kiya)
+# 🔥 NEW AI ROUTE (jaisa tumne rakha tha)
 @app.route('/ask_ai', methods=['POST'])
 def ask_ai():
     try:
@@ -106,9 +106,7 @@ def ask_ai():
 
         result = response.json()
         answer = result['output'][0]['content'][0]['text']
-
         return jsonify({"answer": answer})
-
     except Exception as e:
         return jsonify({"answer": "Error aa gaya bhai"})
 
