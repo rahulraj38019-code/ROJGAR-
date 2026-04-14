@@ -85,39 +85,43 @@ def fetchData():
     except Exception as e:
         return jsonify({"error": str(e)})
 
-# 🔥 GEMINI WORKING AI AGENT ROUTE (Update Kiya Gaya)
+# 🔥 GEMINI WORKING AI AGENT ROUTE (Logging ke saath Update Kiya)
 @app.route('/ask_ai', methods=['POST'])
 def ask_ai():
     try:
         data = request.get_json()
-        # HTML se 'prompt' key ke saath data aayega
         prompt = data.get('prompt') 
 
-        # Google Gemini API Call
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
+        # Google Gemini API Call (v1 use kiya hai jo zyada stable hai)
+        url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
         headers = {'Content-Type': 'application/json'}
         
-        # AI ko instruction diya hai ki wo mere jaisa (Desi/Friendly) baat kare
         payload = {
             "contents": [{
-                "parts": [{"text": f"Bhai, tum ek Rozgar AI Agent ho. User ke is sawal ka jawab ekdum dost ki tarah desi hindi mix English mein do: {prompt}"}]
+                "parts": [{"text": f"Bhai, tum ek Rozgar Hub AI ho. User ka sawal: {prompt}. Ekdum desi hindi mix English mein dost ki tarah jawab do."}]
             }]
         }
 
         response = requests.post(url, headers=headers, json=payload)
         result = response.json()
         
-        # AI Answer safely nikalna
+        # --- YE LINE RENDER LOGS MEIN ASLI ERROR DIKHAYEGI ---
+        print("DEBUG_GOOGLE_API_RESPONSE:", result)
+
         if 'candidates' in result and len(result['candidates']) > 0:
             answer = result['candidates'][0]['content']['parts'][0]['text']
+        elif 'error' in result:
+            # Agar Google error bhej raha hai toh wo yahan dikhega
+            error_msg = result['error'].get('message', 'Unknown Google Error')
+            answer = f"Oteri! Google ne mana kar diya: {error_msg}"
         else:
-            answer = "Bhai, API limit ya key check kar lo, response nahi mila."
+            answer = "Bhai, response nahi mila. API Key ya Region ka chakkar ho sakta hai."
 
         return jsonify({"answer": answer})
 
     except Exception as e:
-        print(f"Error: {e}")
-        return jsonify({"answer": "Bhai, server side par error hai. Net ya API key dekho."})
+        print(f"FATAL_SERVER_ERROR: {e}")
+        return jsonify({"answer": "Bhai, server side par kuch fat gaya hai. Logs check karo."})
 
 if __name__ == '__main__':
     app.run(debug=True)
