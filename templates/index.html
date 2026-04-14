@@ -27,7 +27,7 @@
         .menu-overlay.active { display: block; }
         .menu-item { padding: 15px 0; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 15px; cursor: pointer; font-weight: 600; font-size: 14px; }
         
-        /* --- NAYA LIVE PANEL CSS --- */
+        /* --- LIVE PANEL CSS --- */
         .live-panel { background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 24px; padding: 18px; margin-bottom: 25px; border: 2px solid #334155; box-shadow: 0 10px 30px rgba(0,0,0,0.2); position: relative; }
         .live-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
         .live-dot { width: 12px; height: 12px; background: #ff4757; border-radius: 50%; animation: blink 1s infinite; box-shadow: 0 0 12px #ff4757; }
@@ -42,7 +42,6 @@
         
         .ticker-item { font-size: 12px; color: #cbd5e1; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); display: block; text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .ticker-item:hover { color: var(--blue); }
-        /* -------------------------- */
 
         .dark-mode header, .dark-mode .bottom-nav { border-color: #334155; }
         .dark-mode .input-box { background: #1e293b !important; border-color: #334155 !important; color: #ffffff !important; }
@@ -283,10 +282,9 @@
         document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
         document.getElementById('dash-sec').classList.remove('hidden');
         document.getElementById('user-initial').innerText = user.name[0].toUpperCase();
-        loadLiveUpdates(); // Naya function call
+        loadLiveUpdates(); 
     }
 
-    // --- NAYA FUNCTION: LIVE DATA FETCH KARNE KE LIYE ---
     async function loadLiveUpdates() {
         try {
             const res = await fetch('/get_live_updates');
@@ -300,7 +298,7 @@
                 data.jobs.forEach(j => {
                     jobBox.innerHTML += `<a href="${j.link}" target="_blank" class="ticker-item">🔥 ${j.title}</a>`;
                 });
-                jobBox.innerHTML += jobBox.innerHTML; // Seamless loop ke liye
+                jobBox.innerHTML += jobBox.innerHTML;
             }
             
             if(data.admits.length > 0) {
@@ -308,7 +306,7 @@
                 data.admits.forEach(a => {
                     admitBox.innerHTML += `<a href="${a.link}" target="_blank" class="ticker-item">🆕 ${a.title}</a>`;
                 });
-                admitBox.innerHTML += admitBox.innerHTML; // Seamless loop ke liye
+                admitBox.innerHTML += admitBox.innerHTML;
             }
         } catch (e) { console.error("Live Update Error"); }
     }
@@ -365,10 +363,23 @@
             });
             const data = await res.json();
             
-            let isResult = currentCat.toLowerCase().includes('result') || currentCat.toLowerCase().includes('board');
-
             data.forEach(i => {
-                let btnText = isResult ? "View Result 📄" : "View & Apply 🚀";
+                // --- FIX: SMART BUTTON LOGIC ---
+                let title = i.title.toLowerCase();
+                let btnText = "View Details 🚀"; 
+
+                if (title.includes("result")) {
+                    btnText = "Check Result ✅";
+                } else if (title.includes("admit card") || title.includes("hall ticket")) {
+                    btnText = "Download Admit 🎫";
+                } else if (title.includes("exam date") || title.includes("schedule")) {
+                    btnText = "Check Exam Date 📅";
+                } else if (title.includes("answer key")) {
+                    btnText = "View Answer Key 📝";
+                } else if (title.includes("apply") || title.includes("form") || title.includes("recruitment")) {
+                    btnText = "View & Apply ✍️";
+                }
+
                 document.getElementById('list').innerHTML += `
                 <div class="job-card">
                     <h3 class="job-title">${i.title}</h3>
