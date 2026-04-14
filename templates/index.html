@@ -27,6 +27,7 @@
         .menu-overlay.active { display: block; }
         .menu-item { padding: 15px 0; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 15px; cursor: pointer; font-weight: 600; font-size: 14px; }
         
+        /* --- LIVE PANEL CSS --- */
         .live-panel { background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 24px; padding: 18px; margin-bottom: 25px; border: 2px solid #334155; box-shadow: 0 10px 30px rgba(0,0,0,0.2); position: relative; }
         .live-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
         .live-dot { width: 12px; height: 12px; background: #ff4757; border-radius: 50%; animation: blink 1s infinite; box-shadow: 0 0 12px #ff4757; }
@@ -132,8 +133,10 @@
             <h1 style="text-align:center; font-weight:900;">Welcome! 🚀</h1>
             <label>Full Name</label>
             <input type="text" id="u-name" class="input-box" placeholder="e.g. Rahul Raj">
+            
             <label>Email or Mobile Number</label>
             <input type="text" id="u-contact" class="input-box" placeholder="e.g. +91 0000000000">
+            
             <label>Current State</label>
             <input type="text" id="u-state" class="input-box" placeholder="e.g. Bihar">
             <label>Education</label>
@@ -156,11 +159,15 @@
             <div class="ticker-container">
                 <div class="ticker-col">
                     <div class="ticker-title">New Jobs 🚀</div>
-                    <div id="job-ticker" class="scroll-box"></div>
+                    <div id="job-ticker" class="scroll-box">
+                        <div class="ticker-item">Loading updates...</div>
+                    </div>
                 </div>
                 <div class="ticker-col">
                     <div class="ticker-title">Admit Cards 🎫</div>
-                    <div id="admit-ticker" class="scroll-box"></div>
+                    <div id="admit-ticker" class="scroll-box">
+                        <div class="ticker-item">Loading updates...</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -179,7 +186,7 @@
             <div class="dash-card" onclick="openJobs('ITI Jobs')"><i>⚙️</i><span>ITI Specialist</span></div>
             <div class="dash-card" onclick="openJobs('Remote Work from Home Jobs')"><i>🏠</i><span>Remote/WFH</span></div>
         </div>
-        
+
         <h3 style="font-weight:800; margin-top:30px;">Direct Support</h3>
         <a href="https://whatsapp.com/channel/0029VbCL3cTElagwBiU2aJ2N" target="_blank" class="social-link-card">
             <div style="display:flex; align-items:center; gap:12px;">
@@ -191,6 +198,17 @@
             </div>
             <div style="color:var(--blue); font-weight:800;">JOIN</div>
         </a>
+
+        <a href="https://www.instagram.com/___rahul_yadav_._?igsh=b3ltc2FwaDd4bzB1" target="_blank" class="social-link-card">
+            <div style="display:flex; align-items:center; gap:12px;">
+                <div class="social-icon" style="background:#fff0f6; color:#e1306c;">📸</div>
+                <div>
+                    <div style="font-weight:800; font-size:14px;">Instagram Profile</div>
+                    <div style="font-size:11px; color:var(--text-muted);">Follow for latest tips</div>
+                </div>
+            </div>
+            <div style="color:var(--blue); font-weight:800;">FOLLOW</div>
+        </a>
     </div>
 
     <div id="res-sec" class="hidden">
@@ -201,7 +219,56 @@
             <div class="dash-card" onclick="toggleResSub('ssc')"><i>🦁</i><span>SSC</span></div>
             <div class="dash-card" onclick="toggleResSub('police')"><i>👮</i><span>Bihar Police</span></div>
         </div>
+
+        <div id="sub-bihar-board" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
+            <label>Exam Type</label>
+            <div style="display:flex; gap:10px; margin-bottom:12px;">
+                <button onclick="setResType(this, 'Matric')" class="pill" style="flex:1;">Matric (10th)</button>
+                <button onclick="setResType(this, 'Inter')" class="pill" style="flex:1;">Inter (12th)</button>
+            </div>
+            <button onclick="finalResSearch('Bihar Board')" class="btn-primary" style="padding:12px;">Get Result</button>
         </div>
+
+        <div id="sub-railway" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
+            <label>Select Railway Post</label>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:12px;">
+                <button onclick="setResType(this, 'Railway Group D')" class="pill">Group D</button>
+                <button onclick="setResType(this, 'Railway ALP')" class="pill">ALP</button>
+                <button onclick="setResType(this, 'Railway Technician')" class="pill">Technician</button>
+                <button onclick="setResType(this, 'Railway NTPC')" class="pill">NTPC</button>
+            </div>
+            <label>Select Year</label>
+            <select id="rail-year" class="input-box">
+                <option value="2026">2026</option>
+                <option value="2025">2025</option>
+                <option value="2024">2024</option>
+            </select>
+            <button onclick="finalResSearch('Railway')" class="btn-primary" style="padding:12px;">Search Result</button>
+        </div>
+
+        <div id="sub-ssc" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
+            <label>Choose SSC Exam</label>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                <button onclick="setResType(this, 'SSC MTS')" class="pill">MTS</button>
+                <button onclick="setResType(this, 'SSC CGL')" class="pill">CGL</button>
+                <button onclick="setResType(this, 'SSC CHSL')" class="pill">CHSL</button>
+                <button onclick="setResType(this, 'SSC GD')" class="pill">GD</button>
+            </div>
+            <button onclick="finalResSearch('SSC')" class="btn-primary" style="padding:12px; margin-top:10px;">Find Result</button>
+        </div>
+
+        <div id="sub-police" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
+            <label>Select Post</label>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:12px;">
+                <button onclick="setResType(this, 'Bihar Police Constable')" class="pill">Constable</button>
+                <button onclick="setResType(this, 'Bihar Police SI')" class="pill">SI (Daroga)</button>
+                <button onclick="setResType(this, 'Bihar Police Driver')" class="pill">Driver</button>
+            </div>
+            <label>Select Year</label>
+            <input type="number" id="police-year" class="input-box" value="2026">
+            <button onclick="finalResSearch('Bihar Police')" class="btn-primary" style="padding:12px;">Check Result</button>
+        </div>
+    </div>
 
     <div id="feed-sec" class="hidden">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
@@ -209,142 +276,4 @@
             <button onclick="showDash()" style="color:var(--blue); border:none; background:none; font-weight:800;">Home</button>
         </div>
         <div id="list"></div>
-        <div id="loading" class="hidden" style="text-align:center; font-weight:700; color:var(--blue); padding:20px;">Fetching...</div>
-    </div>
-</div>
-
-<nav class="bottom-nav">
-    <div class="nav-item active" onclick="showDash()"><i>🏠</i>Home</div>
-    <div class="nav-item" onclick="showResults()"><i>📄</i>Results</div>
-    <div class="nav-item" onclick="openJobs('latest jobs')"><i>💼</i>Jobs</div>
-    <div class="nav-item" onclick="toggleMenu()"><i>⚙️</i>Menu</div>
-</nav>
-
-<script>
-    // System Variables
-    let currentEdu = "";
-    let resType = "";
-
-    // Load Local Data
-    window.onload = () => {
-        const user = localStorage.getItem('user');
-        if (!user) {
-            document.getElementById('login-sec').classList.remove('hidden');
-        } else {
-            document.getElementById('dash-sec').classList.remove('hidden');
-            document.getElementById('user-initial').innerText = JSON.parse(user).name[0].toUpperCase();
-            fetchLiveUpdates();
-        }
-        if(localStorage.getItem('theme') === 'dark') toggleDarkMode(true);
-    };
-
-    // AI Functions (Vercel Fixed)
-    function toggleAI() {
-        const box = document.getElementById('ai-box');
-        box.style.display = (box.style.display === 'flex') ? 'none' : 'flex';
-    }
-
-    async function sendToAI() {
-        const input = document.getElementById('ai-input');
-        const box = document.getElementById('ai-messages');
-        const val = input.value.trim();
-        if(!val) return;
-
-        // User message UI
-        box.innerHTML += `<div class="msg user">${val}</div>`;
-        input.value = "";
-        box.scrollTop = box.scrollHeight;
-
-        try {
-            // FIXED: Path changed to /ask_ai (Universal path for Vercel/Render)
-            const res = await fetch('/ask_ai', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ prompt: val })
-            });
-            const data = await res.json();
-            box.innerHTML += `<div class="msg bot">${data.answer}</div>`;
-        } catch (e) {
-            box.innerHTML += `<div class="msg bot">Bhai, server connected nahi hai. Check karo!</div>`;
-        }
-        box.scrollTop = box.scrollHeight;
-    }
-
-    // Business Logic
-    function saveLogin() {
-        const name = document.getElementById('u-name').value;
-        const contact = document.getElementById('u-contact').value;
-        const state = document.getElementById('u-state').value;
-        if(!name || !currentEdu) return alert("Poori detail bharo!");
-        localStorage.setItem('user', JSON.stringify({ name, contact, state, edu: currentEdu }));
-        location.reload();
-    }
-
-    function toggleEdu(el, val) {
-        document.querySelectorAll('.edu-chip').forEach(c => c.classList.remove('selected'));
-        el.classList.add('selected');
-        currentEdu = val;
-    }
-
-    async function fetchLiveUpdates() {
-        try {
-            const res = await fetch('/get_live_updates');
-            const data = await res.json();
-            const jBox = document.getElementById('job-ticker');
-            const aBox = document.getElementById('admit-ticker');
-            
-            jBox.innerHTML = data.jobs.map(j => `<a href="${j.link}" target="_blank" class="ticker-item">🔥 ${j.title}</a>`).join('') + jBox.innerHTML;
-            aBox.innerHTML = data.admits.map(a => `<a href="${a.link}" target="_blank" class="ticker-item">🎫 ${a.title}</a>`).join('') + aBox.innerHTML;
-        } catch (e) { console.log("Ticker Error"); }
-    }
-
-    async function openJobs(cat) {
-        showFeed();
-        document.getElementById('f-title').innerText = cat;
-        document.getElementById('list').innerHTML = "";
-        document.getElementById('loading').classList.remove('hidden');
-
-        const user = JSON.parse(localStorage.getItem('user'));
-        try {
-            const res = await fetch('/fetch_jobs', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ category: cat, state: user.state, edu: user.edu })
-            });
-            const data = await res.json();
-            document.getElementById('loading').classList.add('hidden');
-            
-            document.getElementById('list').innerHTML = data.map(job => `
-                <div class="job-card">
-                    <h4 class="job-title">${job.title}</h4>
-                    <p style="font-size:11px; color:var(--text-muted); margin:5px 0;">Source: ${job.link.split('/')[2]}</p>
-                    <a href="${job.link}" target="_blank" class="btn-apply">View Details & Apply</a>
-                </div>
-            `).join('');
-        } catch (e) { alert("Data fetch failed!"); }
-    }
-
-    // UI Helpers
-    function showDash() { hideAll(); document.getElementById('dash-sec').classList.remove('hidden'); }
-    function showResults() { hideAll(); document.getElementById('res-sec').classList.remove('hidden'); }
-    function showFeed() { hideAll(); document.getElementById('feed-sec').classList.remove('hidden'); }
-    function hideAll() { 
-        ['dash-sec', 'res-sec', 'feed-sec', 'login-sec'].forEach(id => document.getElementById(id).classList.add('hidden')); 
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    }
-    function toggleMenu() { 
-        document.getElementById('sideMenu').classList.toggle('active'); 
-        document.getElementById('overlay').classList.toggle('active');
-    }
-    function toggleDarkMode(init = false) {
-        const body = document.getElementById('app-body');
-        body.classList.toggle('dark-mode');
-        const isDark = body.classList.contains('dark-mode');
-        if(!init) localStorage.setItem('theme', isDark ? 'dark' : 'light');
-        document.getElementById('mode-btn').innerText = isDark ? '☀️' : '🌙';
-    }
-    function logout() { localStorage.clear(); location.reload(); }
-</script>
-
-</body>
-</html>
+        <div id="loading" class="hidden" style="text-align:center; font-weight:700; color:var(--bl
