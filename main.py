@@ -3,6 +3,7 @@ from flask import Flask, render_template, request, jsonify, send_from_directory
 from flask_cors import CORS
 import os
 from bs4 import BeautifulSoup
+import google.generativeai as genai  # 🔥 Nayi Library import ki hai
 
 app = Flask(__name__)
 CORS(app)
@@ -12,8 +13,12 @@ K1 = "268aa2e751d03f3d"
 K2 = "61ffa0fe6b46cd80bf6ec73d"
 SERPER_API_KEY = K1 + K2
 
-# 🔥 GEMINI API KEY
+# 🔥 GEMINI API CONFIG (Library setup)
 GEMINI_API_KEY = "AIzaSyBf_YPYwWRmcMvquhlAP4-inZy3yOVwAnA"
+genai.configure(api_key=GEMINI_API_KEY)
+
+# Model configuration
+model = genai.GenerativeModel('gemini-1.5-flash')
 
 @app.route('/manifest.json')
 def serve_manifest():
@@ -27,7 +32,7 @@ def serve_sw():
 def index():
     return render_template('index.html')
 
-# --- LIVE UPDATES ROUTE ---
+# --- LIVE UPDATES ROUTE (No changes here) ---
 @app.route('/get_live_updates')
 def get_live_updates():
     try:
@@ -85,48 +90,32 @@ def fetchData():
     except Exception as e:
         return jsonify({"error": str(e)})
 
-# 🔥 GEMINI WORKING AI AGENT ROUTE (FIXED MODEL NAME)
+# 🔥 GEMINI WORKING AI AGENT (Library Method)
 @app.route('/ask_ai', methods=['POST'])
 def ask_ai():
     try:
         data = request.get_json()
         prompt = data.get('prompt') 
 
-        # Model name changed to gemini-1.5-flash-latest to fix "model not found"
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key={GEMINI_API_KEY}"
-        headers = {'Content-Type': 'application/json'}
-        
+        # Personalized System Instruction taaki AI doston ki tarah baat kare
         system_instruction = (
-            "Tum Gemini ho, ek authentic aur adaptive AI collaborator. "
-            "Tumhara kaam Rozgar Hub ke users ki help karna hai ekdum doston ki tarah desi Hinglish mein. "
-            "Clear, concise aur witty raho."
+            "Tum Gemini ho, Rozgar Hub ke users ke liye ek friendly aur witty AI assistant. "
+            "Tumhe desi Hinglish mein jawab dena hai. Zyada formalities mat karo, ek dum desi dost banke guide karo."
         )
 
-        payload = {
-            "contents": [{
-                "parts": [{"text": f"{system_instruction}\n\nUser: {prompt}"}]
-            }]
-        }
-
-        response = requests.post(url, headers=headers, json=payload)
-        result = response.json()
+        # Library se content generate karna
+        response = model.generate_content(f"{system_instruction}\n\nUser: {prompt}")
         
-        print("DEBUG_GOOGLE_API_RESPONSE:", result)
-
-        if 'candidates' in result and len(result['candidates']) > 0:
-            answer = result['candidates'][0]['content']['parts'][0]['text']
-        elif 'error' in result:
-            # Agar ab bhi error aaye toh ye exact message dikhayega
-            error_msg = result['error'].get('message', 'Unknown Error')
-            answer = f"Oteri! Google ne mana kar diya: {error_msg}"
+        if response.text:
+            answer = response.text
         else:
-            answer = "Bhai, response nahi mila. Ek baar phir se try kar na!"
+            answer = "Bhai, Google ne response nahi diya. Ek baar phir se pucho!"
 
         return jsonify({"answer": answer})
 
     except Exception as e:
-        print(f"FATAL_SERVER_ERROR: {e}")
-        return jsonify({"answer": "Bhai, backend par kuch fat gaya hai."})
+        print(f"FATAL_ERROR: {e}")
+        return jsonify({"answer": f"Oteri! Ek naya error aa gaya: {str(e)}"})
 
 if __name__ == '__main__':
     app.run(debug=True)
