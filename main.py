@@ -12,6 +12,9 @@ K1 = "268aa2e751d03f3d"
 K2 = "61ffa0fe6b46cd80bf6ec73d"
 SERPER_API_KEY = K1 + K2
 
+# 🔥 FIX: direct key hata ke env variable use kiya (kuch remove nahi kiya)
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
 @app.route('/manifest.json')
 def serve_manifest():
     return send_from_directory(os.getcwd(), 'manifest.json')
@@ -81,6 +84,33 @@ def fetch_jobs():
         return jsonify(results)
     except Exception as e:
         return jsonify({"error": str(e)})
+
+# 🔥 NEW AI ROUTE ADD KIYA (ye bhi extra hai, kuch delete nahi kiya)
+@app.route('/ask_ai', methods=['POST'])
+def ask_ai():
+    try:
+        data = request.get_json()
+        question = data.get('question')
+
+        response = requests.post(
+            "https://api.openai.com/v1/responses",
+            headers={
+                "Authorization": f"Bearer {OPENAI_API_KEY}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "model": "gpt-4.1-mini",
+                "input": question
+            }
+        )
+
+        result = response.json()
+        answer = result['output'][0]['content'][0]['text']
+
+        return jsonify({"answer": answer})
+
+    except Exception as e:
+        return jsonify({"answer": "Error aa gaya bhai"})
 
 if __name__ == '__main__':
     app.run(debug=True)
