@@ -71,9 +71,43 @@
         .social-link-card { display: flex; align-items: center; justify-content: space-between; background: var(--white); padding: 15px; border-radius: 18px; margin-top: 10px; border: 1px solid #eee; text-decoration: none; transition: 0.3s; }
         .social-link-card:active { transform: scale(0.98); }
         .social-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+
+        /* --- AI ASSISTANT CSS --- */
+        #ai-trigger { position: fixed; bottom: 85px; right: 20px; z-index: 1001; cursor: pointer; transition: 0.3s; }
+        .ai-robot { font-size: 40px; animation: float 3s ease-in-out infinite; display: block; }
+        .hi-hand { position: absolute; top: 0; left: -10px; font-size: 20px; animation: wave 1.5s infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        @keyframes wave { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(30deg); } }
+
+        #ai-box { position: fixed; bottom: 100px; right: 20px; width: 320px; height: 450px; background: var(--white); border-radius: 20px; box-shadow: 0 15px 50px rgba(0,0,0,0.2); z-index: 1002; display: none; flex-direction: column; overflow: hidden; border: 1px solid #eee; }
+        .ai-header { background: var(--blue); color: white; padding: 15px; font-weight: 800; display: flex; justify-content: space-between; align-items: center; }
+        #ai-messages { flex: 1; padding: 15px; overflow-y: auto; font-size: 13px; display: flex; flex-direction: column; gap: 10px; }
+        .msg { padding: 10px 14px; border-radius: 15px; max-width: 80%; line-height: 1.4; }
+        .msg.bot { background: var(--light-blue); color: var(--blue); align-self: flex-start; }
+        .msg.user { background: var(--blue); color: white; align-self: flex-end; }
+        .ai-input-area { padding: 10px; border-top: 1px solid #eee; display: flex; gap: 8px; }
     </style>
 </head>
 <body id="app-body">
+
+<div id="ai-trigger" onclick="toggleAI()">
+    <span class="hi-hand">👋</span>
+    <span class="ai-robot">🤖</span>
+</div>
+
+<div id="ai-box">
+    <div class="ai-header">
+        <span>Rozgar AI 🤖</span>
+        <span onclick="toggleAI()" style="cursor:pointer; font-size:20px;">×</span>
+    </div>
+    <div id="ai-messages">
+        <div class="msg bot">Namaste! Main Rozgar AI hoon. Main apki job ya result dhoondhne mein help kar sakta hoon. Poochiye?</div>
+    </div>
+    <div class="ai-input-area">
+        <input type="text" id="ai-input" class="input-box" placeholder="Sawal likhein..." style="margin:0; padding:10px;">
+        <button onclick="sendToAI()" style="background:var(--blue); color:white; border:none; border-radius:10px; padding:0 15px; cursor:pointer;">➡️</button>
+    </div>
+</div>
 
 <div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
 
@@ -289,26 +323,19 @@
         try {
             const res = await fetch('/get_live_updates');
             const data = await res.json();
-            
             const jobBox = document.getElementById('job-ticker');
             const admitBox = document.getElementById('admit-ticker');
-            
             if(data.jobs.length > 0) {
                 jobBox.innerHTML = '';
-                data.jobs.forEach(j => {
-                    jobBox.innerHTML += `<a href="${j.link}" target="_blank" class="ticker-item">🔥 ${j.title}</a>`;
-                });
+                data.jobs.forEach(j => { jobBox.innerHTML += `<a href="${j.link}" target="_blank" class="ticker-item">🔥 ${j.title}</a>`; });
                 jobBox.innerHTML += jobBox.innerHTML;
             }
-            
             if(data.admits.length > 0) {
                 admitBox.innerHTML = '';
-                data.admits.forEach(a => {
-                    admitBox.innerHTML += `<a href="${a.link}" target="_blank" class="ticker-item">🆕 ${a.title}</a>`;
-                });
+                data.admits.forEach(a => { admitBox.innerHTML += `<a href="${a.link}" target="_blank" class="ticker-item">🆕 ${a.title}</a>`; });
                 admitBox.innerHTML += admitBox.innerHTML;
             }
-        } catch (e) { console.error("Live Update Error"); }
+        } catch (e) {}
     }
 
     function showResults() {
@@ -334,9 +361,7 @@
         let year = "2026";
         if(cat === 'Railway') year = document.getElementById('rail-year').value;
         if(cat === 'Bihar Police') year = document.getElementById('police-year').value;
-        
-        let query = `${resType} Result ${year} official link`;
-        openJobs(query);
+        openJobs(`${resType} Result ${year} official link`);
     }
 
     function openJobs(cat) {
@@ -362,34 +387,45 @@
                 body: JSON.stringify({ category: currentCat, state: user.state, edu: user.edu })
             });
             const data = await res.json();
-            
             data.forEach(i => {
-                // --- FIX: SMART BUTTON LOGIC ---
-                let title = i.title.toLowerCase();
-                let btnText = "View Details 🚀"; 
-
-                if (title.includes("result")) {
-                    btnText = "Check Result ✅";
-                } else if (title.includes("admit card") || title.includes("hall ticket")) {
-                    btnText = "Download Admit 🎫";
-                } else if (title.includes("exam date") || title.includes("schedule")) {
-                    btnText = "Check Exam Date 📅";
-                } else if (title.includes("answer key")) {
-                    btnText = "View Answer Key 📝";
-                } else if (title.includes("apply") || title.includes("form") || title.includes("recruitment")) {
-                    btnText = "View & Apply ✍️";
-                }
-
                 document.getElementById('list').innerHTML += `
                 <div class="job-card">
                     <h3 class="job-title">${i.title}</h3>
-                    <div style="display:flex; gap:10px; margin-top:10px;">
-                        <a href="${i.link}" target="_blank" class="btn-apply" style="flex:1;">${btnText}</a>
-                    </div>
+                    <a href="${i.link}" target="_blank" class="btn-apply">View Details 🚀</a>
                 </div>`;
             });
         } catch(e) {}
         document.getElementById('loading').classList.add('hidden');
+    }
+
+    // --- AI FUNCTIONS ---
+    function toggleAI() {
+        const box = document.getElementById('ai-box');
+        box.style.display = (box.style.display === 'flex') ? 'none' : 'flex';
+    }
+
+    async function sendToAI() {
+        const input = document.getElementById('ai-input');
+        const msg = input.value;
+        if(!msg) return;
+        
+        const chat = document.getElementById('ai-messages');
+        chat.innerHTML += `<div class="msg user">${msg}</div>`;
+        input.value = '';
+        chat.scrollTop = chat.scrollHeight;
+
+        try {
+            const res = await fetch('/ask_ai', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ prompt: msg })
+            });
+            const data = await res.json();
+            chat.innerHTML += `<div class="msg bot">${data.answer}</div>`;
+            chat.scrollTop = chat.scrollHeight;
+        } catch(e) {
+            chat.innerHTML += `<div class="msg bot">Server error. Check API Key.</div>`;
+        }
     }
 
     function logout() { localStorage.removeItem('rozgarUser'); location.reload(); }
