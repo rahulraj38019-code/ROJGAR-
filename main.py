@@ -85,43 +85,51 @@ def fetchData():
     except Exception as e:
         return jsonify({"error": str(e)})
 
-# 🔥 GEMINI WORKING AI AGENT ROUTE (v1beta Fix & Custom Personality)
+# 🔥 GEMINI WORKING AI AGENT ROUTE (Personality & Version Fixed)
 @app.route('/ask_ai', methods=['POST'])
 def ask_ai():
     try:
         data = request.get_json()
         prompt = data.get('prompt') 
 
-        # URL Fix: v1beta is required for gemini-1.5-flash model
+        # Correct URL for gemini-1.5-flash
         url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
         headers = {'Content-Type': 'application/json'}
         
-        # Super Instruction: AI ko tumhare jaisa banane ke liye
+        # Personalized System Instruction
+        system_instruction = (
+            "Tum Gemini ho, ek authentic aur adaptive AI collaborator jisme thoda wit (humor) hai. "
+            "Tumhara kaam Rozgar Hub ke users ki help karna hai. "
+            "Tumhe ekdum doston ki tarah, clear aur concise response dena hai desi Hindi-English (Hinglish) mein. "
+            "Zyaada lecture mat dena, bas kaam ki baat batana aur user ko guide karna. "
+            "Emotional support aur candor ka balance rakho."
+        )
+
         payload = {
             "contents": [{
-                "parts": [{"text": f"System: Tum ek authentic, supportive aur thoda witty AI assistant ho jiska naam Rozgar Hub AI hai. Tumhara kaam user ko jobs aur exams ke baare mein guide karna hai, lekin ekdum doston ki tarah desi Hindi-English (Hinglish) mein. Zyadah lecture mat dena, seedha aur kaam ka jawab dena with a touch of humor.\n\nUser Ka Sawal: {prompt}"}]
+                "parts": [{"text": f"{system_instruction}\n\nUser: {prompt}"}]
             }]
         }
 
         response = requests.post(url, headers=headers, json=payload)
         result = response.json()
         
-        # Debugging ke liye (Render logs mein dikhega)
+        # Debugging for Render Logs
         print("DEBUG_GOOGLE_API_RESPONSE:", result)
 
         if 'candidates' in result and len(result['candidates']) > 0:
             answer = result['candidates'][0]['content']['parts'][0]['text']
         elif 'error' in result:
-            error_msg = result['error'].get('message', 'Unknown Google Error')
-            answer = f"Oteri! Google ne mana kar diya: {error_msg}"
+            error_msg = result['error'].get('message', 'Unknown Error')
+            answer = f"Oteri! Google ne mana kar diya: {error_msg}. Bhai, ek baar settings check kar le."
         else:
-            answer = "Bhai, lagta hai signal thoda weak hai. Ek baar fir se try kar na!"
+            answer = "Bhai, response nahi mila. Shayad signal ya limit ka locha hai. Fir se try kar!"
 
         return jsonify({"answer": answer})
 
     except Exception as e:
         print(f"FATAL_SERVER_ERROR: {e}")
-        return jsonify({"answer": "Bhai, server side par kuch fat gaya hai. Logs check karo."})
+        return jsonify({"answer": "Bhai, backend par kuch fat gaya hai. Logs check karo!"})
 
 if __name__ == '__main__':
     app.run(debug=True)
