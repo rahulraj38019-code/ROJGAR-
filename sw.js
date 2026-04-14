@@ -1,19 +1,10 @@
-const CACHE_NAME = 'rozgar-v2';
+const cacheName = 'rozgar-v1';
+const assets = ['./', './index.html'];
 
-const STATIC_ASSETS = [
-  '/',
-  '/manifest.json',
-  '/sw.js'
-];
-
-self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(STATIC_ASSETS))
-  );
+self.addEventListener('install', e => {
+  e.waitUntil(caches.open(cacheName).then(cache => cache.addAll(assets)));
 });
 
-self.addEventListener('fetch', event => {
-  event.respondWith(
-    caches.match(event.request).then(res => res || fetch(event.request))
-  );
+self.addEventListener('fetch', e => {
+  e.respondWith(caches.match(e.request).then(res => res || fetch(e.request)));
 });
