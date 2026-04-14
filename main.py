@@ -18,7 +18,7 @@ GEMINI_API_KEY = "AIzaSyBf_YPYwWRmcMvquhlAP4-inZy3yOVwAnA"
 genai.configure(api_key=GEMINI_API_KEY)
 
 # Stable Model: gemini-pro (Iska koi nakhra nahi hota)
-model = genai.GenerativeModel('gemini-pro')
+model = genai.GenerativeModel('gemini-1.5-flash')
 
 @app.route('/manifest.json')
 def serve_manifest():
