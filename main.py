@@ -3,7 +3,7 @@ from flask import Flask, render_template, request, jsonify, send_from_directory
 from flask_cors import CORS
 import os
 from bs4 import BeautifulSoup
-import google.generativeai as genai  # 🔥 Library setup
+import google.generativeai as genai 
 
 app = Flask(__name__)
 CORS(app)
@@ -13,12 +13,12 @@ K1 = "268aa2e751d03f3d"
 K2 = "61ffa0fe6b46cd80bf6ec73d"
 SERPER_API_KEY = K1 + K2
 
-# 🔥 GEMINI API CONFIG (Isse models/ path ka issue solve hoga)
+# 🔥 GEMINI API CONFIG (Vercel/Global Servers ke liye best setup)
 GEMINI_API_KEY = "AIzaSyBf_YPYwWRmcMvquhlAP4-inZy3yOVwAnA"
 genai.configure(api_key=GEMINI_API_KEY)
 
-# Stable Model Initialization
-model = genai.GenerativeModel('gemini-1.5-flash-latest')
+# Stable Model: gemini-pro (Iska koi nakhra nahi hota)
+model = genai.GenerativeModel('gemini-pro')
 
 @app.route('/manifest.json')
 def serve_manifest():
@@ -32,7 +32,7 @@ def serve_sw():
 def index():
     return render_template('index.html')
 
-# --- LIVE UPDATES ROUTE ---
+# --- LIVE UPDATES ROUTE (No changes) ---
 @app.route('/get_live_updates')
 def get_live_updates():
     try:
@@ -90,34 +90,26 @@ def fetchData():
     except Exception as e:
         return jsonify({"error": str(e)})
 
-# 🔥 GEMINI WORKING AI AGENT (Stable Version)
+# 🔥 GEMINI WORKING AI AGENT (Vercel Ready)
 @app.route('/ask_ai', methods=['POST'])
 def ask_ai():
     try:
         data = request.get_json()
         prompt = data.get('prompt') 
 
-        # System message for personality
-        system_instruction = (
-            "Tum Gemini ho, Rozgar Hub ke users ke liye ek friendly aur witty AI assistant. "
-            "Ek dum desi Hinglish mein jawab do doston ki tarah. No formal talk."
-        )
+        # Desi prompt
+        system_instruction = "Tum Rozgar Hub ke witty AI dost ho. Desi Hinglish mein doston ki tarah jawab do."
 
-        # Content generation call
-        response = model.generate_content(f"{system_instruction}\n\nUser Question: {prompt}")
+        # Content generation
+        response = model.generate_content(f"{system_instruction}\n\nUser: {prompt}")
         
         if response and response.text:
-            answer = response.text
+            return jsonify({"answer": response.text})
         else:
-            answer = "Bhai, Google ke server se response nahi aaya. Ek baar phir try karo na!"
-
-        return jsonify({"answer": answer})
+            return jsonify({"answer": "Bhai, Google ne dandi maar di. Phir se puch!"})
 
     except Exception as e:
-        # Detailed error logging for Render
-        error_msg = str(e)
-        print(f"DEBUG_ERROR: {error_msg}")
-        return jsonify({"answer": f"Bhai, thoda technical issue hai: {error_msg[:50]}"})
+        return jsonify({"answer": f"Oteri! Error aa gaya: {str(e)[:50]}"})
 
 if __name__ == '__main__':
     app.run(debug=True)
