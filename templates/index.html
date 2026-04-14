@@ -133,6 +133,10 @@
             <h1 style="text-align:center; font-weight:900;">Welcome! 🚀</h1>
             <label>Full Name</label>
             <input type="text" id="u-name" class="input-box" placeholder="e.g. Rahul Raj">
+            
+            <label>Email or Mobile Number</label>
+            <input type="text" id="u-contact" class="input-box" placeholder="e.g. +91 0000000000">
+            
             <label>Current State</label>
             <input type="text" id="u-state" class="input-box" placeholder="e.g. Bihar">
             <label>Education</label>
@@ -306,8 +310,9 @@
 
     function saveLogin() {
         user.name = document.getElementById('u-name').value;
+        user.contact = document.getElementById('u-contact').value; // Contact save kiya
         user.state = document.getElementById('u-state').value;
-        if(!user.name || !user.edu) return alert("Details bharo bhai!");
+        if(!user.name || !user.edu || !user.contact) return alert("Saari details bharo bhai!");
         localStorage.setItem('rozgarUser', JSON.stringify(user));
         showDash();
     }
