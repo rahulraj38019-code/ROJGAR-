@@ -3,7 +3,7 @@ from flask import Flask, render_template, request, jsonify, send_from_directory
 from flask_cors import CORS
 import os
 from bs4 import BeautifulSoup
-import google.generativeai as genai  # 🔥 Nayi Library import ki hai
+import google.generativeai as genai  # 🔥 Library setup
 
 app = Flask(__name__)
 CORS(app)
@@ -13,12 +13,12 @@ K1 = "268aa2e751d03f3d"
 K2 = "61ffa0fe6b46cd80bf6ec73d"
 SERPER_API_KEY = K1 + K2
 
-# 🔥 GEMINI API CONFIG (Library setup)
+# 🔥 GEMINI API CONFIG (Isse models/ path ka issue solve hoga)
 GEMINI_API_KEY = "AIzaSyBf_YPYwWRmcMvquhlAP4-inZy3yOVwAnA"
 genai.configure(api_key=GEMINI_API_KEY)
 
-# Model configuration
-model = genai.GenerativeModel('gemini-1.5-flash')
+# Stable Model Initialization
+model = genai.GenerativeModel('gemini-1.5-flash-latest')
 
 @app.route('/manifest.json')
 def serve_manifest():
@@ -32,7 +32,7 @@ def serve_sw():
 def index():
     return render_template('index.html')
 
-# --- LIVE UPDATES ROUTE (No changes here) ---
+# --- LIVE UPDATES ROUTE ---
 @app.route('/get_live_updates')
 def get_live_updates():
     try:
@@ -90,32 +90,34 @@ def fetchData():
     except Exception as e:
         return jsonify({"error": str(e)})
 
-# 🔥 GEMINI WORKING AI AGENT (Library Method)
+# 🔥 GEMINI WORKING AI AGENT (Stable Version)
 @app.route('/ask_ai', methods=['POST'])
 def ask_ai():
     try:
         data = request.get_json()
         prompt = data.get('prompt') 
 
-        # Personalized System Instruction taaki AI doston ki tarah baat kare
+        # System message for personality
         system_instruction = (
             "Tum Gemini ho, Rozgar Hub ke users ke liye ek friendly aur witty AI assistant. "
-            "Tumhe desi Hinglish mein jawab dena hai. Zyada formalities mat karo, ek dum desi dost banke guide karo."
+            "Ek dum desi Hinglish mein jawab do doston ki tarah. No formal talk."
         )
 
-        # Library se content generate karna
-        response = model.generate_content(f"{system_instruction}\n\nUser: {prompt}")
+        # Content generation call
+        response = model.generate_content(f"{system_instruction}\n\nUser Question: {prompt}")
         
-        if response.text:
+        if response and response.text:
             answer = response.text
         else:
-            answer = "Bhai, Google ne response nahi diya. Ek baar phir se pucho!"
+            answer = "Bhai, Google ke server se response nahi aaya. Ek baar phir try karo na!"
 
         return jsonify({"answer": answer})
 
     except Exception as e:
-        print(f"FATAL_ERROR: {e}")
-        return jsonify({"answer": f"Oteri! Ek naya error aa gaya: {str(e)}"})
+        # Detailed error logging for Render
+        error_msg = str(e)
+        print(f"DEBUG_ERROR: {error_msg}")
+        return jsonify({"answer": f"Bhai, thoda technical issue hai: {error_msg[:50]}"})
 
 if __name__ == '__main__':
     app.run(debug=True)
