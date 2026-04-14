@@ -276,4 +276,164 @@
             <button onclick="showDash()" style="color:var(--blue); border:none; background:none; font-weight:800;">Home</button>
         </div>
         <div id="list"></div>
-        <div id="loading" class="hidden" style="text-align:center; font-weight:700; color:var(--bl
+        <div id="loading" class="hidden" style="text-align:center; font-weight:700; color:var(--blue); padding:20px;">Fetching latest updates...</div>
+    </div>
+</div>
+
+<div class="bottom-nav">
+    <div class="nav-item active" onclick="showDash()"><i>🏠</i>Home</div>
+    <div class="nav-item" onclick="showResults()"><i>📄</i>Results</div>
+    <div class="nav-item" onclick="toggleMenu()"><i>⚙️</i>Settings</div>
+</div>
+
+<script>
+    let user = {}; let currentCat = ''; let loading = false; let resType = '';
+
+    function toggleMenu() { document.getElementById('sideMenu').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
+    
+    function toggleDarkMode() {
+        document.body.classList.toggle('dark-mode');
+        localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+    }
+
+    window.onload = () => {
+        if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
+        const saved = localStorage.getItem('rozgarUser');
+        if(saved) { user = JSON.parse(saved); showDash(); } 
+        else { document.getElementById('login-sec').classList.remove('hidden'); }
+    };
+
+    function toggleEdu(el, val) {
+        document.querySelectorAll('.edu-chip').forEach(c => c.classList.remove('selected'));
+        el.classList.add('selected'); user.edu = val;
+    }
+
+    function saveLogin() {
+        user.name = document.getElementById('u-name').value;
+        user.contact = document.getElementById('u-contact').value; // Contact save kiya
+        user.state = document.getElementById('u-state').value;
+        if(!user.name || !user.edu || !user.contact) return alert("Saari details bharo bhai!");
+        localStorage.setItem('rozgarUser', JSON.stringify(user));
+        showDash();
+    }
+
+    function showDash() {
+        document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
+        document.getElementById('dash-sec').classList.remove('hidden');
+        document.getElementById('user-initial').innerText = user.name[0].toUpperCase();
+        loadLiveUpdates(); 
+    }
+
+    async function loadLiveUpdates() {
+        try {
+            const res = await fetch('/get_live_updates');
+            const data = await res.json();
+            const jobBox = document.getElementById('job-ticker');
+            const admitBox = document.getElementById('admit-ticker');
+            if(data.jobs.length > 0) {
+                jobBox.innerHTML = '';
+                data.jobs.forEach(j => { jobBox.innerHTML += `<a href="${j.link}" target="_blank" class="ticker-item">🔥 ${j.title}</a>`; });
+                jobBox.innerHTML += jobBox.innerHTML;
+            }
+            if(data.admits.length > 0) {
+                admitBox.innerHTML = '';
+                data.admits.forEach(a => { admitBox.innerHTML += `<a href="${a.link}" target="_blank" class="ticker-item">🆕 ${a.title}</a>`; });
+                admitBox.innerHTML += admitBox.innerHTML;
+            }
+        } catch (e) {}
+    }
+
+    function showResults() {
+        document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
+        document.getElementById('res-sec').classList.remove('hidden');
+    }
+
+    function toggleResSub(id) {
+        ['bihar-board', 'railway', 'ssc', 'police'].forEach(k => document.getElementById('sub-'+k)?.classList.add('hidden'));
+        document.getElementById('sub-'+id)?.classList.remove('hidden');
+        resType = ''; 
+        document.querySelectorAll('.pill').forEach(p => p.classList.remove('active-pill'));
+    }
+
+    function setResType(el, val) { 
+        resType = val; 
+        el.parentElement.querySelectorAll('.pill').forEach(p => p.classList.remove('active-pill'));
+        el.classList.add('active-pill');
+    }
+
+    function finalResSearch(cat) {
+        if(!resType) return alert("Pehle post select karein!");
+        let year = "2026";
+        if(cat === 'Railway') year = document.getElementById('rail-year').value;
+        if(cat === 'Bihar Police') year = document.getElementById('police-year').value;
+        openJobs(`${resType} Result ${year} official link`);
+    }
+
+    function openJobs(cat) {
+        currentCat = cat;
+        document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
+        document.getElementById('feed-sec').classList.remove('hidden');
+        document.getElementById('f-title').innerText = cat;
+        document.getElementById('list').innerHTML = '';
+        fetchData();
+    }
+
+    function triggerSearch() {
+        const sQuery = document.getElementById('main-search-inp').value;
+        if(sQuery) openJobs(sQuery);
+    }
+
+    async function fetchData() {
+        document.getElementById('loading').classList.remove('hidden');
+        try {
+            const res = await fetch('/fetch_jobs', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ category: currentCat, state: user.state, edu: user.edu })
+            });
+            const data = await res.json();
+            data.forEach(i => {
+                document.getElementById('list').innerHTML += `
+                <div class="job-card">
+                    <h3 class="job-title">${i.title}</h3>
+                    <a href="${i.link}" target="_blank" class="btn-apply">View Details 🚀</a>
+                </div>`;
+            });
+        } catch(e) {}
+        document.getElementById('loading').classList.add('hidden');
+    }
+
+    // --- AI FUNCTIONS ---
+    function toggleAI() {
+        const box = document.getElementById('ai-box');
+        box.style.display = (box.style.display === 'flex') ? 'none' : 'flex';
+    }
+
+    async function sendToAI() {
+        const input = document.getElementById('ai-input');
+        const msg = input.value;
+        if(!msg) return;
+        
+        const chat = document.getElementById('ai-messages');
+        chat.innerHTML += `<div class="msg user">${msg}</div>`;
+        input.value = '';
+        chat.scrollTop = chat.scrollHeight;
+
+        try {
+            const res = await fetch('/ask_ai', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ prompt: msg })
+            });
+            const data = await res.json();
+            chat.innerHTML += `<div class="msg bot">${data.answer}</div>`;
+            chat.scrollTop = chat.scrollHeight;
+        } catch(e) {
+            chat.innerHTML += `<div class="msg bot">Server error. Check API Key.</div>`;
+        }
+    }
+
+    function logout() { localStorage.removeItem('rozgarUser'); location.reload(); }
+</script>
+</body>
+</html>
