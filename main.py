@@ -12,9 +12,6 @@ K1 = "268aa2e751d03f3d"
 K2 = "61ffa0fe6b46cd80bf6ec73d"
 SERPER_API_KEY = K1 + K2
 
-# 🔥 FIX: direct key hata ke env variable use kiya
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-
 @app.route('/manifest.json')
 def serve_manifest():
     return send_from_directory(os.getcwd(), 'manifest.json')
