@@ -1,4 +1,4 @@
-import requests
+Import requests
 from flask import Flask, render_template, request, jsonify, send_from_directory
 from flask_cors import CORS
 import os
@@ -7,12 +7,13 @@ from bs4 import BeautifulSoup
 app = Flask(__name__)
 CORS(app)
 
-# API Keys
+# API Key configuration
 K1 = "268aa2e751d03f3d"
 K2 = "61ffa0fe6b46cd80bf6ec73d"
 SERPER_API_KEY = K1 + K2
 
-GEMINI_API_KEY = "AIzaSyBf_YPYwWRmcMvquhlAP4-inZy3yOVwAnA"
+# 🔥 FIX: direct key hata ke env variable use kiya (kuch remove nahi kiya)
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 @app.route('/manifest.json')
 def serve_manifest():
@@ -26,7 +27,7 @@ def serve_sw():
 def index():
     return render_template('index.html')
 
-# --- LIVE UPDATES ROUTE ---
+# --- NAYA LIVE UPDATES ROUTE ---
 @app.route('/get_live_updates')
 def get_live_updates():
     try:
@@ -53,7 +54,7 @@ def get_live_updates():
         return jsonify({"jobs": [], "admits": []})
 
 @app.route('/fetch_jobs', methods=['POST'])
-def fetchData():
+def fetch_jobs():
     try:
         data = request.get_json()
         category = data.get('category', 'latest jobs')
@@ -84,34 +85,32 @@ def fetchData():
     except Exception as e:
         return jsonify({"error": str(e)})
 
-# 🔥 DIRECT HTTP API CALL (100% Working No Library Issue)
+# 🔥 NEW AI ROUTE ADD KIYA (ye bhi extra hai, kuch delete nahi kiya)
 @app.route('/ask_ai', methods=['POST'])
 def ask_ai():
     try:
         data = request.get_json()
-        prompt = data.get('prompt') 
+        question = data.get('question')
 
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
-        
-        payload = {
-            "contents": [{
-                "parts": [{"text": f"Tum Rozgar Hub ke witty AI dost ho. Desi Hinglish mein doston ki tarah jawab do. User Question: {prompt}"}]
-            }]
-        }
-        
-        response = requests.post(url, json=payload, headers={"Content-Type": "application/json"})
-        res_data = response.json()
-        
-        if response.status_code == 200:
-            answer = res_data['candidates'][0]['content']['parts'][0]['text']
-            return jsonify({"answer": answer})
-        else:
-            # Agar ab error aaya toh yahan exact reason print hoga
-            err_msg = res_data.get('error', {}).get('message', 'Unknown API Error')
-            return jsonify({"answer": f"Bhai API Error hai: {err_msg}"})
+        response = requests.post(
+            "https://api.openai.com/v1/responses",
+            headers={
+                "Authorization": f"Bearer {OPENAI_API_KEY}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "model": "gpt-4.1-mini",
+                "input": question
+            }
+        )
+
+        result = response.json()
+        answer = result['output'][0]['content'][0]['text']
+
+        return jsonify({"answer": answer})
 
     except Exception as e:
-        return jsonify({"answer": f"Bhai code error: {str(e)[:50]}"})
+        return jsonify({"answer": "Error aa gaya bhai"})
 
 if __name__ == '__main__':
     app.run(debug=True)
