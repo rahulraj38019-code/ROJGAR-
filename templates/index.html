@@ -1,141 +1,398 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ROZGAR HUB</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROZGAR HUB - Professional Portal</title>
+    
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#007bff">
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js');
+      }
+    </script>
 
-<link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#007bff">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --main: #121212; --blue: #007bff; --light-blue: #e7f1ff; --bg: #f8fafc; --white: #ffffff; --text-muted: #64748b; }
+        body.dark-mode { --bg: #0f172a; --white: #1e293b; --main: #f1f5f9; --text-muted: #94a3b8; --light-blue: #1e3a8a; }
+        body { background: var(--bg); font-family: 'Inter', sans-serif; margin: 0; padding: 0; padding-bottom: 120px; color: var(--main); transition: 0.3s; overflow-x: hidden; }
+        .container { max-width: 500px; margin: 0 auto; padding: 15px; }
+        header { background: var(--white); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 100; }
+        .logo-text { font-weight: 800; font-size: 20px; color: var(--blue); letter-spacing: -0.5px; cursor: pointer; }
+        .side-menu { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: var(--white); z-index: 1000; transition: 0.3s; box-shadow: 10px 0 30px rgba(0,0,0,0.1); padding: 25px; box-sizing: border-box; }
+        .side-menu.active { left: 0; }
+        .menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; display: none; }
+        .menu-overlay.active { display: block; }
+        .menu-item { padding: 15px 0; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 15px; cursor: pointer; font-weight: 600; font-size: 14px; }
+        
+        /* --- LIVE PANEL CSS --- */
+        .live-panel { background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 24px; padding: 18px; margin-bottom: 25px; border: 2px solid #334155; box-shadow: 0 10px 30px rgba(0,0,0,0.2); position: relative; }
+        .live-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
+        .live-dot { width: 12px; height: 12px; background: #ff4757; border-radius: 50%; animation: blink 1s infinite; box-shadow: 0 0 12px #ff4757; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+        
+        .ticker-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; height: 120px; overflow: hidden; }
+        .ticker-col { display: flex; flex-direction: column; }
+        .ticker-title { font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--blue); margin-bottom: 8px; text-align: center; background: rgba(0,123,255,0.1); padding: 4px; border-radius: 6px; }
+        .scroll-box { animation: scrollUp 20s linear infinite; }
+        .scroll-box:hover { animation-play-state: paused; }
+        @keyframes scrollUp { 0% { transform: translateY(0); } 100% { transform: translateY(-50%); } }
+        
+        .ticker-item { font-size: 12px; color: #cbd5e1; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); display: block; text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .ticker-item:hover { color: var(--blue); }
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-
-<script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js');
-}
-</script>
-
-<style>
-body{margin:0;font-family:Inter;background:#f8fafc}
-.container{max-width:500px;margin:auto;padding:15px}
-header{display:flex;justify-content:space-between;padding:15px;background:#fff}
-.card{background:#fff;padding:15px;border-radius:12px;margin-bottom:15px}
-.btn{background:#007bff;color:#fff;padding:12px;border:none;border-radius:8px;width:100%}
-.ticker{font-size:12px;display:block;margin:5px 0}
-</style>
+        .dark-mode header, .dark-mode .bottom-nav { border-color: #334155; }
+        .dark-mode .input-box { background: #1e293b !important; border-color: #334155 !important; color: #ffffff !important; }
+        .dark-mode .card, .dark-mode .job-card, .dark-mode .dash-card, .dark-mode .login-card { border-color: #334155; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .login-card { background: var(--white); padding: 30px 25px; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.04); border: 1px solid #f0f0f0; }
+        .input-box { width: 100%; padding: 16px; border-radius: 14px; border: 1.5px solid #e2e8f0; font-size: 14px; font-weight: 600; box-sizing: border-box; outline: none; transition: 0.3s; margin-bottom: 18px; background: #fbfcfe; color: #121212; }
+        label { display: block; font-size: 12px; font-weight: 800; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .edu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px; }
+        .edu-chip { border: 1.5px solid #e2e8f0; padding: 12px; border-radius: 12px; text-align: center; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.3s; background: var(--white); color: var(--text-muted); }
+        .edu-chip.selected { background: var(--blue) !important; color: #fff !important; border-color: var(--blue) !important; }
+        .card { background: var(--white); padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); margin-bottom: 20px; border: 1px solid #f0f0f0; }
+        .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .dash-card { background: var(--white); padding: 15px; border-radius: 18px; text-align: center; border: 1px solid #f0f0f0; transition: 0.3s; cursor: pointer; }
+        .dash-card i { font-size: 24px; display: block; margin-bottom: 5px; font-style: normal; }
+        .job-card { background: var(--white); padding: 18px; border-radius: 16px; margin-bottom: 12px; border: 1px solid #f0f0f0; }
+        .job-title { font-size: 15px; font-weight: 700; color: var(--main); margin: 0; }
+        .btn-apply { display: block; text-align: center; background: var(--blue); color: white; padding: 12px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 13px; margin-top: 15px; }
+        .btn-primary { width: 100%; background: var(--blue); color: white; padding: 18px; border: none; border-radius: 15px; font-size: 16px; font-weight: 800; cursor: pointer; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #eee; box-shadow: 0 -5px 15px rgba(0,0,0,0.03); max-width: 500px; margin: 0 auto; z-index: 99; }
+        .nav-item { text-align: center; color: #94a3b8; font-size: 10px; font-weight: 700; cursor: pointer; text-decoration: none;}
+        .nav-item.active { color: var(--blue); }
+        .nav-item i { font-size: 20px; display: block; margin-bottom: 3px; font-style: normal; }
+        .hidden { display: none; }
+        .pill { background: #fff; padding: 8px 16px; border-radius: 50px; border: 1px solid #ddd; font-size: 12px; font-weight: 600; cursor: pointer; margin-bottom: 5px; color: var(--text-muted); }
+        .pill.active-pill { background: var(--blue) !important; color: white !important; border-color: var(--blue) !important; }
+        
+        .social-link-card { display: flex; align-items: center; justify-content: space-between; background: var(--white); padding: 15px; border-radius: 18px; margin-top: 10px; border: 1px solid #eee; text-decoration: none; transition: 0.3s; }
+        .social-link-card:active { transform: scale(0.98); }
+        .social-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    </style>
 </head>
+<body id="app-body">
 
-<body>
+<div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
+
+<div class="side-menu" id="sideMenu">
+    <h3 style="margin-top:0; color:var(--blue);">App Settings ⚙️</h3>
+    <div class="menu-item" onclick="editProfile()">👤 Edit Profile</div>
+    <div class="menu-item" onclick="toggleDarkMode()">🌓 Switch Theme</div>
+    <div class="menu-item" onclick="location.reload()">🔄 Refresh Updates</div>
+    <div class="menu-item" style="color:red; border:none;" onclick="logout()">🚪 Logout</div>
+</div>
 
 <header>
-<div><b>ROZGAR HUB</b></div>
-<div onclick="toggleDark()">🌙</div>
+    <div class="logo-text" onclick="toggleMenu()">ROZGAR HUB</div>
+    <div style="display: flex; align-items: center; gap: 15px;">
+        <div onclick="toggleDarkMode()" id="mode-btn" style="cursor:pointer; font-size: 20px; background: var(--light-blue); width: 35px; height: 35px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">🌙</div>
+        <div id="user-initial" style="background:var(--light-blue); color:var(--blue); width:35px; height:35px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px;">U</div>
+    </div>
 </header>
 
 <div class="container">
+    <div id="login-sec" class="hidden">
+        <div class="login-card">
+            <h1 style="text-align:center; font-weight:900;">Welcome! 🚀</h1>
+            <label>Full Name</label>
+            <input type="text" id="u-name" class="input-box" placeholder="e.g. Rahul Raj">
+            <label>Current State</label>
+            <input type="text" id="u-state" class="input-box" placeholder="e.g. Bihar">
+            <label>Education</label>
+            <div class="edu-grid" id="edu-options">
+                <div class="edu-chip" onclick="toggleEdu(this, '10th')">10th Pass</div>
+                <div class="edu-chip" onclick="toggleEdu(this, '12th')">12th Pass</div>
+                <div class="edu-chip" onclick="toggleEdu(this, 'ITI')">ITI Pass</div>
+                <div class="edu-chip" onclick="toggleEdu(this, 'UG')">Undergraduate</div>
+            </div>
+            <button onclick="saveLogin()" class="btn-primary">Save Profile ⚡</button>
+        </div>
+    </div>
 
-<div id="login">
-<input id="name" placeholder="Name" class="card">
-<button onclick="saveUser()" class="btn">Start</button>
+    <div id="dash-sec" class="hidden">
+        <div class="live-panel">
+            <div class="live-header">
+                <div class="live-dot"></div>
+                <span style="color:white; font-weight:800; font-size:14px;">LIVE UPDATES 🛰️</span>
+            </div>
+            <div class="ticker-container">
+                <div class="ticker-col">
+                    <div class="ticker-title">New Jobs 🚀</div>
+                    <div id="job-ticker" class="scroll-box">
+                        <div class="ticker-item">Loading updates...</div>
+                    </div>
+                </div>
+                <div class="ticker-col">
+                    <div class="ticker-title">Admit Cards 🎫</div>
+                    <div id="admit-ticker" class="scroll-box">
+                        <div class="ticker-item">Loading updates...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="padding: 5px; border: 1.5px solid var(--blue);">
+            <div style="display: flex; align-items: center;">
+                <input type="text" id="main-search-inp" placeholder="Search Jobs or Results..." style="flex:1; padding:12px; border:none; outline:none; font-weight:600; background:transparent; color:var(--main);">
+                <button onclick="triggerSearch()" style="background:var(--blue); color:white; border:none; border-radius:10px; padding:10px 15px; cursor:pointer;">🔍</button>
+            </div>
+        </div>
+
+        <h3 style="font-weight:800;">Top Categories</h3>
+        <div class="dash-grid">
+            <div class="dash-card" onclick="openJobs('Govt Jobs')"><i>🏛️</i><span>Govt Jobs</span></div>
+            <div class="dash-card" onclick="openJobs('Railway Jobs')"><i>🚂</i><span>Railway</span></div>
+            <div class="dash-card" onclick="openJobs('ITI Jobs')"><i>⚙️</i><span>ITI Specialist</span></div>
+            <div class="dash-card" onclick="openJobs('Remote Work from Home Jobs')"><i>🏠</i><span>Remote/WFH</span></div>
+        </div>
+
+        <h3 style="font-weight:800; margin-top:30px;">Direct Support</h3>
+        <a href="https://whatsapp.com/channel/0029VbCL3cTElagwBiU2aJ2N" target="_blank" class="social-link-card">
+            <div style="display:flex; align-items:center; gap:12px;">
+                <div class="social-icon" style="background:#e7fbf0; color:#22c55e;">💬</div>
+                <div>
+                    <div style="font-weight:800; font-size:14px;">WhatsApp Channel</div>
+                    <div style="font-size:11px; color:var(--text-muted);">Get daily updates on phone</div>
+                </div>
+            </div>
+            <div style="color:var(--blue); font-weight:800;">JOIN</div>
+        </a>
+
+        <a href="https://www.instagram.com/___rahul_yadav_._?igsh=b3ltc2FwaDd4bzB1" target="_blank" class="social-link-card">
+            <div style="display:flex; align-items:center; gap:12px;">
+                <div class="social-icon" style="background:#fff0f6; color:#e1306c;">📸</div>
+                <div>
+                    <div style="font-weight:800; font-size:14px;">Instagram Profile</div>
+                    <div style="font-size:11px; color:var(--text-muted);">Follow for latest tips</div>
+                </div>
+            </div>
+            <div style="color:var(--blue); font-weight:800;">FOLLOW</div>
+        </a>
+    </div>
+
+    <div id="res-sec" class="hidden">
+        <h3 style="font-weight:800; margin-bottom:15px;">Results Portal 📄</h3>
+        <div class="dash-grid">
+            <div class="dash-card" onclick="toggleResSub('bihar-board')"><i>🎓</i><span>Bihar Board</span></div>
+            <div class="dash-card" onclick="toggleResSub('railway')"><i>🚂</i><span>Railway</span></div>
+            <div class="dash-card" onclick="toggleResSub('ssc')"><i>🦁</i><span>SSC</span></div>
+            <div class="dash-card" onclick="toggleResSub('police')"><i>👮</i><span>Bihar Police</span></div>
+        </div>
+
+        <div id="sub-bihar-board" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
+            <label>Exam Type</label>
+            <div style="display:flex; gap:10px; margin-bottom:12px;">
+                <button onclick="setResType(this, 'Matric')" class="pill" style="flex:1;">Matric (10th)</button>
+                <button onclick="setResType(this, 'Inter')" class="pill" style="flex:1;">Inter (12th)</button>
+            </div>
+            <button onclick="finalResSearch('Bihar Board')" class="btn-primary" style="padding:12px;">Get Result</button>
+        </div>
+
+        <div id="sub-railway" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
+            <label>Select Railway Post</label>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:12px;">
+                <button onclick="setResType(this, 'Railway Group D')" class="pill">Group D</button>
+                <button onclick="setResType(this, 'Railway ALP')" class="pill">ALP</button>
+                <button onclick="setResType(this, 'Railway Technician')" class="pill">Technician</button>
+                <button onclick="setResType(this, 'Railway NTPC')" class="pill">NTPC</button>
+            </div>
+            <label>Select Year</label>
+            <select id="rail-year" class="input-box">
+                <option value="2026">2026</option>
+                <option value="2025">2025</option>
+                <option value="2024">2024</option>
+            </select>
+            <button onclick="finalResSearch('Railway')" class="btn-primary" style="padding:12px;">Search Result</button>
+        </div>
+
+        <div id="sub-ssc" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
+            <label>Choose SSC Exam</label>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                <button onclick="setResType(this, 'SSC MTS')" class="pill">MTS</button>
+                <button onclick="setResType(this, 'SSC CGL')" class="pill">CGL</button>
+                <button onclick="setResType(this, 'SSC CHSL')" class="pill">CHSL</button>
+                <button onclick="setResType(this, 'SSC GD')" class="pill">GD</button>
+            </div>
+            <button onclick="finalResSearch('SSC')" class="btn-primary" style="padding:12px; margin-top:10px;">Find Result</button>
+        </div>
+
+        <div id="sub-police" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
+            <label>Select Post</label>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:12px;">
+                <button onclick="setResType(this, 'Bihar Police Constable')" class="pill">Constable</button>
+                <button onclick="setResType(this, 'Bihar Police SI')" class="pill">SI (Daroga)</button>
+                <button onclick="setResType(this, 'Bihar Police Driver')" class="pill">Driver</button>
+            </div>
+            <label>Select Year</label>
+            <input type="number" id="police-year" class="input-box" value="2026">
+            <button onclick="finalResSearch('Bihar Police')" class="btn-primary" style="padding:12px;">Check Result</button>
+        </div>
+    </div>
+
+    <div id="feed-sec" class="hidden">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h3 id="f-title" style="margin:0; text-transform:uppercase; font-size:16px; font-weight:800;">Listing</h3>
+            <button onclick="showDash()" style="color:var(--blue); border:none; background:none; font-weight:800;">Home</button>
+        </div>
+        <div id="list"></div>
+        <div id="loading" class="hidden" style="text-align:center; font-weight:700; color:var(--blue); padding:20px;">Fetching latest updates...</div>
+    </div>
 </div>
 
-<div id="dash" style="display:none">
-
-<div class="card">
-<h3>Jobs</h3>
-<div id="jobs">Loading...</div>
-</div>
-
-<div class="card">
-<h3>Admit</h3>
-<div id="admits">Loading...</div>
-</div>
-
-<input id="search" placeholder="Search jobs..." class="card">
-<button onclick="search()" class="btn">Search</button>
-
-<div id="results"></div>
-
-</div>
-
+<div class="bottom-nav">
+    <div class="nav-item active" onclick="showDash()"><i>🏠</i>Home</div>
+    <div class="nav-item" onclick="showResults()"><i>📄</i>Results</div>
+    <div class="nav-item" onclick="toggleMenu()"><i>⚙️</i>Settings</div>
 </div>
 
 <script>
-let user = JSON.parse(localStorage.getItem("user"));
+    let user = {}; let currentCat = ''; let loading = false; let resType = '';
 
-if(user){
-document.getElementById("login").style.display="none";
-document.getElementById("dash").style.display="block";
-load();
-}
+    function toggleMenu() { document.getElementById('sideMenu').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
+    
+    function toggleDarkMode() {
+        document.body.classList.toggle('dark-mode');
+        localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+    }
 
-function saveUser(){
-let name=document.getElementById("name").value;
-if(!name) return alert("Enter name");
-localStorage.setItem("user",JSON.stringify({name}));
-location.reload();
-}
+    window.onload = () => {
+        if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
+        const saved = localStorage.getItem('rozgarUser');
+        if(saved) { user = JSON.parse(saved); showDash(); } 
+        else { document.getElementById('login-sec').classList.remove('hidden'); }
+    };
 
-function toggleDark(){
-document.body.style.background=document.body.style.background=="black"?"#f8fafc":"black";
-}
+    function toggleEdu(el, val) {
+        document.querySelectorAll('.edu-chip').forEach(c => c.classList.remove('selected'));
+        el.classList.add('selected'); user.edu = val;
+    }
 
-async function load(){
-let jobs=document.getElementById("jobs");
-let admits=document.getElementById("admits");
+    function saveLogin() {
+        user.name = document.getElementById('u-name').value;
+        user.state = document.getElementById('u-state').value;
+        if(!user.name || !user.edu) return alert("Details bharo bhai!");
+        localStorage.setItem('rozgarUser', JSON.stringify(user));
+        showDash();
+    }
 
-try{
-let res=await fetch("/get_live_updates");
-let data=await res.json();
+    function showDash() {
+        document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
+        document.getElementById('dash-sec').classList.remove('hidden');
+        document.getElementById('user-initial').innerText = user.name[0].toUpperCase();
+        loadLiveUpdates(); 
+    }
 
-let jHTML="";
-let aHTML="";
+    async function loadLiveUpdates() {
+        try {
+            const res = await fetch('/get_live_updates');
+            const data = await res.json();
+            
+            const jobBox = document.getElementById('job-ticker');
+            const admitBox = document.getElementById('admit-ticker');
+            
+            if(data.jobs.length > 0) {
+                jobBox.innerHTML = '';
+                data.jobs.forEach(j => {
+                    jobBox.innerHTML += `<a href="${j.link}" target="_blank" class="ticker-item">🔥 ${j.title}</a>`;
+                });
+                jobBox.innerHTML += jobBox.innerHTML;
+            }
+            
+            if(data.admits.length > 0) {
+                admitBox.innerHTML = '';
+                data.admits.forEach(a => {
+                    admitBox.innerHTML += `<a href="${a.link}" target="_blank" class="ticker-item">🆕 ${a.title}</a>`;
+                });
+                admitBox.innerHTML += admitBox.innerHTML;
+            }
+        } catch (e) { console.error("Live Update Error"); }
+    }
 
-data.jobs.forEach(j=>{
-jHTML+=`<a href="${j.link}" target="_blank" class="ticker">${j.title}</a>`;
-});
+    function showResults() {
+        document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
+        document.getElementById('res-sec').classList.remove('hidden');
+    }
 
-data.admits.forEach(a=>{
-aHTML+=`<a href="${a.link}" target="_blank" class="ticker">${a.title}</a>`;
-});
+    function toggleResSub(id) {
+        ['bihar-board', 'railway', 'ssc', 'police'].forEach(k => document.getElementById('sub-'+k)?.classList.add('hidden'));
+        document.getElementById('sub-'+id)?.classList.remove('hidden');
+        resType = ''; 
+        document.querySelectorAll('.pill').forEach(p => p.classList.remove('active-pill'));
+    }
 
-jobs.innerHTML=jHTML||"No jobs";
-admits.innerHTML=aHTML||"No admits";
+    function setResType(el, val) { 
+        resType = val; 
+        el.parentElement.querySelectorAll('.pill').forEach(p => p.classList.remove('active-pill'));
+        el.classList.add('active-pill');
+    }
 
-}catch{
-jobs.innerHTML="Error";
-admits.innerHTML="Error";
-}
-}
+    function finalResSearch(cat) {
+        if(!resType) return alert("Pehle post select karein!");
+        let year = "2026";
+        if(cat === 'Railway') year = document.getElementById('rail-year').value;
+        if(cat === 'Bihar Police') year = document.getElementById('police-year').value;
+        
+        let query = `${resType} Result ${year} official link`;
+        openJobs(query);
+    }
 
-setInterval(load,300000);
+    function openJobs(cat) {
+        currentCat = cat;
+        document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
+        document.getElementById('feed-sec').classList.remove('hidden');
+        document.getElementById('f-title').innerText = cat;
+        document.getElementById('list').innerHTML = '';
+        fetchData();
+    }
 
-async function search(){
-let q=document.getElementById("search").value;
-let resBox=document.getElementById("results");
+    function triggerSearch() {
+        const sQuery = document.getElementById('main-search-inp').value;
+        if(sQuery) openJobs(sQuery);
+    }
 
-resBox.innerHTML="Loading...";
+    async function fetchData() {
+        document.getElementById('loading').classList.remove('hidden');
+        try {
+            const res = await fetch('/fetch_jobs', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ category: currentCat, state: user.state, edu: user.edu })
+            });
+            const data = await res.json();
+            
+            data.forEach(i => {
+                // --- FIX: SMART BUTTON LOGIC ---
+                let title = i.title.toLowerCase();
+                let btnText = "View Details 🚀"; 
 
-let res=await fetch("/fetch_jobs",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({category:q})
-});
+                if (title.includes("result")) {
+                    btnText = "Check Result ✅";
+                } else if (title.includes("admit card") || title.includes("hall ticket")) {
+                    btnText = "Download Admit 🎫";
+                } else if (title.includes("exam date") || title.includes("schedule")) {
+                    btnText = "Check Exam Date 📅";
+                } else if (title.includes("answer key")) {
+                    btnText = "View Answer Key 📝";
+                } else if (title.includes("apply") || title.includes("form") || title.includes("recruitment")) {
+                    btnText = "View & Apply ✍️";
+                }
 
-let data=await res.json();
+                document.getElementById('list').innerHTML += `
+                <div class="job-card">
+                    <h3 class="job-title">${i.title}</h3>
+                    <div style="display:flex; gap:10px; margin-top:10px;">
+                        <a href="${i.link}" target="_blank" class="btn-apply" style="flex:1;">${btnText}</a>
+                    </div>
+                </div>`;
+            });
+        } catch(e) {}
+        document.getElementById('loading').classList.add('hidden');
+    }
 
-let html="";
-data.forEach(d=>{
-html+=`<div class="card">
-<b>${d.title}</b><br>
-<a href="${d.link}" target="_blank">Apply</a>
-</div>`;
-});
-
-resBox.innerHTML=html||"No result";
-}
+    function logout() { localStorage.removeItem('rozgarUser'); location.reload(); }
 </script>
-
 </body>
 </html>
