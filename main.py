@@ -3,22 +3,16 @@ from flask import Flask, render_template, request, jsonify, send_from_directory
 from flask_cors import CORS
 import os
 from bs4 import BeautifulSoup
-import google.generativeai as genai 
 
 app = Flask(__name__)
 CORS(app)
 
-# API Key configuration
+# API Keys
 K1 = "268aa2e751d03f3d"
 K2 = "61ffa0fe6b46cd80bf6ec73d"
 SERPER_API_KEY = K1 + K2
 
-# 🔥 GEMINI API CONFIG (Vercel/Global Servers ke liye best setup)
 GEMINI_API_KEY = "AIzaSyBf_YPYwWRmcMvquhlAP4-inZy3yOVwAnA"
-genai.configure(api_key=GEMINI_API_KEY)
-
-# Stable Model: gemini-pro (Iska koi nakhra nahi hota)
-model = genai.GenerativeModel('gemini-1.5-flash')
 
 @app.route('/manifest.json')
 def serve_manifest():
@@ -32,7 +26,7 @@ def serve_sw():
 def index():
     return render_template('index.html')
 
-# --- LIVE UPDATES ROUTE (No changes) ---
+# --- LIVE UPDATES ROUTE ---
 @app.route('/get_live_updates')
 def get_live_updates():
     try:
@@ -90,26 +84,34 @@ def fetchData():
     except Exception as e:
         return jsonify({"error": str(e)})
 
-# 🔥 GEMINI WORKING AI AGENT (Vercel Ready)
+# 🔥 DIRECT HTTP API CALL (100% Working No Library Issue)
 @app.route('/ask_ai', methods=['POST'])
 def ask_ai():
     try:
         data = request.get_json()
         prompt = data.get('prompt') 
 
-        # Desi prompt
-        system_instruction = "Tum Rozgar Hub ke witty AI dost ho. Desi Hinglish mein doston ki tarah jawab do."
-
-        # Content generation
-        response = model.generate_content(f"{system_instruction}\n\nUser: {prompt}")
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
         
-        if response and response.text:
-            return jsonify({"answer": response.text})
+        payload = {
+            "contents": [{
+                "parts": [{"text": f"Tum Rozgar Hub ke witty AI dost ho. Desi Hinglish mein doston ki tarah jawab do. User Question: {prompt}"}]
+            }]
+        }
+        
+        response = requests.post(url, json=payload, headers={"Content-Type": "application/json"})
+        res_data = response.json()
+        
+        if response.status_code == 200:
+            answer = res_data['candidates'][0]['content']['parts'][0]['text']
+            return jsonify({"answer": answer})
         else:
-            return jsonify({"answer": "Bhai, Google ne dandi maar di. Phir se puch!"})
+            # Agar ab error aaya toh yahan exact reason print hoga
+            err_msg = res_data.get('error', {}).get('message', 'Unknown API Error')
+            return jsonify({"answer": f"Bhai API Error hai: {err_msg}"})
 
     except Exception as e:
-        return jsonify({"answer": f"Oteri! Error aa gaya: {str(e)[:50]}"})
+        return jsonify({"answer": f"Bhai code error: {str(e)[:50]}"})
 
 if __name__ == '__main__':
     app.run(debug=True)
