@@ -12,7 +12,7 @@ K1 = "268aa2e751d03f3d"
 K2 = "61ffa0fe6b46cd80bf6ec73d"
 SERPER_API_KEY = K1 + K2
 
-# 🔥 GEMINI API KEY (Maine direct yahan fit kar di hai taaki koi error na aaye)
+# 🔥 GEMINI API KEY (Direct fit hai taaki error na aaye)
 GEMINI_API_KEY = "AIzaSyBf_YPYwWRmcMvquhlAP4-inZy3yOVwAnA"
 
 @app.route('/manifest.json')
@@ -85,36 +85,39 @@ def fetchData():
     except Exception as e:
         return jsonify({"error": str(e)})
 
-# 🔥 GEMINI WORKING AI AGENT ROUTE (Poora update kar diya)
+# 🔥 GEMINI WORKING AI AGENT ROUTE (Update Kiya Gaya)
 @app.route('/ask_ai', methods=['POST'])
 def ask_ai():
     try:
         data = request.get_json()
-        prompt = data.get('prompt') # HTML se prompt aa raha hai
+        # HTML se 'prompt' key ke saath data aayega
+        prompt = data.get('prompt') 
 
         # Google Gemini API Call
         url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
         headers = {'Content-Type': 'application/json'}
+        
+        # AI ko instruction diya hai ki wo mere jaisa (Desi/Friendly) baat kare
         payload = {
             "contents": [{
-                "parts": [{"text": prompt}]
+                "parts": [{"text": f"Bhai, tum ek Rozgar AI Agent ho. User ke is sawal ka jawab ekdum dost ki tarah desi hindi mix English mein do: {prompt}"}]
             }]
         }
 
         response = requests.post(url, headers=headers, json=payload)
         result = response.json()
         
-        # AI Answer nikalna
-        if 'candidates' in result:
+        # AI Answer safely nikalna
+        if 'candidates' in result and len(result['candidates']) > 0:
             answer = result['candidates'][0]['content']['parts'][0]['text']
         else:
-            answer = "Bhai, API limit ya key ka koi chakkar hai. Check kar lo!"
+            answer = "Bhai, API limit ya key check kar lo, response nahi mila."
 
         return jsonify({"answer": answer})
 
     except Exception as e:
         print(f"Error: {e}")
-        return jsonify({"answer": "Bhai, server side par error aa gaya hai."})
+        return jsonify({"answer": "Bhai, server side par error hai. Net ya API key dekho."})
 
 if __name__ == '__main__':
     app.run(debug=True)
