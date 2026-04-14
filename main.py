@@ -85,24 +85,21 @@ def fetchData():
     except Exception as e:
         return jsonify({"error": str(e)})
 
-# 🔥 GEMINI WORKING AI AGENT ROUTE (Personality & Version Fixed)
+# 🔥 GEMINI WORKING AI AGENT ROUTE (FIXED MODEL NAME)
 @app.route('/ask_ai', methods=['POST'])
 def ask_ai():
     try:
         data = request.get_json()
         prompt = data.get('prompt') 
 
-        # Correct URL for gemini-1.5-flash
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
+        # Model name changed to gemini-1.5-flash-latest to fix "model not found"
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key={GEMINI_API_KEY}"
         headers = {'Content-Type': 'application/json'}
         
-        # Personalized System Instruction
         system_instruction = (
-            "Tum Gemini ho, ek authentic aur adaptive AI collaborator jisme thoda wit (humor) hai. "
-            "Tumhara kaam Rozgar Hub ke users ki help karna hai. "
-            "Tumhe ekdum doston ki tarah, clear aur concise response dena hai desi Hindi-English (Hinglish) mein. "
-            "Zyaada lecture mat dena, bas kaam ki baat batana aur user ko guide karna. "
-            "Emotional support aur candor ka balance rakho."
+            "Tum Gemini ho, ek authentic aur adaptive AI collaborator. "
+            "Tumhara kaam Rozgar Hub ke users ki help karna hai ekdum doston ki tarah desi Hinglish mein. "
+            "Clear, concise aur witty raho."
         )
 
         payload = {
@@ -114,22 +111,22 @@ def ask_ai():
         response = requests.post(url, headers=headers, json=payload)
         result = response.json()
         
-        # Debugging for Render Logs
         print("DEBUG_GOOGLE_API_RESPONSE:", result)
 
         if 'candidates' in result and len(result['candidates']) > 0:
             answer = result['candidates'][0]['content']['parts'][0]['text']
         elif 'error' in result:
+            # Agar ab bhi error aaye toh ye exact message dikhayega
             error_msg = result['error'].get('message', 'Unknown Error')
-            answer = f"Oteri! Google ne mana kar diya: {error_msg}. Bhai, ek baar settings check kar le."
+            answer = f"Oteri! Google ne mana kar diya: {error_msg}"
         else:
-            answer = "Bhai, response nahi mila. Shayad signal ya limit ka locha hai. Fir se try kar!"
+            answer = "Bhai, response nahi mila. Ek baar phir se try kar na!"
 
         return jsonify({"answer": answer})
 
     except Exception as e:
         print(f"FATAL_SERVER_ERROR: {e}")
-        return jsonify({"answer": "Bhai, backend par kuch fat gaya hai. Logs check karo!"})
+        return jsonify({"answer": "Bhai, backend par kuch fat gaya hai."})
 
 if __name__ == '__main__':
     app.run(debug=True)
