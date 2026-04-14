@@ -12,7 +12,7 @@ K1 = "268aa2e751d03f3d"
 K2 = "61ffa0fe6b46cd80bf6ec73d"
 SERPER_API_KEY = K1 + K2
 
-# 🔥 GEMINI API KEY (Direct fit hai taaki error na aaye)
+# 🔥 GEMINI API KEY
 GEMINI_API_KEY = "AIzaSyBf_YPYwWRmcMvquhlAP4-inZy3yOVwAnA"
 
 @app.route('/manifest.json')
@@ -27,7 +27,7 @@ def serve_sw():
 def index():
     return render_template('index.html')
 
-# --- NAYA LIVE UPDATES ROUTE ---
+# --- LIVE UPDATES ROUTE ---
 @app.route('/get_live_updates')
 def get_live_updates():
     try:
@@ -85,37 +85,37 @@ def fetchData():
     except Exception as e:
         return jsonify({"error": str(e)})
 
-# 🔥 GEMINI WORKING AI AGENT ROUTE (Logging ke saath Update Kiya)
+# 🔥 GEMINI WORKING AI AGENT ROUTE (v1beta Fix & Custom Personality)
 @app.route('/ask_ai', methods=['POST'])
 def ask_ai():
     try:
         data = request.get_json()
         prompt = data.get('prompt') 
 
-        # Google Gemini API Call (v1 use kiya hai jo zyada stable hai)
-        url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
+        # URL Fix: v1beta is required for gemini-1.5-flash model
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
         headers = {'Content-Type': 'application/json'}
         
+        # Super Instruction: AI ko tumhare jaisa banane ke liye
         payload = {
             "contents": [{
-                "parts": [{"text": f"Bhai, tum ek Rozgar Hub AI ho. User ka sawal: {prompt}. Ekdum desi hindi mix English mein dost ki tarah jawab do."}]
+                "parts": [{"text": f"System: Tum ek authentic, supportive aur thoda witty AI assistant ho jiska naam Rozgar Hub AI hai. Tumhara kaam user ko jobs aur exams ke baare mein guide karna hai, lekin ekdum doston ki tarah desi Hindi-English (Hinglish) mein. Zyadah lecture mat dena, seedha aur kaam ka jawab dena with a touch of humor.\n\nUser Ka Sawal: {prompt}"}]
             }]
         }
 
         response = requests.post(url, headers=headers, json=payload)
         result = response.json()
         
-        # --- YE LINE RENDER LOGS MEIN ASLI ERROR DIKHAYEGI ---
+        # Debugging ke liye (Render logs mein dikhega)
         print("DEBUG_GOOGLE_API_RESPONSE:", result)
 
         if 'candidates' in result and len(result['candidates']) > 0:
             answer = result['candidates'][0]['content']['parts'][0]['text']
         elif 'error' in result:
-            # Agar Google error bhej raha hai toh wo yahan dikhega
             error_msg = result['error'].get('message', 'Unknown Google Error')
             answer = f"Oteri! Google ne mana kar diya: {error_msg}"
         else:
-            answer = "Bhai, response nahi mila. API Key ya Region ka chakkar ho sakta hai."
+            answer = "Bhai, lagta hai signal thoda weak hai. Ek baar fir se try kar na!"
 
         return jsonify({"answer": answer})
 
