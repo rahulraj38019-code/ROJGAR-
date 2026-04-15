@@ -242,7 +242,7 @@
 
 <script>
     let user = {}; let resType = ''; let currentCategory = ''; let lastResults = []; let currentType = ''; 
-    let pageCount = 1;
+    let pageCount = 1; let currentScreen = 'home';
 
     window.onload = () => {
         if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
@@ -250,12 +250,26 @@
         fetchLive();
     };
 
+    // BACK BUTTON LOGIC
+    window.onpopstate = function(event) {
+        if (event.state) {
+            const screen = event.state.screen;
+            if (screen === 'home') showDash(false);
+            else if (screen === 'results') showResults(false);
+            else if (screen === 'list') {
+                document.getElementById('back-btn').classList.add('hidden');
+                if(currentType === 'Job') document.getElementById('load-more-container').classList.remove('hidden');
+                renderList(lastResults);
+            }
+        }
+    };
+
     function checkLogin() {
         let saved = localStorage.getItem('userHub');
         if(saved) {
             user = JSON.parse(saved);
             document.getElementById('user-initial').innerText = user.name ? user.name.charAt(0).toUpperCase() : 'U';
-            showDash();
+            showDash(true);
         } else {
             hideAll();
             document.getElementById('login-sec').classList.remove('hidden');
@@ -283,20 +297,24 @@
         });
     }
 
-    function showDash() {
+    function showDash(push = true) {
         hideAll();
         document.getElementById('main-header').classList.remove('hidden');
         document.getElementById('dash-sec').classList.remove('hidden');
         document.getElementById('bottom-bar').classList.remove('hidden');
         setActiveNav(0);
+        currentScreen = 'home';
+        if(push) history.pushState({screen: 'home'}, '');
     }
 
-    function showResults() {
+    function showResults(push = true) {
         hideAll();
         document.getElementById('main-header').classList.remove('hidden');
         document.getElementById('res-sec').classList.remove('hidden');
         document.getElementById('bottom-bar').classList.remove('hidden');
         setActiveNav(1);
+        currentScreen = 'results';
+        if(push) history.pushState({screen: 'results'}, '');
     }
 
     async function fetchLive() {
@@ -345,6 +363,7 @@
             lastResults = [];
             pageCount = 1;
             document.getElementById('list').innerHTML = "<div style='padding:40px; text-align:center; font-weight:700; color:var(--blue);'>🔍 Connecting...</div>";
+            history.pushState({screen: 'list'}, '');
         }
         
         currentCategory = cat;
@@ -369,7 +388,6 @@
             });
             let newResults = await response.json();
             
-            // Result Filtering: Sirf wo links jinme "result" ya "scorecard" word ho
             if(currentType === 'Result') {
                 newResults = newResults.filter(item => 
                     item.title.toLowerCase().includes('result') || 
@@ -381,7 +399,6 @@
             lastResults = [...lastResults, ...newResults];
             renderList(lastResults);
             
-            // Load More button logic
             if(newResults.length > 0 && currentType === 'Job') {
                 document.getElementById('load-more-container').classList.remove('hidden');
             } else {
@@ -418,6 +435,7 @@
         const listDiv = document.getElementById('list');
         document.getElementById('back-btn').classList.remove('hidden');
         document.getElementById('load-more-container').classList.add('hidden');
+        history.pushState({screen: 'details'}, '');
         
         let btnText = "Apply Now 🚀";
         if(currentType === 'Result') { btnText = "Check Result Page ✅"; }
@@ -448,6 +466,7 @@
         document.getElementById('feed-sec').classList.remove('hidden');
         document.getElementById('bottom-bar').classList.remove('hidden');
         document.getElementById('f-title').innerText = "LIVE UPDATE";
+        history.pushState({screen: 'details'}, '');
         
         let btnText = type === 'Result' ? "Check Result Page ✅" : (type === 'Admit Card' ? "Download Admit Card 📥" : "Apply Now 🚀");
 
@@ -462,9 +481,7 @@
     }
 
     function goBackToList() {
-        document.getElementById('back-btn').classList.add('hidden');
-        if(currentType === 'Job') document.getElementById('load-more-container').classList.remove('hidden');
-        renderList(lastResults);
+        history.back();
     }
 </script>
 </body>
