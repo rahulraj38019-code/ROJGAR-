@@ -155,10 +155,10 @@
 
         <h3 style="font-weight:800;">Top Categories</h3>
         <div class="dash-grid">
-            <div class="dash-card" onclick="openJobs('Govt Jobs')"><i>🏛️</i><span>Govt Jobs</span></div>
-            <div class="dash-card" onclick="openJobs('Railway Jobs')"><i>🚂</i><span>Railway</span></div>
-            <div class="dash-card" onclick="openJobs('ITI Jobs')"><i>⚙️</i><span>ITI Jobs</span></div>
-            <div class="dash-card" onclick="openJobs('Remote Jobs')"><i>🏠</i><span>Remote/WFH</span></div>
+            <div class="dash-card" onclick="openJobs('latest Govt job vacancy 2026 apply online')"><i>🏛️</i><span>Govt Jobs</span></div>
+            <div class="dash-card" onclick="openJobs('new Railway recruitment vacancy 2026 NTPC Group D ALP')"><i>🚂</i><span>Railway</span></div>
+            <div class="dash-card" onclick="openJobs('latest ITI Pass Govt Jobs vacancy 2026 Apprentice')"><i>⚙️</i><span>ITI Jobs</span></div>
+            <div class="dash-card" onclick="openJobs('latest Remote work from home jobs vacancy 2026')"><i>🏠</i><span>Remote/WFH</span></div>
         </div>
 
         <h3 style="font-weight:800; margin-top:30px;">Direct Support</h3>
@@ -343,7 +343,7 @@
     function toggleDarkMode() { document.body.classList.toggle('dark-mode'); localStorage.setItem('darkMode', document.body.classList.contains('dark-mode')); }
     function editProfile() { localStorage.removeItem('userHub'); location.reload(); }
     function logout() { localStorage.removeItem('userHub'); location.reload(); }
-    function triggerSearch() { let v = document.getElementById('main-search-inp').value; if(v) openJobs(v); }
+    function triggerSearch() { let v = document.getElementById('main-search-inp').value; if(v) openJobs(v + " vacancy apply online"); }
     
     function toggleResSub(id) { 
         document.querySelectorAll('#res-sec .card').forEach(c => c.classList.add('hidden')); 
@@ -363,7 +363,6 @@
         if(!resType) return alert("Pehle option select karein!"); 
         if(!yearVal) return alert("Pehle Year (saal) daalein!");
         
-        // Accurate Search Query with Year
         let query = `${cat} ${resType} Result ${yearVal} official direct portal roll number link`;
         openJobs(query); 
     }
@@ -388,7 +387,9 @@
         document.getElementById('bottom-bar').classList.remove('hidden'); 
         document.getElementById('feed-sec').classList.remove('hidden'); 
         document.getElementById('back-btn').classList.add('hidden');
-        document.getElementById('f-title').innerText = cat.split(' official')[0].toUpperCase(); 
+        
+        let cleanTitle = cat.split(' vacancy')[0].split(' official')[0].toUpperCase();
+        document.getElementById('f-title').innerText = cleanTitle; 
 
         try {
             const response = await fetch('/fetch_jobs', {
