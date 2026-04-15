@@ -28,7 +28,7 @@
             box-shadow: 0 0 15px var(--neon-glow) !important;
             transition: 0.3s;
         }
-        
+
         .side-menu { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: var(--white); z-index: 1000; transition: 0.3s; box-shadow: 10px 0 30px rgba(0,0,0,0.1); padding: 25px; box-sizing: border-box; }
         .side-menu.active { left: 0; }
         .menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; display: none; }
@@ -45,7 +45,7 @@
         .ticker-title { font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--blue); margin-bottom: 8px; text-align: center; background: rgba(0,123,255,0.1); padding: 4px; border-radius: 6px; }
         .scroll-box { animation: scrollUp 20s linear infinite; }
         @keyframes scrollUp { 0% { transform: translateY(0); } 100% { transform: translateY(-50%); } }
-        .ticker-item { font-size: 12px; color: #cbd5e1; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); text-decoration: none; display: block; }
+        .ticker-item { font-size: 12px; color: #cbd5e1; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); text-decoration: none; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         .login-card { background: var(--white); padding: 30px 25px; border-radius: 24px; }
         .input-box { width: 100%; padding: 16px; border-radius: 14px; font-size: 14px; font-weight: 600; box-sizing: border-box; outline: none; margin-bottom: 18px; background: var(--white); color: var(--main); }
@@ -110,10 +110,6 @@
             <h1 style="text-align:center; font-weight:900;">Welcome! 🚀</h1>
             <label>Full Name</label>
             <input type="text" id="u-name" class="input-box" placeholder="e.g. Rahul Raj">
-            <label>Email or Mobile</label>
-            <input type="text" id="u-contact" class="input-box" placeholder="e.g. +91 0000000000">
-            <label>Current State</label>
-            <input type="text" id="u-state" class="input-box" placeholder="e.g. Bihar">
             <label>Education</label>
             <div class="edu-grid">
                 <div class="edu-chip" onclick="toggleEdu(this, '10th')">10th Pass</div>
@@ -134,18 +130,18 @@
             <div class="ticker-container">
                 <div class="ticker-col">
                     <div class="ticker-title">New Jobs</div>
-                    <div id="job-ticker" class="scroll-box"><div class="ticker-item">Railway Group D...</div></div>
+                    <div id="job-ticker" class="scroll-box"><div class="ticker-item">Railway Group D 2026...</div><div class="ticker-item">SSC GD 2026...</div></div>
                 </div>
                 <div class="ticker-col">
                     <div class="ticker-title">Admit Cards</div>
-                    <div id="admit-ticker" class="scroll-box"><div class="ticker-item">SSC GD Admit...</div></div>
+                    <div id="admit-ticker" class="scroll-box"><div class="ticker-item">Bihar Police Admit...</div><div class="ticker-item">ITI Exam Hall Ticket...</div></div>
                 </div>
             </div>
         </div>
 
         <div class="card" style="padding: 5px;">
             <div style="display: flex; align-items: center;">
-                <input type="text" id="main-search-inp" placeholder="Search Jobs..." style="flex:1; padding:12px; border:none; outline:none; background:transparent; color:var(--main);">
+                <input type="text" id="main-search-inp" placeholder="Search Jobs or Results..." style="flex:1; padding:12px; border:none; outline:none; background:transparent; color:var(--main);">
                 <button onclick="triggerSearch()" style="background:var(--blue); color:white; border:none; border-radius:10px; padding:10px 15px;">🔍</button>
             </div>
         </div>
@@ -154,15 +150,15 @@
         <div class="dash-grid">
             <div class="dash-card" onclick="openJobs('Govt Jobs')"><i>🏛️</i><span>Govt Jobs</span></div>
             <div class="dash-card" onclick="openJobs('Railway Jobs')"><i>🚂</i><span>Railway</span></div>
-            <div class="dash-card" onclick="openJobs('ITI Jobs')"><i>⚙️</i><span>ITI Specialist</span></div>
-            <div class="dash-card" onclick="openJobs('Remote Jobs')"><i>🏠</i><span>WFH</span></div>
+            <div class="dash-card" onclick="openJobs('ITI Jobs')"><i>⚙️</i><span>ITI Jobs</span></div>
+            <div class="dash-card" onclick="openJobs('Remote Jobs')"><i>🏠</i><span>Remote/WFH</span></div>
         </div>
 
         <h3 style="font-weight:800; margin-top:30px;">Direct Support</h3>
         <a href="https://whatsapp.com/channel/0029VbCL3cTElagwBiU2aJ2N" target="_blank" class="social-link-card">
             <div style="display:flex; align-items:center; gap:12px;">
                 <div class="social-icon" style="background:#e7fbf0; color:#22c55e;">💬</div>
-                <div><div style="font-weight:800; font-size:14px;">WhatsApp Channel</div></div>
+                <div><div style="font-weight:800; font-size:14px;">WhatsApp Channel</div><div style="font-size:11px;">Join for daily updates</div></div>
             </div>
             <div style="color:var(--blue); font-weight:800;">JOIN</div>
         </a>
@@ -170,7 +166,7 @@
         <a href="https://www.instagram.com/___rahul_yadav_._?igsh=b3ltc2FwaDd4bzB1" target="_blank" class="social-link-card">
             <div style="display:flex; align-items:center; gap:12px;">
                 <div class="social-icon" style="background:#fff0f6; color:#e1306c;">📸</div>
-                <div><div style="font-weight:800; font-size:14px;">Instagram Profile</div></div>
+                <div><div style="font-weight:800; font-size:14px;">Instagram Profile</div><div style="font-size:11px;">Follow for latest updates</div></div>
             </div>
             <div style="color:var(--blue); font-weight:800;">FOLLOW</div>
         </a>
@@ -181,10 +177,42 @@
         <div class="dash-grid">
             <div class="dash-card" onclick="toggleResSub('bihar-board')"><i>🎓</i><span>Bihar Board</span></div>
             <div class="dash-card" onclick="toggleResSub('railway')"><i>🚂</i><span>Railway</span></div>
+            <div class="dash-card" onclick="toggleResSub('ssc')"><i>🦁</i><span>SSC</span></div>
+            <div class="dash-card" onclick="toggleResSub('police')"><i>👮</i><span>Bihar Police</span></div>
         </div>
+
         <div id="sub-bihar-board" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
-            <div style="display:flex; gap:10px;"><button onclick="setResType(this, '10th')" class="pill" style="flex:1;">10th</button><button onclick="setResType(this, '12th')" class="pill" style="flex:1;">12th</button></div>
-            <button onclick="finalResSearch('Bihar Board')" class="btn-primary" style="margin-top:10px;">Get Result</button>
+            <div style="display:flex; gap:10px;"><button onclick="setResType(this, 'Matric')" class="pill" style="flex:1;">Matric (10th)</button><button onclick="setResType(this, 'Inter')" class="pill" style="flex:1;">Inter (12th)</button></div>
+            <button onclick="finalResSearch('Bihar Board')" class="btn-primary" style="margin-top:10px;">Check Result</button>
+        </div>
+
+        <div id="sub-railway" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                <button onclick="setResType(this, 'Group D')" class="pill">Group D</button>
+                <button onclick="setResType(this, 'ALP')" class="pill">ALP</button>
+                <button onclick="setResType(this, 'NTPC')" class="pill">NTPC</button>
+                <button onclick="setResType(this, 'Technician')" class="pill">Technician</button>
+            </div>
+            <button onclick="finalResSearch('Railway')" class="btn-primary" style="margin-top:10px;">Get Result</button>
+        </div>
+
+        <div id="sub-ssc" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                <button onclick="setResType(this, 'SSC MTS')" class="pill">MTS</button>
+                <button onclick="setResType(this, 'SSC GD')" class="pill">GD</button>
+                <button onclick="setResType(this, 'SSC CGL')" class="pill">CGL</button>
+                <button onclick="setResType(this, 'SSC CHSL')" class="pill">CHSL</button>
+            </div>
+            <button onclick="finalResSearch('SSC')" class="btn-primary" style="margin-top:10px;">Search</button>
+        </div>
+
+        <div id="sub-police" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                <button onclick="setResType(this, 'Constable')" class="pill">Constable</button>
+                <button onclick="setResType(this, 'SI')" class="pill">SI (Daroga)</button>
+                <button onclick="setResType(this, 'Driver')" class="pill">Driver</button>
+            </div>
+            <button onclick="finalResSearch('Bihar Police')" class="btn-primary" style="margin-top:10px;">Find</button>
         </div>
     </div>
 
@@ -215,7 +243,7 @@
         let saved = localStorage.getItem('userHub');
         if(saved) {
             user = JSON.parse(saved);
-            document.getElementById('user-initial').innerText = user.name.charAt(0).toUpperCase();
+            document.getElementById('user-initial').innerText = user.name ? user.name.charAt(0).toUpperCase() : 'U';
             showDash();
         } else {
             hideAll();
@@ -224,10 +252,9 @@
     }
 
     function saveLogin() {
-        user.name = document.getElementById('u-name').value;
-        user.contact = document.getElementById('u-contact').value;
-        user.state = document.getElementById('u-state').value;
-        if(!user.name || !user.edu) return alert("Please fill details and select Education!");
+        let name = document.getElementById('u-name').value;
+        if(!name || !user.edu) return alert("Please fill Name and Select Education!");
+        user.name = name;
         localStorage.setItem('userHub', JSON.stringify(user));
         location.reload();
     }
@@ -240,7 +267,8 @@
 
     function hideAll() {
         ['login-sec','dash-sec','res-sec','feed-sec','main-header','bottom-bar'].forEach(id => {
-            document.getElementById(id).classList.add('hidden');
+            let el = document.getElementById(id);
+            if(el) el.classList.add('hidden');
         });
     }
 
@@ -268,11 +296,19 @@
     function toggleDarkMode() { document.body.classList.toggle('dark-mode'); localStorage.setItem('darkMode', document.body.classList.contains('dark-mode')); }
     function editProfile() { localStorage.removeItem('userHub'); location.reload(); }
     function logout() { localStorage.removeItem('userHub'); location.reload(); }
-    function openJobs(cat) { hideAll(); document.getElementById('main-header').classList.remove('hidden'); document.getElementById('bottom-bar').classList.remove('hidden'); document.getElementById('feed-sec').classList.remove('hidden'); document.getElementById('f-title').innerText = cat; document.getElementById('list').innerHTML = "Loading updates for " + cat + "..."; }
     function triggerSearch() { let v = document.getElementById('main-search-inp').value; if(v) openJobs(v); }
-    function toggleResSub(id) { document.querySelectorAll('#res-sec .card').forEach(c => c.classList.add('hidden')); document.getElementById('sub-'+id).classList.remove('hidden'); }
+    function toggleResSub(id) { document.querySelectorAll('#res-sec .card').forEach(c => c.classList.add('hidden')); document.getElementById('sub-'+id).classList.remove('hidden'); resType = ''; }
     function setResType(btn, type) { document.querySelectorAll('.pill').forEach(p => p.classList.remove('active-pill')); btn.classList.add('active-pill'); resType = type; }
-    function finalResSearch(cat) { if(!resType) return alert("Select type!"); openJobs(cat + " " + resType); }
+    function finalResSearch(cat) { if(!resType) return alert("Please select an option first!"); openJobs(cat + " " + resType); }
+
+    function openJobs(cat) { 
+        hideAll(); 
+        document.getElementById('main-header').classList.remove('hidden'); 
+        document.getElementById('bottom-bar').classList.remove('hidden'); 
+        document.getElementById('feed-sec').classList.remove('hidden'); 
+        document.getElementById('f-title').innerText = cat; 
+        document.getElementById('list').innerHTML = "<div style='padding:20px; text-align:center;'>Fetching data for " + cat + "...</div>"; 
+    }
 </script>
 </body>
 </html>
