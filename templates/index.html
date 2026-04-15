@@ -78,6 +78,8 @@
         .info-label { font-size: 12px; font-weight: 800; color: var(--text-muted); }
         .info-val { font-size: 13px; font-weight: 700; color: var(--main); }
 
+        .year-input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--blue); margin-top: 10px; font-weight: 600; font-size: 14px; outline: none; }
+
         #ai-trigger { position: fixed; bottom: 85px; right: 20px; z-index: 1001; cursor: pointer; text-decoration: none; display: flex; flex-direction: column; align-items: center; }
         .ai-robot { font-size: 45px; animation: float 3s ease-in-out infinite; display: block; filter: drop-shadow(0 0 15px var(--blue)); }
         .ai-label { background: var(--blue); color: white; padding: 6px 12px; border-radius: 12px; font-size: 11px; font-weight: 800; margin-top: -5px; }
@@ -188,7 +190,8 @@
 
         <div id="sub-bihar-board" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
             <div style="display:flex; gap:10px;"><button onclick="setResType(this, 'Matric')" class="pill" style="flex:1;">Matric (10th)</button><button onclick="setResType(this, 'Inter')" class="pill" style="flex:1;">Inter (12th)</button></div>
-            <button onclick="finalResSearch('Bihar Board')" class="btn-primary" style="margin-top:10px;">Check Result ✅</button>
+            <input type="number" id="year-bihar" class="year-input" placeholder="Enter Year (e.g. 2025)">
+            <button onclick="finalResSearch('Bihar Board', 'year-bihar')" class="btn-primary" style="margin-top:10px;">Check Result ✅</button>
         </div>
 
         <div id="sub-railway" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
@@ -198,7 +201,8 @@
                 <button onclick="setResType(this, 'NTPC')" class="pill">NTPC</button>
                 <button onclick="setResType(this, 'Technician')" class="pill">Technician</button>
             </div>
-            <button onclick="finalResSearch('Railway')" class="btn-primary" style="margin-top:10px;">Check Result ✅</button>
+            <input type="number" id="year-railway" class="year-input" placeholder="Enter Year (e.g. 2024)">
+            <button onclick="finalResSearch('Railway', 'year-railway')" class="btn-primary" style="margin-top:10px;">Check Result ✅</button>
         </div>
 
         <div id="sub-ssc" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
@@ -208,7 +212,8 @@
                 <button onclick="setResType(this, 'SSC CGL')" class="pill">CGL</button>
                 <button onclick="setResType(this, 'SSC CHSL')" class="pill">CHSL</button>
             </div>
-            <button onclick="finalResSearch('SSC')" class="btn-primary" style="margin-top:10px;">Check Result ✅</button>
+            <input type="number" id="year-ssc" class="year-input" placeholder="Enter Year (e.g. 2025)">
+            <button onclick="finalResSearch('SSC', 'year-ssc')" class="btn-primary" style="margin-top:10px;">Check Result ✅</button>
         </div>
 
         <div id="sub-police" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
@@ -217,7 +222,8 @@
                 <button onclick="setResType(this, 'SI')" class="pill">SI (Daroga)</button>
                 <button onclick="setResType(this, 'Driver')" class="pill">Driver</button>
             </div>
-            <button onclick="finalResSearch('Bihar Police')" class="btn-primary" style="margin-top:10px;">Check Result ✅</button>
+            <input type="number" id="year-police" class="year-input" placeholder="Enter Year (e.g. 2024)">
+            <button onclick="finalResSearch('Bihar Police', 'year-police')" class="btn-primary" style="margin-top:10px;">Check Result ✅</button>
         </div>
     </div>
 
@@ -250,7 +256,6 @@
         fetchLive();
     };
 
-    // BACK BUTTON LOGIC
     window.onpopstate = function(event) {
         if (event.state) {
             const screen = event.state.screen;
@@ -353,9 +358,14 @@
         resType = type; 
     }
 
-    function finalResSearch(cat) { 
-        if(!resType) return alert("Pehle koi ek option select karein!"); 
-        openJobs(cat + " " + resType + " official direct result page roll number check"); 
+    function finalResSearch(cat, yearId) { 
+        let yearVal = document.getElementById(yearId).value;
+        if(!resType) return alert("Pehle option select karein!"); 
+        if(!yearVal) return alert("Pehle Year (saal) daalein!");
+        
+        // Accurate Search Query with Year
+        let query = `${cat} ${resType} Result ${yearVal} official direct portal roll number link`;
+        openJobs(query); 
     }
 
     async function openJobs(cat, isLoadMore = false) { 
@@ -378,7 +388,7 @@
         document.getElementById('bottom-bar').classList.remove('hidden'); 
         document.getElementById('feed-sec').classList.remove('hidden'); 
         document.getElementById('back-btn').classList.add('hidden');
-        document.getElementById('f-title').innerText = cat.replace(/official direct result page roll number check/g, '').trim().toUpperCase(); 
+        document.getElementById('f-title').innerText = cat.split(' official')[0].toUpperCase(); 
 
         try {
             const response = await fetch('/fetch_jobs', {
@@ -392,7 +402,8 @@
                 newResults = newResults.filter(item => 
                     item.title.toLowerCase().includes('result') || 
                     item.link.toLowerCase().includes('result') ||
-                    item.title.toLowerCase().includes('score')
+                    item.title.toLowerCase().includes('score') ||
+                    item.title.toLowerCase().includes('check')
                 );
             }
 
