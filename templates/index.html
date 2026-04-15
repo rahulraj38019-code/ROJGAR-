@@ -293,4 +293,128 @@
 
     // FIXED: Is function ko poora kar diya hai aur nav bar hide logic joda hai
     window.onload = () => {
-        if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-m
+        if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
+        const saved = localStorage.getItem('rozgarUser');
+        if(saved) { 
+            user = JSON.parse(saved); 
+            document.querySelector('.bottom-nav').classList.remove('hidden'); 
+            showDash(); 
+        } else { 
+            document.querySelector('.bottom-nav').classList.add('hidden'); 
+            document.getElementById('login-sec').classList.remove('hidden'); 
+        }
+    };
+
+    function toggleEdu(el, val) {
+        document.querySelectorAll('.edu-chip').forEach(c => c.classList.remove('selected'));
+        el.classList.add('selected'); user.edu = val;
+    }
+
+    function saveLogin() {
+        user.name = document.getElementById('u-name').value;
+        user.contact = document.getElementById('u-contact').value;
+        user.state = document.getElementById('u-state').value;
+        if(!user.name || !user.contact || !user.edu) return alert("Bhai details toh bharo!");
+        localStorage.setItem('rozgarUser', JSON.stringify(user));
+        document.querySelector('.bottom-nav').classList.remove('hidden'); 
+        showDash();
+    }
+
+    // Bypass Protection: Agar user login nahi hai to page nahi dikhega
+    function showDash() {
+        if(!localStorage.getItem('rozgarUser')) return; 
+        document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
+        document.getElementById('dash-sec').classList.remove('hidden');
+        document.getElementById('user-initial').innerText = user.name ? user.name[0].toUpperCase() : 'U';
+        loadLiveUpdates();
+    }
+
+    // Bypass Protection: Agar user login nahi hai to page nahi dikhega
+    function showResults() {
+        if(!localStorage.getItem('rozgarUser')) return;
+        document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
+        document.getElementById('res-sec').classList.remove('hidden');
+    }
+
+    function toggleResSub(id) {
+        document.querySelectorAll('#res-sec .card').forEach(c => c.classList.add('hidden'));
+        const sub = document.getElementById('sub-' + id);
+        if(sub) sub.classList.remove('hidden');
+    }
+
+    function setResType(el, val) {
+        el.parentElement.querySelectorAll('.pill').forEach(p => p.classList.remove('active-pill'));
+        el.classList.add('active-pill'); resType = val;
+    }
+
+    async function loadLiveUpdates() {
+        try {
+            const res = await fetch('/get_live_updates');
+            const data = await res.json();
+            const jobBox = document.getElementById('job-ticker');
+            const admitBox = document.getElementById('admit-ticker');
+            if(data.jobs && data.jobs.length > 0) {
+                jobBox.innerHTML = data.jobs.map(j => `<a href="${j.link}" target="_blank" class="ticker-item">🔥 ${j.title}</a>`).join('');
+            }
+            if(data.admits && data.admits.length > 0) {
+                admitBox.innerHTML = data.admits.map(a => `<a href="${a.link}" target="_blank" class="ticker-item">🆕 ${a.title}</a>`).join('');
+            }
+        } catch (e) { console.log("Update load failed"); }
+    }
+
+    function openJobs(cat) {
+        if(!localStorage.getItem('rozgarUser')) return;
+        currentCat = cat;
+        document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
+        document.getElementById('feed-sec').classList.remove('hidden');
+        document.getElementById('f-title').innerText = cat;
+        document.getElementById('list').innerHTML = '';
+        fetchData();
+    }
+
+    function triggerSearch() {
+        const q = document.getElementById('main-search-inp').value;
+        if(q) openJobs(q);
+    }
+
+    function finalResSearch(cat) {
+        if(!resType) return alert("Select type first!");
+        openJobs(cat + " " + resType);
+    }
+
+    async function fetchData() {
+        document.getElementById('loading').classList.remove('hidden');
+        try {
+            const res = await fetch('/fetch_jobs', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ category: currentCat, state: user.state, edu: user.edu })
+            });
+            const data = await res.json();
+            const list = document.getElementById('list');
+            if(data && data.length > 0) {
+                data.forEach(i => {
+                    list.innerHTML += `
+                    <div class="job-card">
+                        <h3 class="job-title">${i.title}</h3>
+                        <a href="${i.link}" target="_blank" style="color:var(--blue); font-weight:800; text-decoration:none; display:block; margin-top:10px;">View Details 🚀</a>
+                    </div>`;
+                });
+            } else { list.innerHTML = '<p style="text-align:center;">No results found.</p>'; }
+        } catch(e) { document.getElementById('list').innerHTML = 'Error fetching data'; }
+        document.getElementById('loading').classList.add('hidden');
+    }
+
+    function editProfile() {
+        document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
+        document.getElementById('login-sec').classList.remove('hidden');
+        document.getElementById('u-name').value = user.name || '';
+        document.getElementById('u-contact').value = user.contact || '';
+        document.getElementById('u-state').value = user.state || '';
+        toggleMenu();
+    }
+
+    function logout() { localStorage.removeItem('rozgarUser'); location.reload(); }
+</script>
+</body>
+</html>
