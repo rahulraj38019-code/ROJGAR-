@@ -72,8 +72,7 @@
         .job-title { font-weight: 800; font-size: 14px; color: var(--blue); margin-bottom: 5px; }
         .job-desc { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
 
-        /* Details View Styling */
-        .details-card { background: var(--white); padding: 25px; border-radius: 24px; margin-top: 10px; }
+        .details-card { background: var(--white); padding: 25px; border-radius: 24px; margin-top: 10px; position: relative; }
         .info-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,0.05); }
         .info-label { font-size: 12px; font-weight: 800; color: var(--text-muted); }
         .info-val { font-size: 13px; font-weight: 700; color: var(--main); }
@@ -188,7 +187,7 @@
 
         <div id="sub-bihar-board" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
             <div style="display:flex; gap:10px;"><button onclick="setResType(this, 'Matric')" class="pill" style="flex:1;">Matric (10th)</button><button onclick="setResType(this, 'Inter')" class="pill" style="flex:1;">Inter (12th)</button></div>
-            <button onclick="finalResSearch('Bihar Board')" class="btn-primary" style="margin-top:10px;">Check Result</button>
+            <button onclick="finalResSearch('Bihar Board')" class="btn-primary" style="margin-top:10px;">Check Result ✅</button>
         </div>
 
         <div id="sub-railway" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
@@ -198,7 +197,7 @@
                 <button onclick="setResType(this, 'NTPC')" class="pill">NTPC</button>
                 <button onclick="setResType(this, 'Technician')" class="pill">Technician</button>
             </div>
-            <button onclick="finalResSearch('Railway')" class="btn-primary" style="margin-top:10px;">Get Result</button>
+            <button onclick="finalResSearch('Railway')" class="btn-primary" style="margin-top:10px;">Check Result ✅</button>
         </div>
 
         <div id="sub-ssc" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
@@ -208,7 +207,7 @@
                 <button onclick="setResType(this, 'SSC CGL')" class="pill">CGL</button>
                 <button onclick="setResType(this, 'SSC CHSL')" class="pill">CHSL</button>
             </div>
-            <button onclick="finalResSearch('SSC')" class="btn-primary" style="margin-top:10px;">Search</button>
+            <button onclick="finalResSearch('SSC')" class="btn-primary" style="margin-top:10px;">Check Result ✅</button>
         </div>
 
         <div id="sub-police" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
@@ -217,7 +216,7 @@
                 <button onclick="setResType(this, 'SI')" class="pill">SI (Daroga)</button>
                 <button onclick="setResType(this, 'Driver')" class="pill">Driver</button>
             </div>
-            <button onclick="finalResSearch('Bihar Police')" class="btn-primary" style="margin-top:10px;">Find</button>
+            <button onclick="finalResSearch('Bihar Police')" class="btn-primary" style="margin-top:10px;">Check Result ✅</button>
         </div>
     </div>
 
@@ -238,7 +237,7 @@
 </div>
 
 <script>
-    let user = {}; let resType = ''; let currentCategory = ''; let lastResults = [];
+    let user = {}; let resType = ''; let currentCategory = ''; let lastResults = []; let currentType = '';
 
     window.onload = () => {
         if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
@@ -332,21 +331,27 @@
     }
 
     function finalResSearch(cat) { 
-        if(!resType) return alert("Please select an option!"); 
-        openJobs(cat + " " + resType); 
+        if(!resType) return alert("Pehle koi ek option select karein!"); 
+        openJobs(cat + " " + resType + " direct result link"); 
     }
 
     async function openJobs(cat) { 
         currentCategory = cat;
+        // Determine type strictly here
+        let lowerCat = cat.toLowerCase();
+        if(lowerCat.includes('result')) { currentType = 'Result'; }
+        else if(lowerCat.includes('admit')) { currentType = 'Admit Card'; }
+        else { currentType = 'Job'; }
+
         hideAll(); 
         document.getElementById('main-header').classList.remove('hidden'); 
         document.getElementById('bottom-bar').classList.remove('hidden'); 
         document.getElementById('feed-sec').classList.remove('hidden'); 
         document.getElementById('back-btn').classList.add('hidden');
-        document.getElementById('f-title').innerText = cat.toUpperCase(); 
+        document.getElementById('f-title').innerText = cat.replace('direct result link','').trim().toUpperCase(); 
         
         const listDiv = document.getElementById('list');
-        listDiv.innerHTML = "<div style='padding:40px; text-align:center; font-weight:700; color:var(--blue);'>🔍 Fetching Official Data...</div>"; 
+        listDiv.innerHTML = "<div style='padding:40px; text-align:center; font-weight:700; color:var(--blue);'>🔍 Fetching Official Links...</div>"; 
 
         try {
             const response = await fetch('/fetch_jobs', {
@@ -355,73 +360,70 @@
                 body: JSON.stringify({ category: cat, edu: user.edu || '10th' })
             });
             lastResults = await response.json();
-            renderList(lastResults, cat);
+            renderList(lastResults);
         } catch(e) {
             listDiv.innerHTML = "<div style='padding:40px; text-align:center;'>⚠️ Connection Error!</div>";
         }
     }
 
-    function renderList(results, cat) {
+    function renderList(results) {
         const listDiv = document.getElementById('list');
         if(!results || results.length === 0) {
-            listDiv.innerHTML = "<div style='padding:40px; text-align:center;'>❌ No results found.</div>";
+            listDiv.innerHTML = "<div style='padding:40px; text-align:center;'>❌ No direct links found.</div>";
             return;
         }
         
-        let type = cat.toLowerCase().includes('result') ? 'Result' : (cat.toLowerCase().includes('admit') ? 'Admit Card' : 'Job');
-
         listDiv.innerHTML = results.map((item, index) => `
-            <div class="job-card" onclick="viewDetails(${index}, '${type}')">
+            <div class="job-card" onclick="viewDetails(${index})">
                 <div class="job-title">${item.title}</div>
-                <div class="job-desc">${item.snippet ? item.snippet.substring(0, 100) : 'Click to see details'}...</div>
+                <div class="job-desc">${item.snippet ? item.snippet.substring(0, 100) : 'Official portal details...'}</div>
                 <div style="font-size:11px; color:var(--blue); margin-top:10px; font-weight:800;">VIEW DETAILS →</div>
             </div>
         `).join('');
     }
 
-    function viewDetails(index, type) {
+    function viewDetails(index) {
         const item = lastResults[index];
         const listDiv = document.getElementById('list');
         document.getElementById('back-btn').classList.remove('hidden');
         
         let btnText = "Apply Now 🚀";
-        let btnColor = "var(--blue)";
-        
-        if(type === 'Result') { btnText = "Check Result ✅"; }
-        if(type === 'Admit Card') { btnText = "Download Admit Card 📥"; }
+        if(currentType === 'Result') { btnText = "Check Result Page ✅"; }
+        if(currentType === 'Admit Card') { btnText = "Download Admit Card 📥"; }
 
         listDiv.innerHTML = `
             <div class="details-card">
                 <h2 style="color:var(--blue); margin-top:0; font-size:18px;">${item.title}</h2>
-                <p style="font-size:13px; color:var(--text-muted); line-height:1.5;">${item.snippet || 'Official notification details are available on the main portal.'}</p>
-                
-                <div class="info-row"><span class="info-label">Category:</span><span class="info-val">${type}</span></div>
-                <div class="info-row"><span class="info-label">Fee:</span><span class="info-val">As per Official Advt.</span></div>
+                <div class="info-row"><span class="info-label">Type:</span><span class="info-val">${currentType}</span></div>
+                <div class="info-row"><span class="info-label">Fees:</span><span class="info-val">Check Link</span></div>
                 <div class="info-row"><span class="info-label">Status:</span><span class="info-val" style="color:green;">ACTIVE</span></div>
-                <div class="info-row"><span class="info-label">Last Date:</span><span class="info-val">Check Notification</span></div>
+                <div class="info-row"><span class="info-label">Update:</span><span class="info-val">Today</span></div>
                 
-                <button onclick="window.open('${item.link}', '_blank')" class="btn-primary" style="margin-top:25px; background:${btnColor};">
+                <p style="font-size:12px; color:var(--text-muted); margin-top:15px; border-top:1px solid #eee; padding-top:10px;">
+                    ${item.snippet || 'Open the link below to enter required credentials on the official portal.'}
+                </p>
+
+                <button onclick="window.open('${item.link}', '_blank')" class="btn-primary" style="margin-top:20px;">
                     ${btnText}
                 </button>
             </div>
         `;
     }
 
-    // Direct details from tickers
     function showDetailsDirect(title, link, type) {
+        currentType = type;
         hideAll();
         document.getElementById('main-header').classList.remove('hidden'); 
         document.getElementById('feed-sec').classList.remove('hidden');
         document.getElementById('bottom-bar').classList.remove('hidden');
         document.getElementById('f-title').innerText = "LIVE UPDATE";
         
-        let btnText = type === 'Result' ? "Check Result ✅" : (type === 'Admit Card' ? "Download Admit Card 📥" : "Apply Now 🚀");
+        let btnText = type === 'Result' ? "Check Result Page ✅" : (type === 'Admit Card' ? "Download Admit Card 📥" : "Apply Now 🚀");
 
         document.getElementById('list').innerHTML = `
             <div class="details-card">
                 <h2 style="color:var(--blue); margin-top:0;">${title}</h2>
                 <div class="info-row"><span class="info-label">Type:</span><span class="info-val">${type}</span></div>
-                <div class="info-row"><span class="info-label">Source:</span><span class="info-val">Official Portal</span></div>
                 <button onclick="window.open('${link}', '_blank')" class="btn-primary" style="margin-top:25px;">${btnText}</button>
                 <button onclick="showDash()" class="btn-primary" style="margin-top:10px; background:#64748b;">Close</button>
             </div>
@@ -430,7 +432,7 @@
 
     function goBackToList() {
         document.getElementById('back-btn').classList.add('hidden');
-        renderList(lastResults, currentCategory);
+        renderList(lastResults);
     }
 </script>
 </body>
