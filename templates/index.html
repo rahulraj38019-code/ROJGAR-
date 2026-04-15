@@ -55,6 +55,7 @@
         .dash-card i { font-size: 24px; display: block; margin-bottom: 5px; font-style: normal; }
         
         .btn-primary { width: 100%; background: var(--blue); color: white; padding: 18px; border: none; border-radius: 15px; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 0 20px var(--blue); }
+        .btn-load { width: 100%; background: var(--white); color: var(--blue); padding: 12px; border: 1px solid var(--blue); border-radius: 12px; font-size: 14px; font-weight: 800; cursor: pointer; margin-top: 10px; }
         
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid var(--blue); box-shadow: 0 -5px 20px var(--neon-glow); max-width: 500px; margin: 0 auto; z-index: 99; }
         .nav-item { text-align: center; color: #94a3b8; font-size: 10px; font-weight: 700; cursor: pointer; text-decoration: none;}
@@ -227,6 +228,9 @@
             <button onclick="showDash()" style="color:var(--blue); border:none; background:none; font-weight:800;">Home</button>
         </div>
         <div id="list"></div>
+        <div id="load-more-container" class="hidden">
+            <button onclick="loadMore()" class="btn-load">Load More 🔄</button>
+        </div>
     </div>
 </div>
 
@@ -237,7 +241,8 @@
 </div>
 
 <script>
-    let user = {}; let resType = ''; let currentCategory = ''; let lastResults = []; let currentType = '';
+    let user = {}; let resType = ''; let currentCategory = ''; let lastResults = []; let currentType = ''; 
+    let pageCount = 1;
 
     window.onload = () => {
         if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
@@ -332,13 +337,19 @@
 
     function finalResSearch(cat) { 
         if(!resType) return alert("Pehle koi ek option select karein!"); 
-        openJobs(cat + " " + resType + " direct result link"); 
+        openJobs(cat + " " + resType + " official direct result page roll number check"); 
     }
 
-    async function openJobs(cat) { 
+    async function openJobs(cat, isLoadMore = false) { 
+        if(!isLoadMore) {
+            lastResults = [];
+            pageCount = 1;
+            document.getElementById('list').innerHTML = "<div style='padding:40px; text-align:center; font-weight:700; color:var(--blue);'>🔍 Connecting...</div>";
+        }
+        
         currentCategory = cat;
-        // Determine type strictly here
         let lowerCat = cat.toLowerCase();
+        
         if(lowerCat.includes('result')) { currentType = 'Result'; }
         else if(lowerCat.includes('admit')) { currentType = 'Admit Card'; }
         else { currentType = 'Job'; }
@@ -348,36 +359,56 @@
         document.getElementById('bottom-bar').classList.remove('hidden'); 
         document.getElementById('feed-sec').classList.remove('hidden'); 
         document.getElementById('back-btn').classList.add('hidden');
-        document.getElementById('f-title').innerText = cat.replace('direct result link','').trim().toUpperCase(); 
-        
-        const listDiv = document.getElementById('list');
-        listDiv.innerHTML = "<div style='padding:40px; text-align:center; font-weight:700; color:var(--blue);'>🔍 Fetching Official Links...</div>"; 
+        document.getElementById('f-title').innerText = cat.replace(/official direct result page roll number check/g, '').trim().toUpperCase(); 
 
         try {
             const response = await fetch('/fetch_jobs', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ category: cat, edu: user.edu || '10th' })
+                body: JSON.stringify({ category: cat, edu: user.edu || '10th', page: pageCount })
             });
-            lastResults = await response.json();
+            let newResults = await response.json();
+            
+            // Result Filtering: Sirf wo links jinme "result" ya "scorecard" word ho
+            if(currentType === 'Result') {
+                newResults = newResults.filter(item => 
+                    item.title.toLowerCase().includes('result') || 
+                    item.link.toLowerCase().includes('result') ||
+                    item.title.toLowerCase().includes('score')
+                );
+            }
+
+            lastResults = [...lastResults, ...newResults];
             renderList(lastResults);
+            
+            // Load More button logic
+            if(newResults.length > 0 && currentType === 'Job') {
+                document.getElementById('load-more-container').classList.remove('hidden');
+            } else {
+                document.getElementById('load-more-container').classList.add('hidden');
+            }
         } catch(e) {
-            listDiv.innerHTML = "<div style='padding:40px; text-align:center;'>⚠️ Connection Error!</div>";
+            document.getElementById('list').innerHTML = "<div style='padding:40px; text-align:center;'>⚠️ Connection Error!</div>";
         }
+    }
+
+    function loadMore() {
+        pageCount++;
+        openJobs(currentCategory, true);
     }
 
     function renderList(results) {
         const listDiv = document.getElementById('list');
         if(!results || results.length === 0) {
-            listDiv.innerHTML = "<div style='padding:40px; text-align:center;'>❌ No direct links found.</div>";
+            listDiv.innerHTML = "<div style='padding:40px; text-align:center;'>❌ No direct portals found.</div>";
             return;
         }
         
         listDiv.innerHTML = results.map((item, index) => `
             <div class="job-card" onclick="viewDetails(${index})">
                 <div class="job-title">${item.title}</div>
-                <div class="job-desc">${item.snippet ? item.snippet.substring(0, 100) : 'Official portal details...'}</div>
-                <div style="font-size:11px; color:var(--blue); margin-top:10px; font-weight:800;">VIEW DETAILS →</div>
+                <div class="job-desc">${item.snippet ? item.snippet.substring(0, 100) : 'Direct access to official data portal...'}</div>
+                <div style="font-size:11px; color:var(--blue); margin-top:10px; font-weight:800;">VIEW PORTAL →</div>
             </div>
         `).join('');
     }
@@ -386,6 +417,7 @@
         const item = lastResults[index];
         const listDiv = document.getElementById('list');
         document.getElementById('back-btn').classList.remove('hidden');
+        document.getElementById('load-more-container').classList.add('hidden');
         
         let btnText = "Apply Now 🚀";
         if(currentType === 'Result') { btnText = "Check Result Page ✅"; }
@@ -394,13 +426,12 @@
         listDiv.innerHTML = `
             <div class="details-card">
                 <h2 style="color:var(--blue); margin-top:0; font-size:18px;">${item.title}</h2>
+                <div class="info-row"><span class="info-label">Status:</span><span class="info-val" style="color:green;">ACTIVE PORTAL</span></div>
                 <div class="info-row"><span class="info-label">Type:</span><span class="info-val">${currentType}</span></div>
-                <div class="info-row"><span class="info-label">Fees:</span><span class="info-val">Check Link</span></div>
-                <div class="info-row"><span class="info-label">Status:</span><span class="info-val" style="color:green;">ACTIVE</span></div>
-                <div class="info-row"><span class="info-label">Update:</span><span class="info-val">Today</span></div>
+                <div class="info-row"><span class="info-label">Method:</span><span class="info-val">Official Server</span></div>
                 
                 <p style="font-size:12px; color:var(--text-muted); margin-top:15px; border-top:1px solid #eee; padding-top:10px;">
-                    ${item.snippet || 'Open the link below to enter required credentials on the official portal.'}
+                    <b>Portal Info:</b> ${item.snippet || 'Click below to access the official portal securely.'}
                 </p>
 
                 <button onclick="window.open('${item.link}', '_blank')" class="btn-primary" style="margin-top:20px;">
@@ -432,6 +463,7 @@
 
     function goBackToList() {
         document.getElementById('back-btn').classList.add('hidden');
+        if(currentType === 'Job') document.getElementById('load-more-container').classList.remove('hidden');
         renderList(lastResults);
     }
 </script>
