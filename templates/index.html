@@ -68,9 +68,9 @@
         .social-link-card { display: flex; align-items: center; justify-content: space-between; background: var(--white); padding: 15px; border-radius: 18px; margin-top: 10px; text-decoration: none; color: inherit; }
         .social-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
 
-        .job-card { background: var(--white); padding: 15px; border-radius: 15px; margin-bottom: 12px; display: block; text-decoration: none; color: inherit; }
-        .job-title { font-weight: 800; font-size: 14px; color: var(--blue); margin-bottom: 5px; }
-        .job-desc { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
+        .job-card { background: var(--white); padding: 15px; border-radius: 15px; margin-bottom: 12px; display: block; text-decoration: none; color: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+        .job-title { font-weight: 800; font-size: 14px; color: var(--blue); margin-bottom: 5px; pointer-events: none; }
+        .job-desc { font-size: 12px; color: var(--text-muted); line-height: 1.4; pointer-events: none; }
 
         #ai-trigger { position: fixed; bottom: 85px; right: 20px; z-index: 1001; cursor: pointer; text-decoration: none; display: flex; flex-direction: column; align-items: center; }
         .ai-robot { font-size: 45px; animation: float 3s ease-in-out infinite; display: block; filter: drop-shadow(0 0 15px var(--blue)); }
@@ -310,16 +310,23 @@
     function editProfile() { localStorage.removeItem('userHub'); location.reload(); }
     function logout() { localStorage.removeItem('userHub'); location.reload(); }
     function triggerSearch() { let v = document.getElementById('main-search-inp').value; if(v) openJobs(v); }
-    function toggleResSub(id) { document.querySelectorAll('#res-sec .card').forEach(c => c.classList.add('hidden')); document.getElementById('sub-'+id).classList.remove('hidden'); resType = ''; }
     
+    function toggleResSub(id) { 
+        document.querySelectorAll('#res-sec .card').forEach(c => c.classList.add('hidden')); 
+        const sub = document.getElementById('sub-'+id);
+        if(sub) sub.classList.remove('hidden'); 
+        resType = ''; 
+        document.querySelectorAll('.pill').forEach(p => p.classList.remove('active-pill'));
+    }
+
     function setResType(btn, type) { 
-        document.querySelectorAll('.pill').forEach(p => p.classList.remove('active-pill')); 
+        btn.parentElement.querySelectorAll('.pill').forEach(p => p.classList.remove('active-pill')); 
         btn.classList.add('active-pill'); 
         resType = type; 
     }
 
     function finalResSearch(cat) { 
-        if(!resType) return alert("Select an option!"); 
+        if(!resType) return alert("Pehle option select karein!"); 
         openJobs(cat + " " + resType); 
     }
 
@@ -331,7 +338,7 @@
         document.getElementById('f-title').innerText = cat.toUpperCase(); 
         
         const listDiv = document.getElementById('list');
-        listDiv.innerHTML = "<div style='padding:40px; text-align:center; font-weight:700; color:var(--blue);'>🔍 Fetching Updates...</div>"; 
+        listDiv.innerHTML = "<div style='padding:40px; text-align:center; font-weight:700; color:var(--blue);'>🔍 Data load ho raha hai...</div>"; 
 
         try {
             const response = await fetch('/fetch_jobs', {
@@ -342,20 +349,23 @@
             const results = await response.json();
             
             if(!results || results.length === 0 || results.error) {
-                listDiv.innerHTML = "<div style='padding:40px; text-align:center;'>❌ No results found for this category.</div>";
+                listDiv.innerHTML = "<div style='padding:40px; text-align:center;'>❌ Kuch nahi mila. Dobara koshish karein.</div>";
                 return;
             }
 
+            // Fix: window.open ko card par direct lagaya hai
             let html = results.map(item => `
-                <a href="${item.link}" target="_blank" class="job-card">
+                <div class="job-card" onclick="window.open('${item.link}', '_blank')">
                     <div class="job-title">${item.title}</div>
-                    <div class="job-desc">${item.snippet ? item.snippet.substring(0, 150) : 'View Details'}...</div>
-                    <div style="font-size:11px; color:var(--blue); margin-top:8px; font-weight:800;">OPEN OFFICIAL LINK →</div>
-                </a>
+                    <div class="job-desc">${item.snippet ? item.snippet.substring(0, 160) : 'Click karke official jaankari dekhein'}...</div>
+                    <div style="font-size:11px; color:var(--blue); margin-top:10px; font-weight:800; border-top:1px solid rgba(0,0,0,0.05); padding-top:8px;">
+                        GO TO WEBSITE →
+                    </div>
+                </div>
             `).join('');
             listDiv.innerHTML = html;
         } catch(e) {
-            listDiv.innerHTML = "<div style='padding:40px; text-align:center;'>⚠️ Error connecting to server.</div>";
+            listDiv.innerHTML = "<div style='padding:40px; text-align:center;'>⚠️ Network error! Internet check karein.</div>";
         }
     }
 </script>
