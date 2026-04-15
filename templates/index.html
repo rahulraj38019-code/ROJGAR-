@@ -15,7 +15,7 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --main: #121212; --blue: #007bff; --light-blue: #e7f1ff; --bg: #f8fafc; --white: #ffffff; --text-muted: #64748b; --neon-glow: rgba(0, 123, 255, 0.6); }
+        :root { --main: #121212; --blue: #007bff; --light-blue: --e7f1ff; --bg: #f8fafc; --white: #ffffff; --text-muted: #64748b; --neon-glow: rgba(0, 123, 255, 0.6); }
         body.dark-mode { --bg: #0f172a; --white: #1e293b; --main: #f1f5f9; --text-muted: #94a3b8; --light-blue: #1e3a8a; --neon-glow: rgba(0, 210, 255, 0.8); }
         body { background: var(--bg); font-family: 'Inter', sans-serif; margin: 0; padding: 0; padding-bottom: 120px; color: var(--main); transition: 0.3s; overflow-x: hidden; }
         .container { max-width: 500px; margin: 0 auto; padding: 15px; }
@@ -94,15 +94,41 @@
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
         @keyframes wave { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(30deg); } }
 
+        /* --- 🤖 AI FLOATING WINDOW --- */
+        .ai-modal {
+            display: none; position: fixed; bottom: 100px; right: 10px;
+            width: 95%; max-width: 380px; height: 550px; background: var(--white);
+            border: 2px solid var(--blue); border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4); z-index: 2000;
+            overflow: hidden; animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes slideUp { from { transform: translateY(50px) scale(0.9); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
+        .ai-modal-header {
+            background: var(--blue); color: white; padding: 12px 18px;
+            display: flex; justify-content: space-between; align-items: center; font-weight: 800;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .close-ai { cursor: pointer; font-size: 22px; transition: 0.2s; }
+        .close-ai:hover { transform: rotate(90deg); }
+        .ai-iframe { width: 100%; height: calc(100% - 48px); border: none; background: #fff; }
+
     </style>
 </head>
 <body id="app-body">
 
-<a id="ai-trigger" href="https://gemini.google.com/" target="_blank">
+<div id="ai-trigger" onclick="toggleAI()">
     <span class="hi-hand">👋</span>
     <span class="ai-robot">🤖</span>
     <div class="ai-label">ASK AI</div>
-</a>
+</div>
+
+<div id="aiModal" class="ai-modal">
+    <div class="ai-modal-header">
+        <span>Rozgar AI Assistant 🤖</span>
+        <span class="close-ai" onclick="toggleAI()">✖</span>
+    </div>
+    <iframe src="https://gemini.google.com/" class="ai-iframe"></iframe>
+</div>
 
 <div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
 
@@ -284,6 +310,16 @@
 <script>
     let user = {}; let currentCat = ''; let loading = false; let resType = '';
 
+    // FIXED: Window toggle function for AI
+    function toggleAI() {
+        const modal = document.getElementById('aiModal');
+        if (modal.style.display === 'block') {
+            modal.style.display = 'none';
+        } else {
+            modal.style.display = 'block';
+        }
+    }
+
     function toggleMenu() { document.getElementById('sideMenu').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
     
     function toggleDarkMode() {
@@ -291,16 +327,13 @@
         localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
     }
 
-    // FIXED: Is function ko poora kar diya hai aur nav bar hide logic joda hai
     window.onload = () => {
         if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
         const saved = localStorage.getItem('rozgarUser');
         if(saved) { 
             user = JSON.parse(saved); 
-            document.querySelector('.bottom-nav').classList.remove('hidden'); 
             showDash(); 
         } else { 
-            document.querySelector('.bottom-nav').classList.add('hidden'); 
             document.getElementById('login-sec').classList.remove('hidden'); 
         }
     };
@@ -316,22 +349,17 @@
         user.state = document.getElementById('u-state').value;
         if(!user.name || !user.contact || !user.edu) return alert("Bhai details toh bharo!");
         localStorage.setItem('rozgarUser', JSON.stringify(user));
-        document.querySelector('.bottom-nav').classList.remove('hidden'); 
         showDash();
     }
 
-    // Bypass Protection: Agar user login nahi hai to page nahi dikhega
     function showDash() {
-        if(!localStorage.getItem('rozgarUser')) return; 
         document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
         document.getElementById('dash-sec').classList.remove('hidden');
         document.getElementById('user-initial').innerText = user.name ? user.name[0].toUpperCase() : 'U';
         loadLiveUpdates();
     }
 
-    // Bypass Protection: Agar user login nahi hai to page nahi dikhega
     function showResults() {
-        if(!localStorage.getItem('rozgarUser')) return;
         document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
         document.getElementById('res-sec').classList.remove('hidden');
     }
@@ -363,7 +391,6 @@
     }
 
     function openJobs(cat) {
-        if(!localStorage.getItem('rozgarUser')) return;
         currentCat = cat;
         document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
         document.getElementById('feed-sec').classList.remove('hidden');
