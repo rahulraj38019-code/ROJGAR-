@@ -20,11 +20,9 @@
         body { background: var(--bg); font-family: 'Inter', sans-serif; margin: 0; padding: 0; padding-bottom: 120px; color: var(--main); transition: 0.3s; overflow-x: hidden; }
         .container { max-width: 500px; margin: 0 auto; padding: 15px; }
         
-        /* --- ✨ NEON HEADER & SHADOWS --- */
         header { background: var(--white); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 100; box-shadow: 0 0 15px var(--neon-glow); }
         .logo-text { font-weight: 800; font-size: 20px; color: var(--blue); letter-spacing: -0.5px; cursor: pointer; text-shadow: 0 0 10px var(--blue); }
 
-        /* --- ✨ GLOBAL NEON GLOW FOR CARDS --- */
         .live-panel, .dash-card, .social-link-card, .job-card, .card, .pill, .input-box, .login-card, .edu-chip {
             border: 1px solid var(--blue) !important;
             box-shadow: 0 0 15px var(--neon-glow) !important;
@@ -41,7 +39,6 @@
         .menu-overlay.active { display: block; }
         .menu-item { padding: 15px 0; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 15px; cursor: pointer; font-weight: 600; font-size: 14px; }
         
-        /* --- LIVE PANEL CSS --- */
         .live-panel { background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 24px; padding: 18px; margin-bottom: 25px; position: relative; }
         .live-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
         .live-dot { width: 12px; height: 12px; background: #ff4757; border-radius: 50%; animation: blink 1s infinite; box-shadow: 0 0 15px #ff4757; }
@@ -69,7 +66,6 @@
         .job-title { font-size: 15px; font-weight: 700; color: var(--main); margin: 0; }
         .btn-primary { width: 100%; background: var(--blue); color: white; padding: 18px; border: none; border-radius: 15px; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 0 20px var(--blue); }
         
-        /* --- NEON BOTTOM NAV --- */
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid var(--blue); box-shadow: 0 -5px 20px var(--neon-glow); max-width: 500px; margin: 0 auto; z-index: 99; }
         .nav-item { text-align: center; color: #94a3b8; font-size: 10px; font-weight: 700; cursor: pointer; text-decoration: none;}
         .nav-item.active { color: var(--blue); text-shadow: 0 0 10px var(--blue); }
@@ -81,7 +77,6 @@
         .social-link-card { display: flex; align-items: center; justify-content: space-between; background: var(--white); padding: 15px; border-radius: 18px; margin-top: 10px; text-decoration: none; }
         .social-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; box-shadow: 0 0 10px currentColor; }
 
-        /* --- 🚀 ATTRACTIVE AI BUTTON --- */
         #ai-trigger { position: fixed; bottom: 85px; right: 20px; z-index: 1001; cursor: pointer; transition: 0.3s; text-decoration: none; display: flex; flex-direction: column; align-items: center; }
         .ai-robot { font-size: 45px; animation: float 3s ease-in-out infinite; display: block; filter: drop-shadow(0 0 15px var(--blue)); }
         .hi-hand { position: absolute; top: 0; left: -10px; font-size: 22px; animation: wave 1.5s infinite; }
@@ -93,7 +88,6 @@
         @keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 10px var(--blue); } 50% { box-shadow: 0 0 25px var(--blue); } }
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
         @keyframes wave { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(30deg); } }
-
     </style>
 </head>
 <body id="app-body">
@@ -128,10 +122,8 @@
             <h1 style="text-align:center; font-weight:900;">Welcome! 🚀</h1>
             <label>Full Name</label>
             <input type="text" id="u-name" class="input-box" placeholder="e.g. Rahul Raj">
-            
             <label>Email or Mobile Number</label>
             <input type="text" id="u-contact" class="input-box" placeholder="e.g. +91 0000000000">
-            
             <label>Current State</label>
             <input type="text" id="u-state" class="input-box" placeholder="e.g. Bihar">
             <label>Education</label>
@@ -154,15 +146,11 @@
             <div class="ticker-container">
                 <div class="ticker-col">
                     <div class="ticker-title">New Jobs 🚀</div>
-                    <div id="job-ticker" class="scroll-box">
-                        <div class="ticker-item">Loading updates...</div>
-                    </div>
+                    <div id="job-ticker" class="scroll-box"><div class="ticker-item">Loading updates...</div></div>
                 </div>
                 <div class="ticker-col">
                     <div class="ticker-title">Admit Cards 🎫</div>
-                    <div id="admit-ticker" class="scroll-box">
-                        <div class="ticker-item">Loading updates...</div>
-                    </div>
+                    <div id="admit-ticker" class="scroll-box"><div class="ticker-item">Loading updates...</div></div>
                 </div>
             </div>
         </div>
@@ -179,30 +167,16 @@
             <div class="dash-card" onclick="openJobs('Govt Jobs')"><i>🏛️</i><span>Govt Jobs</span></div>
             <div class="dash-card" onclick="openJobs('Railway Jobs')"><i>🚂</i><span>Railway</span></div>
             <div class="dash-card" onclick="openJobs('ITI Jobs')"><i>⚙️</i><span>ITI Specialist</span></div>
-            <div class="dash-card" onclick="openJobs('Remote Work from Home Jobs')"><i>🏠</i><span>Remote/WFH</span></div>
+            <div class="dash-card" onclick="openJobs('Remote Work from Home')"><i>🏠</i><span>Remote/WFH</span></div>
         </div>
-
+        
         <h3 style="font-weight:800; margin-top:30px;">Direct Support</h3>
         <a href="https://whatsapp.com/channel/0029VbCL3cTElagwBiU2aJ2N" target="_blank" class="social-link-card">
             <div style="display:flex; align-items:center; gap:12px;">
                 <div class="social-icon" style="background:#e7fbf0; color:#22c55e; border:1px solid #22c55e;">💬</div>
-                <div>
-                    <div style="font-weight:800; font-size:14px;">WhatsApp Channel</div>
-                    <div style="font-size:11px; color:var(--text-muted);">Get daily updates on phone</div>
-                </div>
+                <div><div style="font-weight:800; font-size:14px;">WhatsApp Channel</div><div style="font-size:11px; color:var(--text-muted);">Get daily updates</div></div>
             </div>
             <div style="color:var(--blue); font-weight:800; border:1px solid var(--blue); padding:4px 10px; border-radius:8px;">JOIN</div>
-        </a>
-
-        <a href="https://www.instagram.com/___rahul_yadav_._?igsh=b3ltc2FwaDd4bzB1" target="_blank" class="social-link-card">
-            <div style="display:flex; align-items:center; gap:12px;">
-                <div class="social-icon" style="background:#fff0f6; color:#e1306c; border:1px solid #e1306c;">📸</div>
-                <div>
-                    <div style="font-weight:800; font-size:14px;">Instagram Profile</div>
-                    <div style="font-size:11px; color:var(--text-muted);">Follow for latest tips</div>
-                </div>
-            </div>
-            <div style="color:var(--blue); font-weight:800; border:1px solid var(--blue); padding:4px 10px; border-radius:8px;">FOLLOW</div>
         </a>
     </div>
 
@@ -216,52 +190,37 @@
         </div>
 
         <div id="sub-bihar-board" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
-            <label>Exam Type</label>
             <div style="display:flex; gap:10px; margin-bottom:12px;">
                 <button onclick="setResType(this, 'Matric')" class="pill" style="flex:1;">Matric (10th)</button>
                 <button onclick="setResType(this, 'Inter')" class="pill" style="flex:1;">Inter (12th)</button>
             </div>
-            <button onclick="finalResSearch('Bihar Board')" class="btn-primary" style="padding:12px;">Get Result</button>
+            <button onclick="finalResSearch('Bihar Board')" class="btn-primary">Get Result</button>
         </div>
 
         <div id="sub-railway" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
-            <label>Select Railway Post</label>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:12px;">
                 <button onclick="setResType(this, 'Railway Group D')" class="pill">Group D</button>
                 <button onclick="setResType(this, 'Railway ALP')" class="pill">ALP</button>
                 <button onclick="setResType(this, 'Railway Technician')" class="pill">Technician</button>
                 <button onclick="setResType(this, 'Railway NTPC')" class="pill">NTPC</button>
             </div>
-            <label>Select Year</label>
-            <select id="rail-year" class="input-box">
-                <option value="2026">2026</option>
-                <option value="2025">2025</option>
-                <option value="2024">2024</option>
-            </select>
-            <button onclick="finalResSearch('Railway')" class="btn-primary" style="padding:12px;">Search Result</button>
+            <button onclick="finalResSearch('Railway')" class="btn-primary">Search Result</button>
         </div>
-
+        
         <div id="sub-ssc" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
-            <label>Choose SSC Exam</label>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
                 <button onclick="setResType(this, 'SSC MTS')" class="pill">MTS</button>
-                <button onclick="setResType(this, 'SSC CGL')" class="pill">CGL</button>
-                <button onclick="setResType(this, 'SSC CHSL')" class="pill">CHSL</button>
                 <button onclick="setResType(this, 'SSC GD')" class="pill">GD</button>
             </div>
-            <button onclick="finalResSearch('SSC')" class="btn-primary" style="padding:12px; margin-top:10px;">Find Result</button>
+            <button onclick="finalResSearch('SSC')" class="btn-primary" style="margin-top:10px;">Find Result</button>
         </div>
 
         <div id="sub-police" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
-            <label>Select Post</label>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:12px;">
                 <button onclick="setResType(this, 'Bihar Police Constable')" class="pill">Constable</button>
-                <button onclick="setResType(this, 'Bihar Police SI')" class="pill">SI (Daroga)</button>
-                <button onclick="setResType(this, 'Bihar Police Driver')" class="pill">Driver</button>
+                <button onclick="setResType(this, 'Bihar Police SI')" class="pill">SI</button>
             </div>
-            <label>Select Year</label>
-            <input type="number" id="police-year" class="input-box" value="2026">
-            <button onclick="finalResSearch('Bihar Police')" class="btn-primary" style="padding:12px;">Check Result</button>
+            <button onclick="finalResSearch('Bihar Police')" class="btn-primary">Check Result</button>
         </div>
     </div>
 
@@ -271,7 +230,7 @@
             <button onclick="showDash()" style="color:var(--blue); border:none; background:none; font-weight:800;">Home</button>
         </div>
         <div id="list"></div>
-        <div id="loading" class="hidden" style="text-align:center; font-weight:700; color:var(--blue); padding:20px;">Fetching latest updates...</div>
+        <div id="loading" class="hidden" style="text-align:center; font-weight:700; color:var(--blue); padding:20px;">Fetching...</div>
     </div>
 </div>
 
@@ -291,6 +250,109 @@
         localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
     }
 
-    // FIXED: Is function ko poora kar diya hai aur nav bar hide logic joda hai
     window.onload = () => {
-        if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode')
+        if(localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+        }
+        checkLogin();
+    };
+
+    function checkLogin() {
+        let saved = localStorage.getItem('userHub');
+        if(saved) { 
+            user = JSON.parse(saved); 
+            showDash(); 
+            document.getElementById('user-initial').innerText = user.name ? user.name.charAt(0).toUpperCase() : 'U';
+        } else { 
+            hideAll();
+            document.getElementById('login-sec').classList.remove('hidden'); 
+        }
+    }
+
+    function saveLogin() {
+        user.name = document.getElementById('u-name').value;
+        if(!user.name || !user.edu) return alert("Fill Name and Select Education!");
+        localStorage.setItem('userHub', JSON.stringify(user));
+        location.reload();
+    }
+
+    function toggleEdu(chip, val) {
+        document.querySelectorAll('.edu-chip').forEach(c => c.classList.remove('selected'));
+        chip.classList.add('selected');
+        user.edu = val;
+    }
+
+    function showDash() {
+        hideAll(); 
+        document.getElementById('dash-sec').classList.remove('hidden');
+        setActiveNav(0);
+    }
+
+    function showResults() {
+        hideAll(); 
+        document.getElementById('res-sec').classList.remove('hidden');
+        setActiveNav(1);
+    }
+
+    function hideAll() {
+        ['login-sec','dash-sec','res-sec','feed-sec'].forEach(id => {
+            let el = document.getElementById(id);
+            if(el) el.classList.add('hidden');
+        });
+    }
+
+    function setActiveNav(idx) {
+        document.querySelectorAll('.nav-item').forEach((n,i) => {
+            i === idx ? n.classList.add('active') : n.classList.remove('active');
+        });
+    }
+
+    function toggleResSub(id) {
+        document.querySelectorAll('#res-sec .card').forEach(c => c.classList.add('hidden'));
+        let sub = document.getElementById('sub-' + id);
+        if(sub) sub.classList.remove('hidden');
+        resType = ''; 
+    }
+
+    function setResType(btn, type) {
+        document.querySelectorAll('.pill').forEach(p => p.classList.remove('active-pill'));
+        btn.classList.add('active-pill');
+        resType = type;
+    }
+
+    function finalResSearch(cat) {
+        if(!resType) return alert("Select type first!");
+        openJobs(cat + " " + resType); 
+    }
+
+    function openJobs(cat) {
+        currentCat = cat;
+        hideAll();
+        document.getElementById('feed-sec').classList.remove('hidden');
+        document.getElementById('f-title').innerText = cat;
+        fetchData(cat);
+    }
+
+    function fetchData(cat) {
+        const list = document.getElementById('list');
+        list.innerHTML = '<div style="text-align:center; padding:20px;">No results found for ' + cat + '.</div>';
+    }
+
+    function triggerSearch() {
+        let val = document.getElementById('main-search-inp').value;
+        if(val) openJobs(val);
+    }
+
+    function editProfile() {
+        localStorage.removeItem('userHub');
+        location.reload();
+    }
+
+    function logout() { 
+        localStorage.removeItem('userHub'); 
+        location.reload(); 
+    }
+</script>
+
+</body>
+</html>
