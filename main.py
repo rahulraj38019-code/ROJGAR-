@@ -50,15 +50,15 @@ def fetch_jobs():
         category = data.get('category', 'latest jobs')
         edu = data.get('edu', '')
         
-        # Search Queries Logic (Fixed)
-        if "Bihar Board" in category:
-            query = f"{category} official result 2026 site:biharboardonline.bihar.gov.in OR site:sarkariresult.com"
+        # --- FIXED SEARCH QUERIES (Ab results aayenge) ---
+        if "Railway" in category or "RRB" in category:
+            query = f"RRB Railway {category} official result notice 2026 site:indianrailways.gov.in OR site:sarkariresult.com"
+        elif "Bihar Board" in category:
+            query = f"BSEB {category} official result 2026 site:biharboardonline.bihar.gov.in OR site:sarkariresult.com"
         elif "SSC" in category:
-            query = f"{category} result merit list site:ssc.gov.in OR site:sarkariresult.com"
-        elif "Railway" in category:
-            query = f"RRB {category} official result notice site:indianrailways.gov.in OR site:sarkariresult.com"
+            query = f"SSC {category} merit list result site:ssc.gov.in OR site:sarkariresult.com"
         elif "Police" in category:
-            query = f"{category} result updates site:csbc.bih.nic.in OR site:sarkariresult.com"
+            query = f"Bihar Police {category} result update site:csbc.bih.nic.in OR site:sarkariresult.com"
         else:
             query = f"latest {category} vacancies for {edu} pass 2026 India"
 
@@ -71,11 +71,11 @@ def fetch_jobs():
         response = requests.post('https://google.serper.dev/search', headers=headers, json=payload)
         search_data = response.json()
         
-        # Check agar Serper error de raha ho
+        # Check agar Serper organic results bhej raha hai
         if "organic" in search_data:
             return jsonify(search_data['organic'])
         else:
-            return jsonify({"error": "No results from API"})
+            return jsonify([]) # Khali list bhejo agar data na mile
             
     except Exception as e:
         return jsonify({"error": str(e)})
