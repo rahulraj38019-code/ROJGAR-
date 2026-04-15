@@ -291,14 +291,16 @@
         localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
     }
 
-    // FIXED: Is function ko poora kar diya hai
+    // FIXED: Is function ko poora kar diya hai aur nav bar hide logic joda hai
     window.onload = () => {
         if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
         const saved = localStorage.getItem('rozgarUser');
         if(saved) { 
             user = JSON.parse(saved); 
+            document.querySelector('.bottom-nav').classList.remove('hidden'); 
             showDash(); 
         } else { 
+            document.querySelector('.bottom-nav').classList.add('hidden'); 
             document.getElementById('login-sec').classList.remove('hidden'); 
         }
     };
@@ -314,17 +316,22 @@
         user.state = document.getElementById('u-state').value;
         if(!user.name || !user.contact || !user.edu) return alert("Bhai details toh bharo!");
         localStorage.setItem('rozgarUser', JSON.stringify(user));
+        document.querySelector('.bottom-nav').classList.remove('hidden'); 
         showDash();
     }
 
+    // Bypass Protection: Agar user login nahi hai to page nahi dikhega
     function showDash() {
+        if(!localStorage.getItem('rozgarUser')) return; 
         document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
         document.getElementById('dash-sec').classList.remove('hidden');
         document.getElementById('user-initial').innerText = user.name ? user.name[0].toUpperCase() : 'U';
         loadLiveUpdates();
     }
 
+    // Bypass Protection: Agar user login nahi hai to page nahi dikhega
     function showResults() {
+        if(!localStorage.getItem('rozgarUser')) return;
         document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
         document.getElementById('res-sec').classList.remove('hidden');
     }
@@ -356,6 +363,7 @@
     }
 
     function openJobs(cat) {
+        if(!localStorage.getItem('rozgarUser')) return;
         currentCat = cat;
         document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
         document.getElementById('feed-sec').classList.remove('hidden');
