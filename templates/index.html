@@ -15,25 +15,24 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --main: #121212; --blue: #007bff; --light-blue: #e7f1ff; --bg: #f8fafc; --white: #ffffff; --text-muted: #64748b; --neon-glow: rgba(0, 123, 255, 0.4); }
-        body.dark-mode { --bg: #0f172a; --white: #1e293b; --main: #f1f5f9; --text-muted: #94a3b8; --light-blue: #1e3a8a; --neon-glow: rgba(0, 210, 255, 0.6); }
+        :root { --main: #121212; --blue: #007bff; --light-blue: #e7f1ff; --bg: #f8fafc; --white: #ffffff; --text-muted: #64748b; --neon-glow: rgba(0, 123, 255, 0.6); }
+        body.dark-mode { --bg: #0f172a; --white: #1e293b; --main: #f1f5f9; --text-muted: #94a3b8; --light-blue: #1e3a8a; --neon-glow: rgba(0, 210, 255, 0.8); }
         body { background: var(--bg); font-family: 'Inter', sans-serif; margin: 0; padding: 0; padding-bottom: 120px; color: var(--main); transition: 0.3s; overflow-x: hidden; }
         .container { max-width: 500px; margin: 0 auto; padding: 15px; }
         
-        /* --- ✨ PREMIUM HEADER --- */
-        header { background: var(--white); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
-        .logo-text { font-weight: 800; font-size: 20px; color: var(--blue); letter-spacing: -0.5px; cursor: pointer; }
+        /* --- ✨ NEON HEADER & SHADOWS --- */
+        header { background: var(--white); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 100; box-shadow: 0 0 15px var(--neon-glow); }
+        .logo-text { font-weight: 800; font-size: 20px; color: var(--blue); letter-spacing: -0.5px; cursor: pointer; text-shadow: 0 0 10px var(--blue); }
 
-        /* --- ✨ UI IMPROVEMENT: CARD STYLING --- */
-        .live-panel, .dash-card, .social-link-card, .job-card, .card, .pill, .input-box, .login-card, .edu-chip, .filter-card {
-            border: 1.5px solid #eef2f6 !important;
-            border-radius: 20px !important;
-            box-shadow: 0 8px 24px rgba(149, 157, 165, 0.1) !important;
-            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        /* --- ✨ GLOBAL NEON GLOW FOR CARDS --- */
+        .live-panel, .dash-card, .social-link-card, .job-card, .card, .pill, .input-box, .login-card, .edu-chip {
+            border: 1px solid var(--blue) !important;
+            box-shadow: 0 0 15px var(--neon-glow) !important;
+            transition: 0.3s;
         }
-        .dark-mode .live-panel, .dark-mode .dash-card, .dark-mode .social-link-card, .dark-mode .job-card, .dark-mode .card, .dark-mode .input-box, .dark-mode .filter-card {
-            border-color: #334155 !important;
-            background: #1e293b !important;
+        .dash-card:hover, .social-link-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 25px var(--blue) !important;
         }
 
         .side-menu { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: var(--white); z-index: 1000; transition: 0.3s; box-shadow: 10px 0 30px rgba(0,0,0,0.1); padding: 25px; box-sizing: border-box; }
@@ -43,77 +42,64 @@
         .menu-item { padding: 15px 0; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 15px; cursor: pointer; font-weight: 600; font-size: 14px; }
         
         /* --- LIVE PANEL CSS --- */
-        .live-panel { background: linear-gradient(135deg, #1e293b, #0f172a); padding: 18px; margin-bottom: 25px; position: relative; border: none !important; }
+        .live-panel { background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 24px; padding: 18px; margin-bottom: 25px; position: relative; }
         .live-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
-        .live-dot { width: 10px; height: 10px; background: #ff4757; border-radius: 50%; animation: blink 1s infinite; box-shadow: 0 0 10px #ff4757; }
+        .live-dot { width: 12px; height: 12px; background: #ff4757; border-radius: 50%; animation: blink 1s infinite; box-shadow: 0 0 15px #ff4757; }
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
         
         .ticker-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; height: 120px; overflow: hidden; }
         .ticker-col { display: flex; flex-direction: column; }
-        .ticker-title { font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--blue); margin-bottom: 8px; text-align: center; background: rgba(0,123,255,0.1); padding: 4px; border-radius: 6px; }
+        .ticker-title { font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--blue); margin-bottom: 8px; text-align: center; background: rgba(0,123,255,0.1); padding: 4px; border-radius: 6px; text-shadow: 0 0 5px var(--blue); }
         .scroll-box { animation: scrollUp 20s linear infinite; }
         .scroll-box:hover { animation-play-state: paused; }
         @keyframes scrollUp { 0% { transform: translateY(0); } 100% { transform: translateY(-50%); } }
         .ticker-item { font-size: 12px; color: #cbd5e1; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); display: block; text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* --- ✨ UI IMPROVEMENT: CAREER GUIDE CARD --- */
-        .guide-card { 
-            background: linear-gradient(to right, #6366f1, #a855f7); 
-            color: white; padding: 20px; border-radius: 20px; margin-bottom: 25px; 
-            display: flex; justify-content: space-between; align-items: center;
-        }
-
-        /* --- ✨ NEW: LOCATION & EXP FILTERS (IMAGE 2 STYLE) --- */
-        .filter-section { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px; }
-        .filter-card { background: var(--white); padding: 12px; display: flex; align-items: center; gap: 10px; cursor: pointer; }
-        .filter-icon { font-size: 18px; background: var(--light-blue); width: 35px; height: 35px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
-        .filter-text { font-size: 11px; color: var(--text-muted); font-weight: 600; }
-        .filter-val { font-size: 13px; font-weight: 800; color: var(--main); display: block; }
-
-        .login-card { background: var(--white); padding: 30px 25px; }
-        .input-box { width: 100%; padding: 16px; font-size: 14px; font-weight: 600; box-sizing: border-box; outline: none; margin-bottom: 18px; background: #fbfcfe; color: var(--main); }
+        .login-card { background: var(--white); padding: 30px 25px; border-radius: 24px; }
+        .input-box { width: 100%; padding: 16px; border-radius: 14px; font-size: 14px; font-weight: 600; box-sizing: border-box; outline: none; margin-bottom: 18px; background: var(--white); color: var(--main); }
         label { display: block; font-size: 12px; font-weight: 800; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
         .edu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px; }
-        .edu-chip { padding: 12px; text-align: center; font-size: 13px; font-weight: 700; cursor: pointer; background: var(--white); color: var(--text-muted); }
-        .edu-chip.selected { background: var(--blue) !important; color: #fff !important; border-color: var(--blue) !important; }
-        .card { background: var(--white); padding: 20px; margin-bottom: 20px; }
+        .edu-chip { padding: 12px; border-radius: 12px; text-align: center; font-size: 13px; font-weight: 700; cursor: pointer; background: var(--white); color: var(--text-muted); }
+        .edu-chip.selected { background: var(--blue) !important; color: #fff !important; text-shadow: 0 0 5px white; }
+        .card { background: var(--white); padding: 20px; border-radius: 20px; margin-bottom: 20px; }
         .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-        .dash-card { background: var(--white); padding: 15px; text-align: center; cursor: pointer; }
-        .dash-card i { font-size: 24px; display: block; margin-bottom: 5px; font-style: normal; }
-        .job-card { background: var(--white); padding: 18px; margin-bottom: 12px; }
+        .dash-card { background: var(--white); padding: 15px; border-radius: 18px; text-align: center; cursor: pointer; }
+        .dash-card i { font-size: 24px; display: block; margin-bottom: 5px; font-style: normal; filter: drop-shadow(0 0 5px var(--blue)); }
+        .job-card { background: var(--white); padding: 18px; border-radius: 16px; margin-bottom: 12px; }
         .job-title { font-size: 15px; font-weight: 700; color: var(--main); margin: 0; }
-        .btn-primary { width: 100%; background: var(--blue); color: white; padding: 18px; border: none; border-radius: 15px; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 10px 20px var(--neon-glow); }
+        .btn-primary { width: 100%; background: var(--blue); color: white; padding: 18px; border: none; border-radius: 15px; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 0 20px var(--blue); }
         
-        /* --- ✨ UI IMPROVEMENT: MODERN BOTTOM NAV --- */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #eee; max-width: 500px; margin: 0 auto; z-index: 99; }
-        .nav-item { text-align: center; color: #94a3b8; font-size: 11px; font-weight: 700; cursor: pointer; text-decoration: none; flex: 1; position: relative; }
-        .nav-item.active { color: var(--blue); }
-        .nav-item.active::after { content: ''; position: absolute; top: -10px; left: 25%; width: 50%; height: 3px; background: var(--blue); border-radius: 0 0 10px 10px; box-shadow: 0 2px 10px var(--blue); }
-        .nav-item i { font-size: 20px; display: block; margin-bottom: 4px; font-style: normal; }
-
+        /* --- NEON BOTTOM NAV --- */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid var(--blue); box-shadow: 0 -5px 20px var(--neon-glow); max-width: 500px; margin: 0 auto; z-index: 99; }
+        .nav-item { text-align: center; color: #94a3b8; font-size: 10px; font-weight: 700; cursor: pointer; text-decoration: none;}
+        .nav-item.active { color: var(--blue); text-shadow: 0 0 10px var(--blue); }
+        .nav-item i { font-size: 20px; display: block; margin-bottom: 3px; font-style: normal; }
         .hidden { display: none; }
         .pill { background: #fff; padding: 8px 16px; border-radius: 50px; font-size: 12px; font-weight: 600; cursor: pointer; margin-bottom: 5px; color: var(--text-muted); }
-        .pill.active-pill { background: var(--blue) !important; color: white !important; border-color: var(--blue) !important; }
+        .pill.active-pill { background: var(--blue) !important; color: white !important; box-shadow: 0 0 10px var(--blue) !important; }
         
-        .social-link-card { display: flex; align-items: center; justify-content: space-between; background: var(--white); padding: 15px; margin-top: 10px; text-decoration: none; }
-        .social-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        .social-link-card { display: flex; align-items: center; justify-content: space-between; background: var(--white); padding: 15px; border-radius: 18px; margin-top: 10px; text-decoration: none; }
+        .social-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; box-shadow: 0 0 10px currentColor; }
 
-        /* --- ✨ UI IMPROVEMENT: SMART AI PILL BUTTON --- */
-        #ai-trigger { 
-            position: fixed; bottom: 80px; right: 20px; z-index: 1001; text-decoration: none; 
-            display: flex; align-items: center; gap: 8px; background: var(--blue); 
-            padding: 10px 18px; border-radius: 50px; box-shadow: 0 8px 25px var(--neon-glow);
-            transition: 0.3s;
+        /* --- 🚀 ATTRACTIVE AI BUTTON --- */
+        #ai-trigger { position: fixed; bottom: 85px; right: 20px; z-index: 1001; cursor: pointer; transition: 0.3s; text-decoration: none; display: flex; flex-direction: column; align-items: center; }
+        .ai-robot { font-size: 45px; animation: float 3s ease-in-out infinite; display: block; filter: drop-shadow(0 0 15px var(--blue)); }
+        .hi-hand { position: absolute; top: 0; left: -10px; font-size: 22px; animation: wave 1.5s infinite; }
+        .ai-label { 
+            background: linear-gradient(135deg, #007bff, #00d2ff); 
+            color: white; padding: 6px 12px; border-radius: 12px; font-size: 11px; font-weight: 800; margin-top: -5px; 
+            box-shadow: 0 0 20px var(--blue); animation: pulse-glow 2s infinite; 
         }
-        #ai-trigger:active { transform: scale(0.9); }
-        .ai-robot { font-size: 20px; }
-        .ai-label { color: white; font-size: 12px; font-weight: 800; letter-spacing: 0.5px; }
+        @keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 10px var(--blue); } 50% { box-shadow: 0 0 25px var(--blue); } }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        @keyframes wave { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(30deg); } }
 
     </style>
 </head>
 <body id="app-body">
 
 <a id="ai-trigger" href="https://gemini.google.com/" target="_blank">
+    <span class="hi-hand">👋</span>
     <span class="ai-robot">🤖</span>
     <div class="ai-label">ASK AI</div>
 </a>
@@ -131,8 +117,8 @@
 <header>
     <div class="logo-text" onclick="toggleMenu()">ROZGAR HUB</div>
     <div style="display: flex; align-items: center; gap: 15px;">
-        <div onclick="toggleDarkMode()" id="mode-btn" style="cursor:pointer; font-size: 20px; background: var(--light-blue); width: 35px; height: 35px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">🌙</div>
-        <div id="user-initial" style="background:var(--light-blue); color:var(--blue); width:35px; height:35px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px;">U</div>
+        <div onclick="toggleDarkMode()" id="mode-btn" style="cursor:pointer; font-size: 20px; background: var(--light-blue); width: 35px; height: 35px; border-radius: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 10px var(--blue);">🌙</div>
+        <div id="user-initial" style="background:var(--light-blue); color:var(--blue); width:35px; height:35px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px; border: 1px solid var(--blue);">U</div>
     </div>
 </header>
 
@@ -160,15 +146,6 @@
     </div>
 
     <div id="dash-sec" class="hidden">
-        
-        <div class="guide-card">
-            <div>
-                <div style="font-weight:800; font-size:16px;">Top Interview Tips 💡</div>
-                <div style="font-size:11px; opacity:0.9; margin-top:4px;">Crack your next job easily</div>
-            </div>
-            <div style="background:white; color:#6366f1; padding:8px 12px; border-radius:12px; font-weight:800; font-size:12px;">READ</div>
-        </div>
-
         <div class="live-panel">
             <div class="live-header">
                 <div class="live-dot"></div>
@@ -190,27 +167,10 @@
             </div>
         </div>
 
-        <div class="filter-section">
-            <div class="filter-card" onclick="editProfile()">
-                <div class="filter-icon">📍</div>
-                <div>
-                    <span class="filter-text">Job Location</span>
-                    <span class="filter-val" id="display-state">Bihar</span>
-                </div>
-            </div>
-            <div class="filter-card">
-                <div class="filter-icon">💼</div>
-                <div>
-                    <span class="filter-text">Experience</span>
-                    <span class="filter-val">Fresher</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="card" style="padding: 5px; border: 1.5px solid var(--blue);">
+        <div class="card" style="padding: 5px;">
             <div style="display: flex; align-items: center;">
                 <input type="text" id="main-search-inp" placeholder="Search Jobs or Results..." style="flex:1; padding:12px; border:none; outline:none; font-weight:600; background:transparent; color:var(--main);">
-                <button onclick="triggerSearch()" style="background:var(--blue); color:white; border:none; border-radius:10px; padding:10px 15px; cursor:pointer;">🔍</button>
+                <button onclick="triggerSearch()" style="background:var(--blue); color:white; border:none; border-radius:10px; padding:10px 15px; cursor:pointer; box-shadow: 0 0 10px var(--blue);">🔍</button>
             </div>
         </div>
 
@@ -225,24 +185,24 @@
         <h3 style="font-weight:800; margin-top:30px;">Direct Support</h3>
         <a href="https://whatsapp.com/channel/0029VbCL3cTElagwBiU2aJ2N" target="_blank" class="social-link-card">
             <div style="display:flex; align-items:center; gap:12px;">
-                <div class="social-icon" style="background:#e7fbf0; color:#22c55e;">💬</div>
+                <div class="social-icon" style="background:#e7fbf0; color:#22c55e; border:1px solid #22c55e;">💬</div>
                 <div>
                     <div style="font-weight:800; font-size:14px;">WhatsApp Channel</div>
                     <div style="font-size:11px; color:var(--text-muted);">Get daily updates on phone</div>
                 </div>
             </div>
-            <div style="color:var(--blue); font-weight:800;">JOIN</div>
+            <div style="color:var(--blue); font-weight:800; border:1px solid var(--blue); padding:4px 10px; border-radius:8px;">JOIN</div>
         </a>
 
         <a href="https://www.instagram.com/___rahul_yadav_._?igsh=b3ltc2FwaDd4bzB1" target="_blank" class="social-link-card">
             <div style="display:flex; align-items:center; gap:12px;">
-                <div class="social-icon" style="background:#fff0f6; color:#e1306c;">📸</div>
+                <div class="social-icon" style="background:#fff0f6; color:#e1306c; border:1px solid #e1306c;">📸</div>
                 <div>
                     <div style="font-weight:800; font-size:14px;">Instagram Profile</div>
                     <div style="font-size:11px; color:var(--text-muted);">Follow for latest tips</div>
                 </div>
             </div>
-            <div style="color:var(--blue); font-weight:800;">FOLLOW</div>
+            <div style="color:var(--blue); font-weight:800; border:1px solid var(--blue); padding:4px 10px; border-radius:8px;">FOLLOW</div>
         </a>
     </div>
 
@@ -334,103 +294,4 @@
     window.onload = () => {
         if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
         const saved = localStorage.getItem('rozgarUser');
-        if(saved) { user = JSON.parse(saved); showDash(); } 
-        else { document.getElementById('login-sec').classList.remove('hidden'); }
-    };
-
-    function toggleEdu(el, val) {
-        document.querySelectorAll('.edu-chip').forEach(c => c.classList.remove('selected'));
-        el.classList.add('selected'); user.edu = val;
-    }
-
-    function saveLogin() {
-        user.name = document.getElementById('u-name').value;
-        user.contact = document.getElementById('u-contact').value;
-        user.state = document.getElementById('u-state').value;
-        if(!user.name || !user.contact || !user.edu) return alert("Details bharo bhai!");
-        localStorage.setItem('rozgarUser', JSON.stringify(user));
-        showDash();
-    }
-
-    function showDash() {
-        document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
-        document.getElementById('dash-sec').classList.remove('hidden');
-        document.getElementById('user-initial').innerText = user.name[0].toUpperCase();
-        document.getElementById('display-state').innerText = user.state;
-        loadLiveUpdates();
-    }
-
-    async function loadLiveUpdates() {
-        try {
-            const res = await fetch('/get_live_updates');
-            const data = await res.json();
-            const jobBox = document.getElementById('job-ticker');
-            const admitBox = document.getElementById('admit-ticker');
-            if(data.jobs.length > 0) {
-                jobBox.innerHTML = '';
-                data.jobs.forEach(j => { jobBox.innerHTML += `<a href="${j.link}" target="_blank" class="ticker-item">🔥 ${j.title}</a>`; });
-            }
-            if(data.admits.length > 0) {
-                admitBox.innerHTML = '';
-                data.admits.forEach(a => { admitBox.innerHTML += `<a href="${a.link}" target="_blank" class="ticker-item">🆕 ${a.title}</a>`; });
-            }
-        } catch (e) {}
-    }
-
-    function showResults() {
-        document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
-        document.getElementById('res-sec').classList.remove('hidden');
-    }
-
-    function toggleResSub(id) {
-        document.querySelectorAll('#res-sec .card').forEach(c => c.classList.add('hidden'));
-        document.getElementById('sub-' + id).classList.remove('hidden');
-    }
-
-    function setResType(el, val) {
-        el.parentElement.querySelectorAll('.pill').forEach(p => p.classList.remove('active-pill'));
-        el.classList.add('active-pill'); resType = val;
-    }
-
-    function openJobs(cat) {
-        currentCat = cat;
-        document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
-        document.getElementById('feed-sec').classList.remove('hidden');
-        document.getElementById('f-title').innerText = cat;
-        document.getElementById('list').innerHTML = '';
-        fetchData();
-    }
-
-    function editProfile() {
-        document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
-        document.getElementById('login-sec').classList.remove('hidden');
-        document.getElementById('u-name').value = user.name;
-        document.getElementById('u-contact').value = user.contact;
-        document.getElementById('u-state').value = user.state;
-        toggleMenu();
-    }
-
-    async function fetchData() {
-        document.getElementById('loading').classList.remove('hidden');
-        try {
-            const res = await fetch('/fetch_jobs', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ category: currentCat, state: user.state, edu: user.edu })
-            });
-            const data = await res.json();
-            data.forEach(i => {
-                document.getElementById('list').innerHTML += `
-                <div class="job-card">
-                    <h3 class="job-title">${i.title}</h3>
-                    <a href="${i.link}" target="_blank" class="btn-apply">View Details 🚀</a>
-                </div>`;
-            });
-        } catch(e) {}
-        document.getElementById('loading').classList.add('hidden');
-    }
-
-    function logout() { localStorage.removeItem('rozgarUser'); location.reload(); }
-</script>
-</body>
-</html>
+        if(save
