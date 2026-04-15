@@ -10,10 +10,6 @@ CORS(app)
 # --- DIRECT API KEY YAHAN PASTE KARO ---
 SERPER_API_KEY = "675ec80f6858652b8add27fbe3ab09371a6faaae"
 
-
-# AI Key (Bhai yahan apni asli OpenAI key daal dena, warna error aayega)
-OPENAI_API_KEY = "yahan_apni_key_daalo" 
-
 @app.route('/manifest.json')
 def serve_manifest():
     return send_from_directory(os.getcwd(), 'manifest.json')
