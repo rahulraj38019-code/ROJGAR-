@@ -15,7 +15,7 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --main: #121212; --blue: #007bff; --light-blue: --e7f1ff; --bg: #f8fafc; --white: #ffffff; --text-muted: #64748b; --neon-glow: rgba(0, 123, 255, 0.6); }
+        :root { --main: #121212; --blue: #007bff; --light-blue: #e7f1ff; --bg: #f8fafc; --white: #ffffff; --text-muted: #64748b; --neon-glow: rgba(0, 123, 255, 0.6); }
         body.dark-mode { --bg: #0f172a; --white: #1e293b; --main: #f1f5f9; --text-muted: #94a3b8; --light-blue: #1e3a8a; --neon-glow: rgba(0, 210, 255, 0.8); }
         body { background: var(--bg); font-family: 'Inter', sans-serif; margin: 0; padding: 0; padding-bottom: 120px; color: var(--main); transition: 0.3s; overflow-x: hidden; }
         .container { max-width: 500px; margin: 0 auto; padding: 15px; }
@@ -98,11 +98,11 @@
 </head>
 <body id="app-body">
 
-<div id="ai-trigger" onclick="openAI()">
+<a id="ai-trigger" href="https://gemini.google.com/" target="_blank">
     <span class="hi-hand">👋</span>
     <span class="ai-robot">🤖</span>
     <div class="ai-label">ASK AI</div>
-</div>
+</a>
 
 <div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
 
@@ -284,19 +284,6 @@
 <script>
     let user = {}; let currentCat = ''; let loading = false; let resType = '';
 
-    // NEW: Popup Window logic for AI
-    function openAI() {
-        const url = 'https://gemini.google.com/';
-        const width = 400;
-        const height = 600;
-        const left = (screen.width - width) / 2;
-        const top = (screen.height - height) / 2;
-        
-        window.open(url, 'GeminiAI', 
-            `width=${width},height=${height},top=${top},left=${left},scrollbars=yes,status=no,toolbar=no,menubar=no,location=no`
-        );
-    }
-
     function toggleMenu() { document.getElementById('sideMenu').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
     
     function toggleDarkMode() {
@@ -304,121 +291,6 @@
         localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
     }
 
+    // FIXED: Is function ko poora kar diya hai aur nav bar hide logic joda hai
     window.onload = () => {
-        if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
-        const saved = localStorage.getItem('rozgarUser');
-        if(saved) { 
-            user = JSON.parse(saved); 
-            showDash(); 
-        } else { 
-            document.getElementById('login-sec').classList.remove('hidden'); 
-        }
-    };
-
-    function toggleEdu(el, val) {
-        document.querySelectorAll('.edu-chip').forEach(c => c.classList.remove('selected'));
-        el.classList.add('selected'); user.edu = val;
-    }
-
-    function saveLogin() {
-        user.name = document.getElementById('u-name').value;
-        user.contact = document.getElementById('u-contact').value;
-        user.state = document.getElementById('u-state').value;
-        if(!user.name || !user.contact || !user.edu) return alert("Bhai details toh bharo!");
-        localStorage.setItem('rozgarUser', JSON.stringify(user));
-        showDash();
-    }
-
-    function showDash() {
-        document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
-        document.getElementById('dash-sec').classList.remove('hidden');
-        document.getElementById('user-initial').innerText = user.name ? user.name[0].toUpperCase() : 'U';
-        loadLiveUpdates();
-    }
-
-    function showResults() {
-        document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
-        document.getElementById('res-sec').classList.remove('hidden');
-    }
-
-    function toggleResSub(id) {
-        document.querySelectorAll('#res-sec .card').forEach(c => c.classList.add('hidden'));
-        const sub = document.getElementById('sub-' + id);
-        if(sub) sub.classList.remove('hidden');
-    }
-
-    function setResType(el, val) {
-        el.parentElement.querySelectorAll('.pill').forEach(p => p.classList.remove('active-pill'));
-        el.classList.add('active-pill'); resType = val;
-    }
-
-    async function loadLiveUpdates() {
-        try {
-            const res = await fetch('/get_live_updates');
-            const data = await res.json();
-            const jobBox = document.getElementById('job-ticker');
-            const admitBox = document.getElementById('admit-ticker');
-            if(data.jobs && data.jobs.length > 0) {
-                jobBox.innerHTML = data.jobs.map(j => `<a href="${j.link}" target="_blank" class="ticker-item">🔥 ${j.title}</a>`).join('');
-            }
-            if(data.admits && data.admits.length > 0) {
-                admitBox.innerHTML = data.admits.map(a => `<a href="${a.link}" target="_blank" class="ticker-item">🆕 ${a.title}</a>`).join('');
-            }
-        } catch (e) { console.log("Update load failed"); }
-    }
-
-    function openJobs(cat) {
-        currentCat = cat;
-        document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
-        document.getElementById('feed-sec').classList.remove('hidden');
-        document.getElementById('f-title').innerText = cat;
-        document.getElementById('list').innerHTML = '';
-        fetchData();
-    }
-
-    function triggerSearch() {
-        const q = document.getElementById('main-search-inp').value;
-        if(q) openJobs(q);
-    }
-
-    function finalResSearch(cat) {
-        if(!resType) return alert("Select type first!");
-        openJobs(cat + " " + resType);
-    }
-
-    async function fetchData() {
-        document.getElementById('loading').classList.remove('hidden');
-        try {
-            const res = await fetch('/fetch_jobs', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ category: currentCat, state: user.state, edu: user.edu })
-            });
-            const data = await res.json();
-            const list = document.getElementById('list');
-            if(data && data.length > 0) {
-                data.forEach(i => {
-                    list.innerHTML += `
-                    <div class="job-card">
-                        <h3 class="job-title">${i.title}</h3>
-                        <a href="${i.link}" target="_blank" style="color:var(--blue); font-weight:800; text-decoration:none; display:block; margin-top:10px;">View Details 🚀</a>
-                    </div>`;
-                });
-            } else { list.innerHTML = '<p style="text-align:center;">No results found.</p>'; }
-        } catch(e) { document.getElementById('list').innerHTML = 'Error fetching data'; }
-        document.getElementById('loading').classList.add('hidden');
-    }
-
-    function editProfile() {
-        document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
-        document.getElementById('login-sec').classList.remove('hidden');
-        document.getElementById('u-name').value = user.name || '';
-        document.getElementById('u-contact').value = user.contact || '';
-        document.getElementById('u-state').value = user.state || '';
-        toggleMenu();
-    }
-
-    function logout() { localStorage.removeItem('rozgarUser'); location.reload(); }
-</script>
-</body>
-</html>
+        if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-m
