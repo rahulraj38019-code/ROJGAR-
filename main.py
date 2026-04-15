@@ -7,10 +7,9 @@ from bs4 import BeautifulSoup
 app = Flask(__name__)
 CORS(app)
 
-# API Key configuration
-K1 = "268aa2e751d03f3d"
-K2 = "61ffa0fe6b46cd80bf6ec73d"
-SERPER_API_KEY = K1 + K2
+# --- DIRECT API KEY YAHAN PASTE KARO ---
+SERPER_API_KEY = "675ec80f6858652b8add27fbe3ab09371a6faaae"
+
 
 # AI Key (Bhai yahan apni asli OpenAI key daal dena, warna error aayega)
 OPENAI_API_KEY = "yahan_apni_key_daalo" 
