@@ -292,10 +292,10 @@
         try {
             const res = await fetch('/get_live_updates');
             const data = await res.json();
-            if(data.jobs.length) {
+            if(data.jobs && data.jobs.length) {
                 document.getElementById('job-ticker').innerHTML = data.jobs.map(j => `<a href="${j.link}" target="_blank" class="ticker-item">${j.title}</a>`).join('');
             }
-            if(data.admits.length) {
+            if(data.admits && data.admits.length) {
                 document.getElementById('admit-ticker').innerHTML = data.admits.map(a => `<a href="${a.link}" target="_blank" class="ticker-item">${a.title}</a>`).join('');
             }
         } catch(e) {}
@@ -314,38 +314,37 @@
     function setResType(btn, type) { document.querySelectorAll('.pill').forEach(p => p.classList.remove('active-pill')); btn.classList.add('active-pill'); resType = type; }
     function finalResSearch(cat) { if(!resType) return alert("Select an option!"); openJobs(cat + " " + resType); }
 
-    // FIXED: Ab ye backend se data layega
     async function openJobs(cat) { 
         hideAll(); 
         document.getElementById('main-header').classList.remove('hidden'); 
         document.getElementById('bottom-bar').classList.remove('hidden'); 
         document.getElementById('feed-sec').classList.remove('hidden'); 
         document.getElementById('f-title').innerText = cat.toUpperCase(); 
-        document.getElementById('list').innerHTML = "<div style='padding:40px; text-align:center; font-weight:700;'>🔍 Fetching latest updates for " + cat + "...</div>"; 
+        document.getElementById('list').innerHTML = "<div style='padding:40px; text-align:center; font-weight:700;'>🔍 Searching...</div>"; 
 
         try {
             const response = await fetch('/fetch_jobs', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ category: cat, edu: user.edu || 'all' })
+                body: JSON.stringify({ category: cat, edu: user.edu || '' })
             });
             const results = await response.json();
             
             if(!results || results.length === 0 || results.error) {
-                document.getElementById('list').innerHTML = "<div style='padding:40px; text-align:center;'>❌ No results found. Check your API key or connection.</div>";
+                document.getElementById('list').innerHTML = "<div style='padding:40px; text-align:center;'>❌ No results found.</div>";
                 return;
             }
 
             let html = results.map(item => `
                 <a href="${item.link}" target="_blank" class="job-card">
                     <div class="job-title">${item.title}</div>
-                    <div class="job-desc">${item.snippet.substring(0, 120)}...</div>
-                    <div style="font-size:10px; color:var(--blue); margin-top:5px; font-weight:800;">READ MORE →</div>
+                    <div class="job-desc">${item.snippet ? item.snippet.substring(0, 120) : 'View Details'}...</div>
+                    <div style="font-size:10px; color:var(--blue); margin-top:5px; font-weight:800;">VISIT SITE →</div>
                 </a>
             `).join('');
             document.getElementById('list').innerHTML = html;
         } catch(e) {
-            document.getElementById('list').innerHTML = "<div style='padding:40px; text-align:center;'>Error loading data.</div>";
+            document.getElementById('list').innerHTML = "<div style='padding:40px; text-align:center;'>Error fetching data.</div>";
         }
     }
 </script>
