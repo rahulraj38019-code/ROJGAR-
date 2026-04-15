@@ -311,8 +311,17 @@
     function logout() { localStorage.removeItem('userHub'); location.reload(); }
     function triggerSearch() { let v = document.getElementById('main-search-inp').value; if(v) openJobs(v); }
     function toggleResSub(id) { document.querySelectorAll('#res-sec .card').forEach(c => c.classList.add('hidden')); document.getElementById('sub-'+id).classList.remove('hidden'); resType = ''; }
-    function setResType(btn, type) { document.querySelectorAll('.pill').forEach(p => p.classList.remove('active-pill')); btn.classList.add('active-pill'); resType = type; }
-    function finalResSearch(cat) { if(!resType) return alert("Select an option!"); openJobs(cat + " " + resType); }
+    
+    function setResType(btn, type) { 
+        document.querySelectorAll('.pill').forEach(p => p.classList.remove('active-pill')); 
+        btn.classList.add('active-pill'); 
+        resType = type; 
+    }
+
+    function finalResSearch(cat) { 
+        if(!resType) return alert("Select an option!"); 
+        openJobs(cat + " " + resType); 
+    }
 
     async function openJobs(cat) { 
         hideAll(); 
@@ -320,31 +329,33 @@
         document.getElementById('bottom-bar').classList.remove('hidden'); 
         document.getElementById('feed-sec').classList.remove('hidden'); 
         document.getElementById('f-title').innerText = cat.toUpperCase(); 
-        document.getElementById('list').innerHTML = "<div style='padding:40px; text-align:center; font-weight:700;'>🔍 Searching...</div>"; 
+        
+        const listDiv = document.getElementById('list');
+        listDiv.innerHTML = "<div style='padding:40px; text-align:center; font-weight:700; color:var(--blue);'>🔍 Fetching Updates...</div>"; 
 
         try {
             const response = await fetch('/fetch_jobs', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ category: cat, edu: user.edu || '' })
+                body: JSON.stringify({ category: cat, edu: user.edu || '10th' })
             });
             const results = await response.json();
             
             if(!results || results.length === 0 || results.error) {
-                document.getElementById('list').innerHTML = "<div style='padding:40px; text-align:center;'>❌ No results found.</div>";
+                listDiv.innerHTML = "<div style='padding:40px; text-align:center;'>❌ No results found for this category.</div>";
                 return;
             }
 
             let html = results.map(item => `
                 <a href="${item.link}" target="_blank" class="job-card">
                     <div class="job-title">${item.title}</div>
-                    <div class="job-desc">${item.snippet ? item.snippet.substring(0, 120) : 'View Details'}...</div>
-                    <div style="font-size:10px; color:var(--blue); margin-top:5px; font-weight:800;">VISIT SITE →</div>
+                    <div class="job-desc">${item.snippet ? item.snippet.substring(0, 150) : 'View Details'}...</div>
+                    <div style="font-size:11px; color:var(--blue); margin-top:8px; font-weight:800;">OPEN OFFICIAL LINK →</div>
                 </a>
             `).join('');
-            document.getElementById('list').innerHTML = html;
+            listDiv.innerHTML = html;
         } catch(e) {
-            document.getElementById('list').innerHTML = "<div style='padding:40px; text-align:center;'>Error fetching data.</div>";
+            listDiv.innerHTML = "<div style='padding:40px; text-align:center;'>⚠️ Error connecting to server.</div>";
         }
     }
 </script>
