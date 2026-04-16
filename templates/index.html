@@ -86,7 +86,7 @@
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
 
         /* Google AI Search Bar Styling */
-        .ai-search-container { position: relative; margin-bottom: 25px; border-radius: 50px; background: var(--white); border: 2px solid transparent; background-image: linear-gradient(var(--white), var(--white)), var(--ai-gradient); background-origin: border-box; background-clip: content-box, border-box; box-shadow: 0 4px 20px rgba(0,0,0,0.1); overflow: hidden; }
+        .ai-search-container { position: relative; margin-bottom: 25px; border-radius: 50px; background: var(--white); border: 2px solid transparent; background-origin: border-box; background-clip: content-box, border-box; background-image: linear-gradient(var(--white), var(--white)), var(--ai-gradient); box-shadow: 0 4px 20px rgba(0,0,0,0.1); overflow: hidden; }
         .ai-search-inner { display: flex; align-items: center; padding: 5px 15px; gap: 10px; }
         .ai-sparkle { font-size: 20px; background: var(--ai-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; }
         .ai-search-input { flex: 1; border: none; padding: 12px 5px; font-size: 14px; font-weight: 600; outline: none; background: transparent; color: var(--main); }
@@ -157,10 +157,10 @@
         <div class="ai-search-container">
             <div class="ai-search-inner">
                 <span class="ai-sparkle">✦</span>
-                <input type="text" id="main-search-inp" class="ai-search-input" placeholder="Ask AI: Find my dream job...">
+                <input type="text" id="main-search-inp" class="ai-search-input" placeholder="Ask anything (Hinglish/Eng)...">
                 <button onclick="triggerSearch()" class="ai-btn">✨</button>
             </div>
-            <div class="ai-mode-tag">AI Search Mode</div>
+            <div class="ai-mode-tag">Hinglish AI Support</div>
         </div>
 
         <h3 style="font-weight:800;">Top Categories</h3>
@@ -353,7 +353,26 @@
     function toggleDarkMode() { document.body.classList.toggle('dark-mode'); localStorage.setItem('darkMode', document.body.classList.contains('dark-mode')); }
     function editProfile() { localStorage.removeItem('userHub'); location.reload(); }
     function logout() { localStorage.removeItem('userHub'); location.reload(); }
-    function triggerSearch() { let v = document.getElementById('main-search-inp').value; if(v) openJobs(v + " vacancy apply online"); }
+
+    function triggerSearch() { 
+        let v = document.getElementById('main-search-inp').value; 
+        if(!v) return;
+        
+        let lower = v.toLowerCase();
+        
+        // Advanced Keyword Matching (Works for Hinglish too)
+        const jobKeywords = ['job', 'vacancy', 'recruitment', 'bharti', 'naukri', 'result', 'admit', 'card', 'exam', 'paper', 'railway', 'ssc', 'police', 'daroga', 'board', '10th', '12th', 'iti', 'apply', 'online'];
+        
+        const isJobRelated = jobKeywords.some(keyword => lower.includes(keyword));
+
+        if(isJobRelated) {
+            // Add extra keywords for better job fetching but keep user query visible
+            openJobs(v + " official notification online");
+        } else {
+            // General Questions (Hinglish/Eng) go to Gemini AI
+            window.open(`https://gemini.google.com/app?q=${encodeURIComponent(v)}`, '_blank');
+        }
+    }
     
     function toggleResSub(id) { 
         document.querySelectorAll('#res-sec .card').forEach(c => c.classList.add('hidden')); 
@@ -381,7 +400,7 @@
         if(!isLoadMore) {
             lastResults = [];
             pageCount = 1;
-            document.getElementById('list').innerHTML = "<div style='padding:40px; text-align:center; font-weight:700; color:var(--blue);'>🔍 Connecting...</div>";
+            document.getElementById('list').innerHTML = "<div style='padding:40px; text-align:center; font-weight:700; color:var(--blue);'>🔍 Searching Data...</div>";
             history.pushState({screen: 'list'}, '');
         }
         
@@ -398,7 +417,7 @@
         document.getElementById('feed-sec').classList.remove('hidden'); 
         document.getElementById('back-btn').classList.add('hidden');
         
-        let cleanTitle = cat.split(' vacancy')[0].split(' official')[0].toUpperCase();
+        let cleanTitle = cat.split(' official')[0].toUpperCase();
         document.getElementById('f-title').innerText = cleanTitle; 
 
         try {
