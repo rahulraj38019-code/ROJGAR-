@@ -96,7 +96,6 @@
         .tracker-card { background: var(--white); padding: 15px; border-radius: 18px; margin-bottom: 20px; }
         .target-item { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 13px; font-weight: 600; }
 
-        /* Community Help Button & Chat Page Styles */
         .comm-btn { background: var(--white); padding: 18px; border-radius: 20px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; margin-top: 10px; text-decoration: none; color: inherit; }
         .chat-container { background: var(--bg); height: 80vh; border-radius: 24px; display: flex; flex-direction: column; padding: 15px; border: 1px solid var(--blue); box-shadow: 0 0 20px var(--neon-glow); }
         .chat-bubble { max-width: 80%; padding: 12px 16px; border-radius: 18px; margin-bottom: 12px; font-size: 13px; line-height: 1.4; position: relative; }
@@ -109,10 +108,10 @@
 </head>
 <body id="app-body">
 
-<div id="ai-trigger" onclick="triggerSearchDirect('Latest Jobs and News today')">
+<a id="ai-trigger" href="https://gemini.google.com/" target="_blank">
     <span class="ai-robot">🤖</span>
     <div class="ai-label">ASK AI</div>
-</div>
+</a>
 
 <div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
 
@@ -274,45 +273,7 @@
             <div class="dash-card" onclick="toggleResSub('ssc')"><i>🦁</i><span>SSC</span></div>
             <div class="dash-card" onclick="toggleResSub('police')"><i>👮</i><span>Bihar Police</span></div>
         </div>
-
-        <div id="sub-bihar-board" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
-            <div style="display:flex; gap:10px;"><button onclick="setResType(this, 'Matric')" class="pill" style="flex:1;">Matric (10th)</button><button onclick="setResType(this, 'Inter')" class="pill" style="flex:1;">Inter (12th)</button></div>
-            <input type="number" id="year-bihar" class="year-input" placeholder="Enter Year (e.g. 2025)">
-            <button onclick="finalResSearch('Bihar Board', 'year-bihar')" class="btn-primary" style="margin-top:10px;">Check Result ✅</button>
         </div>
-
-        <div id="sub-railway" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
-                <button onclick="setResType(this, 'Group D')" class="pill">Group D</button>
-                <button onclick="setResType(this, 'ALP')" class="pill">ALP</button>
-                <button onclick="setResType(this, 'NTPC')" class="pill">NTPC</button>
-                <button onclick="setResType(this, 'Technician')" class="pill">Technician</button>
-            </div>
-            <input type="number" id="year-railway" class="year-input" placeholder="Enter Year (e.g. 2024)">
-            <button onclick="finalResSearch('Railway', 'year-railway')" class="btn-primary" style="margin-top:10px;">Check Result ✅</button>
-        </div>
-
-        <div id="sub-ssc" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
-                <button onclick="setResType(this, 'SSC MTS')" class="pill">MTS</button>
-                <button onclick="setResType(this, 'SSC GD')" class="pill">GD</button>
-                <button onclick="setResType(this, 'SSC CGL')" class="pill">CGL</button>
-                <button onclick="setResType(this, 'SSC CHSL')" class="pill">CHSL</button>
-            </div>
-            <input type="number" id="year-ssc" class="year-input" placeholder="Enter Year (e.g. 2025)">
-            <button onclick="finalResSearch('SSC', 'year-ssc')" class="btn-primary" style="margin-top:10px;">Check Result ✅</button>
-        </div>
-
-        <div id="sub-police" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
-                <button onclick="setResType(this, 'Constable')" class="pill">Constable</button>
-                <button onclick="setResType(this, 'SI')" class="pill">SI (Daroga)</button>
-                <button onclick="setResType(this, 'Driver')" class="pill">Driver</button>
-            </div>
-            <input type="number" id="year-police" class="year-input" placeholder="Enter Year (e.g. 2024)">
-            <button onclick="finalResSearch('Bihar Police', 'year-police')" class="btn-primary" style="margin-top:10px;">Check Result ✅</button>
-        </div>
-    </div>
 
     <div id="feed-sec" class="hidden">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
@@ -341,19 +302,6 @@
         if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
         checkLogin();
         fetchLive();
-    };
-
-    window.onpopstate = function(event) {
-        if (event.state) {
-            const screen = event.state.screen;
-            if (screen === 'home') showDash(false);
-            else if (screen === 'results') showResults(false);
-            else if (screen === 'list') {
-                document.getElementById('back-btn').classList.add('hidden');
-                if(currentType === 'Job') document.getElementById('load-more-container').classList.remove('hidden');
-                renderList(lastResults);
-            }
-        }
     };
 
     function checkLogin() {
@@ -452,54 +400,20 @@
         openJobs(v);
     }
 
-    function triggerSearchDirect(v) {
-        openJobs(v);
-    }
-    
-    function toggleResSub(id) { 
-        document.querySelectorAll('#res-sec .card').forEach(c => c.classList.add('hidden')); 
-        const sub = document.getElementById('sub-'+id);
-        if(sub) sub.classList.remove('hidden'); 
-        resType = ''; 
-    }
-
-    function setResType(btn, type) { 
-        btn.parentElement.querySelectorAll('.pill').forEach(p => p.classList.remove('active-pill')); 
-        btn.classList.add('active-pill'); 
-        resType = type; 
-    }
-
-    function finalResSearch(cat, yearId) { 
-        let yearVal = document.getElementById(yearId).value;
-        if(!resType) return alert("Pehle option select karein!"); 
-        if(!yearVal) return alert("Pehle Year (saal) daalein!");
-        let query = `${cat} ${resType} Result ${yearVal} official direct portal`;
-        openJobs(query); 
-    }
-
     async function openJobs(cat, isLoadMore = false) { 
         if(!isLoadMore) {
             lastResults = [];
             pageCount = 1;
-            document.getElementById('list').innerHTML = "<div style='padding:40px; text-align:center; font-weight:700; color:var(--blue);'>🔍 Thinking (AI)...</div>";
+            document.getElementById('list').innerHTML = "<div style='padding:40px; text-align:center; font-weight:700; color:var(--blue);'>🔍 Searching...</div>";
             history.pushState({screen: 'list'}, '');
         }
         
         currentCategory = cat;
-        let lowerCat = cat.toLowerCase();
-        
-        if(lowerCat.includes('result')) { currentType = 'Result'; }
-        else if(lowerCat.includes('admit')) { currentType = 'Admit Card'; }
-        else { currentType = 'Info'; }
-
         hideAll(); 
         document.getElementById('main-header').classList.remove('hidden'); 
         document.getElementById('bottom-bar').classList.remove('hidden'); 
         document.getElementById('feed-sec').classList.remove('hidden'); 
-        document.getElementById('back-btn').classList.add('hidden');
         
-        document.getElementById('f-title').innerText = cat.substring(0, 20).toUpperCase() + (cat.length > 20 ? '...' : ''); 
-
         try {
             const response = await fetch('/fetch_jobs', {
                 method: 'POST',
@@ -507,87 +421,36 @@
                 body: JSON.stringify({ category: cat, edu: user.edu || '10th', page: pageCount })
             });
             let newResults = await response.json();
-            
             lastResults = [...lastResults, ...newResults];
             renderList(lastResults);
-            
-            if(newResults.length > 0 && (currentType === 'Job' || currentType === 'Info')) {
-                document.getElementById('load-more-container').classList.remove('hidden');
-            } else {
-                document.getElementById('load-more-container').classList.add('hidden');
-            }
         } catch(e) {
-            document.getElementById('list').innerHTML = "<div style='padding:40px; text-align:center;'>⚠️ Connection Error!</div>";
+            document.getElementById('list').innerHTML = "<div style='padding:40px; text-align:center;'>⚠️ Error!</div>";
         }
-    }
-
-    function loadMore() {
-        pageCount++;
-        openJobs(currentCategory, true);
     }
 
     function renderList(results) {
         const listDiv = document.getElementById('list');
-        if(!results || results.length === 0) {
-            listDiv.innerHTML = "<div style='padding:40px; text-align:center;'>❌ No data found. Try another query.</div>";
-            return;
-        }
-        
         listDiv.innerHTML = results.map((item, index) => `
             <div class="job-card" onclick="viewDetails(${index})">
                 <div class="job-title">${item.title}</div>
-                <div class="job-desc">${item.snippet ? item.snippet.substring(0, 120) : 'Click to see full details...'}</div>
-                <div style="font-size:11px; color:var(--blue); margin-top:10px; font-weight:800;">READ MORE →</div>
+                <div class="job-desc">${item.snippet || 'Click to see full details...'}</div>
             </div>
         `).join('');
     }
 
     function viewDetails(index) {
         const item = lastResults[index];
-        const listDiv = document.getElementById('list');
-        document.getElementById('back-btn').classList.remove('hidden');
-        document.getElementById('load-more-container').classList.add('hidden');
-        history.pushState({screen: 'details'}, '');
-        
-        let btnText = "Open Link 🚀";
-        if(currentType === 'Result') { btnText = "Check Result ✅"; }
-        if(currentType === 'Admit Card') { btnText = "Download Card 📥"; }
-
-        listDiv.innerHTML = `
-            <div class="details-card">
-                <h2 style="color:var(--blue); margin-top:0; font-size:18px;">${item.title}</h2>
-                <p style="font-size:14px; line-height:1.6; color:var(--main); margin-top:15px; border-top:1px solid #eee; padding-top:15px;">
-                    ${item.snippet || 'No extra info available.'}
-                </p>
-                <button onclick="window.open('${item.link}', '_blank')" class="btn-primary" style="margin-top:20px;">
-                    ${btnText}
-                </button>
-            </div>
-        `;
-    }
-
-    function showDetailsDirect(title, link, type) {
-        currentType = type;
-        hideAll();
-        document.getElementById('main-header').classList.remove('hidden'); 
-        document.getElementById('feed-sec').classList.remove('hidden');
-        document.getElementById('bottom-bar').classList.remove('hidden');
-        document.getElementById('f-title').innerText = "LIVE UPDATE";
-        history.pushState({screen: 'details'}, '');
-        
         document.getElementById('list').innerHTML = `
             <div class="details-card">
-                <h2 style="color:var(--blue); margin-top:0;">${title}</h2>
-                <div class="info-row"><span class="info-label">Type:</span><span class="info-val">${type}</span></div>
-                <button onclick="window.open('${link}', '_blank')" class="btn-primary" style="margin-top:25px;">Check Now 🚀</button>
-                <button onclick="showDash()" class="btn-primary" style="margin-top:10px; background:#64748b;">Close</button>
+                <h2 style="color:var(--blue);">${item.title}</h2>
+                <p>${item.snippet || ''}</p>
+                <button onclick="window.open('${item.link}', '_blank')" class="btn-primary">Open Official Link 🚀</button>
             </div>
         `;
+        document.getElementById('back-btn').classList.remove('hidden');
     }
 
-    function goBackToList() {
-        history.back();
-    }
+    function goBackToList() { renderList(lastResults); document.getElementById('back-btn').classList.add('hidden'); }
 </script>
 </body>
 </html>
