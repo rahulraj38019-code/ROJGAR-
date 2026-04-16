@@ -18,7 +18,7 @@
         header { background: var(--white); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 100; box-shadow: 0 0 15px var(--neon-glow); }
         .logo-text { font-weight: 800; font-size: 20px; color: var(--blue); letter-spacing: -0.5px; cursor: pointer; text-shadow: 0 0 10px var(--blue); }
 
-        .live-panel, .dash-card, .social-link-card, .job-card, .card, .pill, .input-box, .login-card, .edu-chip, .details-card, .tracker-card, .comm-card {
+        .live-panel, .dash-card, .social-link-card, .job-card, .card, .pill, .input-box, .login-card, .edu-chip, .details-card, .tracker-card, .comm-btn {
             border: 1px solid var(--blue) !important;
             box-shadow: 0 0 15px var(--neon-glow) !important;
             transition: 0.3s;
@@ -92,13 +92,19 @@
         .ai-btn { background: var(--ai-gradient); color: white; border: none; border-radius: 50%; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
         .ai-mode-tag { position: absolute; bottom: 2px; right: 60px; font-size: 8px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; }
         
-        /* Step 2, 3, 4, 5 Extra Styles */
         .voice-btn { background: none; border: none; font-size: 18px; cursor: pointer; padding: 5px; }
         .tracker-card { background: var(--white); padding: 15px; border-radius: 18px; margin-bottom: 20px; }
         .target-item { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 13px; font-weight: 600; }
-        .comm-card { background: var(--white); padding: 15px; border-radius: 18px; margin-top: 10px; }
-        .comm-user { font-size: 11px; font-weight: 800; color: var(--blue); }
-        .comm-msg { font-size: 13px; margin-top: 4px; }
+
+        /* Community Help Button & Chat Page Styles */
+        .comm-btn { background: var(--white); padding: 18px; border-radius: 20px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; margin-top: 10px; text-decoration: none; color: inherit; }
+        .chat-container { background: var(--bg); height: 80vh; border-radius: 24px; display: flex; flex-direction: column; padding: 15px; border: 1px solid var(--blue); box-shadow: 0 0 20px var(--neon-glow); }
+        .chat-bubble { max-width: 80%; padding: 12px 16px; border-radius: 18px; margin-bottom: 12px; font-size: 13px; line-height: 1.4; position: relative; }
+        .bubble-left { background: var(--white); color: var(--main); align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid #eee; }
+        .bubble-right { background: #dcf8c6; color: #121212; align-self: flex-end; border-bottom-right-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .dark-mode .bubble-right { background: #056162; color: white; }
+        .chat-user { font-size: 10px; font-weight: 800; color: var(--blue); display: block; margin-bottom: 4px; }
+        .chat-time { font-size: 9px; opacity: 0.6; text-align: right; display: block; margin-top: 4px; }
     </style>
 </head>
 <body id="app-body">
@@ -201,14 +207,16 @@
             <div class="dash-card" onclick="openJobs('latest Remote work from home jobs vacancy 2026')"><i>🏠</i><span>Remote/WFH</span></div>
         </div>
 
-        <h3 style="font-weight:800; margin-top:30px;">Community Help 👥</h3>
-        <div class="comm-card">
-            <div class="comm-user">@Sonu_Kumar</div>
-            <div class="comm-msg">Bhai Railway Group D ka form kab tak aayega?</div>
-        </div>
-        <div class="comm-card">
-            <div class="comm-user">@Admin_Rahul</div>
-            <div class="comm-msg">November tak umeed hai, taiyari jaari rakhein!</div>
+        <h3 style="font-weight:800; margin-top:30px;">Help Desk 👥</h3>
+        <div class="comm-btn" onclick="showCommunityChat()">
+            <div style="display:flex; align-items:center; gap:12px;">
+                <div style="background:var(--light-blue); width:45px; height:45px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:22px;">💬</div>
+                <div>
+                    <div style="font-weight:800; font-size:14px;">Community Help</div>
+                    <div style="font-size:11px; color:var(--text-muted);">Ask doubts & chat with others</div>
+                </div>
+            </div>
+            <div style="color:var(--blue); font-weight:800;">OPEN</div>
         </div>
 
         <h3 style="font-weight:800; margin-top:30px;">Direct Support</h3>
@@ -227,6 +235,35 @@
             </div>
             <div style="color:var(--blue); font-weight:800;">FOLLOW</div>
         </a>
+    </div>
+
+    <div id="chat-sec" class="hidden">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px;">
+            <button onclick="showDash()" style="border:none; background:none; font-size:20px; cursor:pointer;">⬅️</button>
+            <h3 style="margin:0; font-weight:800;">Community Chat</h3>
+        </div>
+        <div class="chat-container">
+            <div class="chat-bubble bubble-left">
+                <span class="chat-user">@Sonu_Kumar</span>
+                Bhai Railway Group D ka form kab tak aayega?
+                <span class="chat-time">10:45 AM</span>
+            </div>
+            <div class="chat-bubble bubble-right">
+                <span class="chat-user">@Admin_Rahul</span>
+                November tak umeed hai, taiyari jaari rakhein!
+                <span class="chat-time">10:48 AM</span>
+            </div>
+            <div class="chat-bubble bubble-left">
+                <span class="chat-user">@Priya_V</span>
+                SSC MTS ke liye best book kaun si hai?
+                <span class="chat-time">11:05 AM</span>
+            </div>
+            <div style="flex:1;"></div>
+            <div style="display:flex; gap:10px;">
+                <input type="text" class="input-box" placeholder="Type your doubt..." style="margin:0;">
+                <button class="ai-btn" style="border-radius:12px; width:50px; height:50px;">📤</button>
+            </div>
+        </div>
     </div>
 
     <div id="res-sec" class="hidden">
@@ -346,7 +383,7 @@
     }
 
     function hideAll() {
-        ['login-sec','dash-sec','res-sec','feed-sec','main-header','bottom-bar','resume-sec'].forEach(id => {
+        ['login-sec','dash-sec','res-sec','feed-sec','main-header','bottom-bar','resume-sec','chat-sec'].forEach(id => {
             let el = document.getElementById(id);
             if(el) el.classList.add('hidden');
         });
@@ -378,6 +415,13 @@
         document.getElementById('resume-sec').classList.remove('hidden');
         document.getElementById('bottom-bar').classList.remove('hidden');
         toggleMenu();
+    }
+
+    function showCommunityChat() {
+        hideAll();
+        document.getElementById('main-header').classList.remove('hidden');
+        document.getElementById('chat-sec').classList.remove('hidden');
+        document.getElementById('bottom-bar').classList.remove('hidden');
     }
 
     async function fetchLive() {
