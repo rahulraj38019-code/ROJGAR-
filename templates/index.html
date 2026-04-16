@@ -96,7 +96,7 @@
 </head>
 <body id="app-body">
 
-<a id="ai-trigger" href="https://gemini.google.com/" target="_blank">
+<a id="ai-trigger" href="https://www.google.com/search?q=latest+govt+jobs+2026&udm=14" target="_blank">
     <span class="ai-robot">🤖</span>
     <div class="ai-label">ASK AI</div>
 </a>
@@ -359,18 +359,14 @@
         if(!v) return;
         
         let lower = v.toLowerCase();
-        
-        // Advanced Keyword Matching (Works for Hinglish too)
         const jobKeywords = ['job', 'vacancy', 'recruitment', 'bharti', 'naukri', 'result', 'admit', 'card', 'exam', 'paper', 'railway', 'ssc', 'police', 'daroga', 'board', '10th', '12th', 'iti', 'apply', 'online'];
-        
         const isJobRelated = jobKeywords.some(keyword => lower.includes(keyword));
 
         if(isJobRelated) {
-            // Add extra keywords for better job fetching but keep user query visible
             openJobs(v + " official notification online");
         } else {
-            // General Questions (Hinglish/Eng) go to Gemini AI
-            window.open(`https://gemini.google.com/app?q=${encodeURIComponent(v)}`, '_blank');
+            // Updated Redirect to Google Search AI Mode (udm=14 for AI/SGE results)
+            window.open(`https://www.google.com/search?q=${encodeURIComponent(v)}&udm=14`, '_blank');
         }
     }
     
