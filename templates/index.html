@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     
     <style>
-        :root { --main: #121212; --blue: #007bff; --light-blue: #e7f1ff; --bg: #f8fafc; --white: #ffffff; --text-muted: #64748b; --neon-glow: rgba(0, 123, 255, 0.6); }
+        :root { --main: #121212; --blue: #007bff; --light-blue: #e7f1ff; --bg: #f8fafc; --white: #ffffff; --text-muted: #64748b; --neon-glow: rgba(0, 123, 255, 0.6); --ai-gradient: linear-gradient(90deg, #4285f4, #9b72cb, #d96570); }
         body.dark-mode { --bg: #0f172a; --white: #1e293b; --main: #f1f5f9; --text-muted: #94a3b8; --light-blue: #1e3a8a; --neon-glow: rgba(0, 210, 255, 0.8); }
         body { background: var(--bg); font-family: 'Inter', sans-serif; margin: 0; padding: 0; padding-bottom: 120px; color: var(--main); transition: 0.3s; overflow-x: hidden; }
         .container { max-width: 500px; margin: 0 auto; padding: 15px; }
@@ -84,6 +84,14 @@
         .ai-robot { font-size: 45px; animation: float 3s ease-in-out infinite; display: block; filter: drop-shadow(0 0 15px var(--blue)); }
         .ai-label { background: var(--blue); color: white; padding: 6px 12px; border-radius: 12px; font-size: 11px; font-weight: 800; margin-top: -5px; }
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+
+        /* Google AI Search Bar Styling */
+        .ai-search-container { position: relative; margin-bottom: 25px; border-radius: 50px; background: var(--white); border: 2px solid transparent; background-image: linear-gradient(var(--white), var(--white)), var(--ai-gradient); background-origin: border-box; background-clip: content-box, border-box; box-shadow: 0 4px 20px rgba(0,0,0,0.1); overflow: hidden; }
+        .ai-search-inner { display: flex; align-items: center; padding: 5px 15px; gap: 10px; }
+        .ai-sparkle { font-size: 20px; background: var(--ai-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; }
+        .ai-search-input { flex: 1; border: none; padding: 12px 5px; font-size: 14px; font-weight: 600; outline: none; background: transparent; color: var(--main); }
+        .ai-btn { background: var(--ai-gradient); color: white; border: none; border-radius: 50%; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        .ai-mode-tag { position: absolute; bottom: 2px; right: 60px; font-size: 8px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; }
     </style>
 </head>
 <body id="app-body">
@@ -146,11 +154,13 @@
             </div>
         </div>
 
-        <div class="card" style="padding: 5px;">
-            <div style="display: flex; align-items: center;">
-                <input type="text" id="main-search-inp" placeholder="Search Jobs or Results..." style="flex:1; padding:12px; border:none; outline:none; background:transparent; color:var(--main);">
-                <button onclick="triggerSearch()" style="background:var(--blue); color:white; border:none; border-radius:10px; padding:10px 15px;">🔍</button>
+        <div class="ai-search-container">
+            <div class="ai-search-inner">
+                <span class="ai-sparkle">✦</span>
+                <input type="text" id="main-search-inp" class="ai-search-input" placeholder="Ask AI: Find my dream job...">
+                <button onclick="triggerSearch()" class="ai-btn">✨</button>
             </div>
+            <div class="ai-mode-tag">AI Search Mode</div>
         </div>
 
         <h3 style="font-weight:800;">Top Categories</h3>
