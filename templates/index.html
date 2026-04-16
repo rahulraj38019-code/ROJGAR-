@@ -97,7 +97,8 @@
         .target-item { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 13px; font-weight: 600; }
 
         .comm-btn { background: var(--white); padding: 18px; border-radius: 20px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; margin-top: 10px; text-decoration: none; color: inherit; }
-        .chat-container { background: var(--bg); height: 80vh; border-radius: 24px; display: flex; flex-direction: column; padding: 15px; border: 1px solid var(--blue); box-shadow: 0 0 20px var(--neon-glow); }
+        .chat-container { background: var(--bg); height: 75vh; border-radius: 24px; display: flex; flex-direction: column; padding: 15px; border: 1px solid var(--blue); box-shadow: 0 0 20px var(--neon-glow); }
+        .chat-display { flex: 1; overflow-y: auto; padding-bottom: 10px; }
         .chat-bubble { max-width: 80%; padding: 12px 16px; border-radius: 18px; margin-bottom: 12px; font-size: 13px; line-height: 1.4; position: relative; }
         .bubble-left { background: var(--white); color: var(--main); align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid #eee; }
         .bubble-right { background: #dcf8c6; color: #121212; align-self: flex-end; border-bottom-right-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
@@ -153,12 +154,12 @@
         <h3 style="font-weight:800;">AI Resume Builder 📄</h3>
         <div class="card">
             <label>Father's Name</label>
-            <input type="text" class="input-box" placeholder="Enter Father's Name">
+            <input type="text" id="res-father" class="input-box" placeholder="Enter Father's Name">
             <label>Skills</label>
-            <input type="text" class="input-box" placeholder="e.g. Computer, ITI, Driving">
+            <input type="text" id="res-skills" class="input-box" placeholder="e.g. Computer, ITI, Driving">
             <label>Experience</label>
-            <textarea class="input-box" style="height:80px;" placeholder="Any past work?"></textarea>
-            <button class="btn-primary" onclick="alert('Demo: Resume will be generated in PDF!')">Download Resume 📥</button>
+            <textarea id="res-exp" class="input-box" style="height:80px;" placeholder="Any past work?"></textarea>
+            <button class="btn-primary resume-btn" onclick="downloadResume()">Download Resume 📥</button>
             <button onclick="showDash()" style="width:100%; margin-top:10px; background:none; border:none; color:var(--text-muted); font-weight:800;">Back to Home</button>
         </div>
     </div>
@@ -242,25 +243,10 @@
             <h3 style="margin:0; font-weight:800;">Community Chat</h3>
         </div>
         <div class="chat-container">
-            <div class="chat-bubble bubble-left">
-                <span class="chat-user">@Sonu_Kumar</span>
-                Bhai Railway Group D ka form kab tak aayega?
-                <span class="chat-time">10:45 AM</span>
-            </div>
-            <div class="chat-bubble bubble-right">
-                <span class="chat-user">@Admin_Rahul</span>
-                November tak umeed hai, taiyari jaari rakhein!
-                <span class="chat-time">10:48 AM</span>
-            </div>
-            <div class="chat-bubble bubble-left">
-                <span class="chat-user">@Priya_V</span>
-                SSC MTS ke liye best book kaun si hai?
-                <span class="chat-time">11:05 AM</span>
-            </div>
-            <div style="flex:1;"></div>
+            <div id="chat-display" class="chat-display"></div>
             <div style="display:flex; gap:10px;">
-                <input type="text" class="input-box" placeholder="Type your doubt..." style="margin:0;">
-                <button class="ai-btn" style="border-radius:12px; width:50px; height:50px;">📤</button>
+                <input type="text" id="chat-input" class="input-box" placeholder="Type your doubt..." style="margin:0;">
+                <button onclick="sendMessage()" class="ai-btn" style="border-radius:12px; width:50px; height:50px;">📤</button>
             </div>
         </div>
     </div>
@@ -340,6 +326,8 @@
         if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
         checkLogin();
         fetchLive();
+        loadMessages(); // Start chat refresh
+        setInterval(loadMessages, 5000);
     };
 
     window.onpopstate = function(event) {
@@ -354,6 +342,8 @@
             }
         }
     };
+
+    // --- LOGIC FUNCTIONS ---
 
     function checkLogin() {
         let saved = localStorage.getItem('userHub');
@@ -413,7 +403,7 @@
         document.getElementById('main-header').classList.remove('hidden');
         document.getElementById('resume-sec').classList.remove('hidden');
         document.getElementById('bottom-bar').classList.remove('hidden');
-        toggleMenu();
+        if(document.getElementById('sideMenu').classList.contains('active')) toggleMenu();
     }
 
     function showCommunityChat() {
@@ -421,7 +411,71 @@
         document.getElementById('main-header').classList.remove('hidden');
         document.getElementById('chat-sec').classList.remove('hidden');
         document.getElementById('bottom-bar').classList.remove('hidden');
+        loadMessages();
     }
+
+    // --- API CONNECTIONS (BACKEND SE JUDE HUE) ---
+
+    async function downloadResume() {
+        const btn = document.querySelector('.resume-btn');
+        btn.innerText = "Generating...";
+        
+        const formData = new FormData();
+        formData.append('name', user.name || 'User');
+        formData.append('father', document.getElementById('res-father').value || 'N/A');
+        formData.append('edu', user.edu || 'N/A');
+        formData.append('skills', document.getElementById('res-skills').value || 'N/A');
+        formData.append('exp', document.getElementById('res-exp').value || 'N/A');
+
+        try {
+            const response = await fetch('/generate_resume', { method: 'POST', body: formData });
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'My_Resume.pdf';
+                document.body.appendChild(a);
+                a.click();
+                btn.innerText = "Download Success!";
+                setTimeout(() => btn.innerText = "Download Resume 📥", 2000);
+            }
+        } catch (err) { alert("Download fail!"); btn.innerText = "Try Again"; }
+    }
+
+    async function loadMessages() {
+        const chatBox = document.getElementById('chat-display');
+        if(!chatBox || document.getElementById('chat-sec').classList.contains('hidden')) return;
+        try {
+            const res = await fetch('/get_messages');
+            const messages = await res.json();
+            chatBox.innerHTML = messages.map(m => `
+                <div class="chat-bubble ${m.user.includes('Admin') ? 'bubble-right' : 'bubble-left'}">
+                    <span class="chat-user">@${m.user}</span>
+                    ${m.msg}
+                    <span class="chat-time">${m.time}</span>
+                </div>
+            `).join('');
+            chatBox.scrollTop = chatBox.scrollHeight;
+        } catch (e) { console.log("Chat error"); }
+    }
+
+    async function sendMessage() {
+        const input = document.getElementById('chat-input');
+        const msg = input.value;
+        if(!msg) return;
+
+        await fetch('/send_message', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ user: user.name || "Guest", msg: msg })
+        });
+
+        input.value = '';
+        loadMessages();
+    }
+
+    // --- OLD FUNCTIONS (STAY AS IS) ---
 
     async function fetchLive() {
         try {
@@ -451,10 +505,6 @@
         openJobs(v);
     }
 
-    function triggerSearchDirect(v) {
-        openJobs(v);
-    }
-    
     function toggleResSub(id) { 
         document.querySelectorAll('#res-sec .card').forEach(c => c.classList.add('hidden')); 
         const sub = document.getElementById('sub-'+id);
