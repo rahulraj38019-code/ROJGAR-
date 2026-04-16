@@ -85,7 +85,6 @@
         .ai-label { background: var(--blue); color: white; padding: 6px 12px; border-radius: 12px; font-size: 11px; font-weight: 800; margin-top: -5px; }
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
 
-        /* Google AI Search Bar Styling */
         .ai-search-container { position: relative; margin-bottom: 25px; border-radius: 50px; background: var(--white); border: 2px solid transparent; background-origin: border-box; background-clip: content-box, border-box; background-image: linear-gradient(var(--white), var(--white)), var(--ai-gradient); box-shadow: 0 4px 20px rgba(0,0,0,0.1); overflow: hidden; }
         .ai-search-inner { display: flex; align-items: center; padding: 5px 15px; gap: 10px; }
         .ai-sparkle { font-size: 20px; background: var(--ai-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; }
@@ -96,10 +95,10 @@
 </head>
 <body id="app-body">
 
-<a id="ai-trigger" href="https://www.google.com/search?q=latest+govt+jobs+2026&udm=14" target="_blank">
+<div id="ai-trigger" onclick="triggerSearchDirect('Latest Jobs and News today')">
     <span class="ai-robot">🤖</span>
     <div class="ai-label">ASK AI</div>
-</a>
+</div>
 
 <div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
 
@@ -160,7 +159,7 @@
                 <input type="text" id="main-search-inp" class="ai-search-input" placeholder="Ask anything (Hinglish/Eng)...">
                 <button onclick="triggerSearch()" class="ai-btn">✨</button>
             </div>
-            <div class="ai-mode-tag">Hinglish AI Support</div>
+            <div class="ai-mode-tag">App AI Support</div>
         </div>
 
         <h3 style="font-weight:800;">Top Categories</h3>
@@ -357,17 +356,11 @@
     function triggerSearch() { 
         let v = document.getElementById('main-search-inp').value; 
         if(!v) return;
-        
-        let lower = v.toLowerCase();
-        const jobKeywords = ['job', 'vacancy', 'recruitment', 'bharti', 'naukri', 'result', 'admit', 'card', 'exam', 'paper', 'railway', 'ssc', 'police', 'daroga', 'board', '10th', '12th', 'iti', 'apply', 'online'];
-        const isJobRelated = jobKeywords.some(keyword => lower.includes(keyword));
+        openJobs(v); // Sabhi sawal ab app ke andar hi open honge
+    }
 
-        if(isJobRelated) {
-            openJobs(v + " official notification online");
-        } else {
-            // Updated Redirect to Google Search AI Mode (udm=14 for AI/SGE results)
-            window.open(`https://www.google.com/search?q=${encodeURIComponent(v)}&udm=14`, '_blank');
-        }
+    function triggerSearchDirect(v) {
+        openJobs(v);
     }
     
     function toggleResSub(id) { 
@@ -387,8 +380,7 @@
         let yearVal = document.getElementById(yearId).value;
         if(!resType) return alert("Pehle option select karein!"); 
         if(!yearVal) return alert("Pehle Year (saal) daalein!");
-        
-        let query = `${cat} ${resType} Result ${yearVal} official direct portal roll number link`;
+        let query = `${cat} ${resType} Result ${yearVal} official direct portal`;
         openJobs(query); 
     }
 
@@ -396,7 +388,7 @@
         if(!isLoadMore) {
             lastResults = [];
             pageCount = 1;
-            document.getElementById('list').innerHTML = "<div style='padding:40px; text-align:center; font-weight:700; color:var(--blue);'>🔍 Searching Data...</div>";
+            document.getElementById('list').innerHTML = "<div style='padding:40px; text-align:center; font-weight:700; color:var(--blue);'>🔍 Thinking (AI)...</div>";
             history.pushState({screen: 'list'}, '');
         }
         
@@ -405,7 +397,7 @@
         
         if(lowerCat.includes('result')) { currentType = 'Result'; }
         else if(lowerCat.includes('admit')) { currentType = 'Admit Card'; }
-        else { currentType = 'Job'; }
+        else { currentType = 'Info'; }
 
         hideAll(); 
         document.getElementById('main-header').classList.remove('hidden'); 
@@ -413,8 +405,7 @@
         document.getElementById('feed-sec').classList.remove('hidden'); 
         document.getElementById('back-btn').classList.add('hidden');
         
-        let cleanTitle = cat.split(' official')[0].toUpperCase();
-        document.getElementById('f-title').innerText = cleanTitle; 
+        document.getElementById('f-title').innerText = cat.substring(0, 20).toUpperCase() + (cat.length > 20 ? '...' : ''); 
 
         try {
             const response = await fetch('/fetch_jobs', {
@@ -424,19 +415,10 @@
             });
             let newResults = await response.json();
             
-            if(currentType === 'Result') {
-                newResults = newResults.filter(item => 
-                    item.title.toLowerCase().includes('result') || 
-                    item.link.toLowerCase().includes('result') ||
-                    item.title.toLowerCase().includes('score') ||
-                    item.title.toLowerCase().includes('check')
-                );
-            }
-
             lastResults = [...lastResults, ...newResults];
             renderList(lastResults);
             
-            if(newResults.length > 0 && currentType === 'Job') {
+            if(newResults.length > 0 && (currentType === 'Job' || currentType === 'Info')) {
                 document.getElementById('load-more-container').classList.remove('hidden');
             } else {
                 document.getElementById('load-more-container').classList.add('hidden');
@@ -454,15 +436,15 @@
     function renderList(results) {
         const listDiv = document.getElementById('list');
         if(!results || results.length === 0) {
-            listDiv.innerHTML = "<div style='padding:40px; text-align:center;'>❌ No direct portals found.</div>";
+            listDiv.innerHTML = "<div style='padding:40px; text-align:center;'>❌ No data found. Try another query.</div>";
             return;
         }
         
         listDiv.innerHTML = results.map((item, index) => `
             <div class="job-card" onclick="viewDetails(${index})">
                 <div class="job-title">${item.title}</div>
-                <div class="job-desc">${item.snippet ? item.snippet.substring(0, 100) : 'Direct access to official data portal...'}</div>
-                <div style="font-size:11px; color:var(--blue); margin-top:10px; font-weight:800;">VIEW PORTAL →</div>
+                <div class="job-desc">${item.snippet ? item.snippet.substring(0, 120) : 'Click to see full details...'}</div>
+                <div style="font-size:11px; color:var(--blue); margin-top:10px; font-weight:800;">READ MORE →</div>
             </div>
         `).join('');
     }
@@ -474,21 +456,16 @@
         document.getElementById('load-more-container').classList.add('hidden');
         history.pushState({screen: 'details'}, '');
         
-        let btnText = "Apply Now 🚀";
-        if(currentType === 'Result') { btnText = "Check Result Page ✅"; }
-        if(currentType === 'Admit Card') { btnText = "Download Admit Card 📥"; }
+        let btnText = "Open Link 🚀";
+        if(currentType === 'Result') { btnText = "Check Result ✅"; }
+        if(currentType === 'Admit Card') { btnText = "Download Card 📥"; }
 
         listDiv.innerHTML = `
             <div class="details-card">
                 <h2 style="color:var(--blue); margin-top:0; font-size:18px;">${item.title}</h2>
-                <div class="info-row"><span class="info-label">Status:</span><span class="info-val" style="color:green;">ACTIVE PORTAL</span></div>
-                <div class="info-row"><span class="info-label">Type:</span><span class="info-val">${currentType}</span></div>
-                <div class="info-row"><span class="info-label">Method:</span><span class="info-val">Official Server</span></div>
-                
-                <p style="font-size:12px; color:var(--text-muted); margin-top:15px; border-top:1px solid #eee; padding-top:10px;">
-                    <b>Portal Info:</b> ${item.snippet || 'Click below to access the official portal securely.'}
+                <p style="font-size:14px; line-height:1.6; color:var(--main); margin-top:15px; border-top:1px solid #eee; padding-top:15px;">
+                    ${item.snippet || 'No extra info available.'}
                 </p>
-
                 <button onclick="window.open('${item.link}', '_blank')" class="btn-primary" style="margin-top:20px;">
                     ${btnText}
                 </button>
@@ -505,13 +482,11 @@
         document.getElementById('f-title').innerText = "LIVE UPDATE";
         history.pushState({screen: 'details'}, '');
         
-        let btnText = type === 'Result' ? "Check Result Page ✅" : (type === 'Admit Card' ? "Download Admit Card 📥" : "Apply Now 🚀");
-
         document.getElementById('list').innerHTML = `
             <div class="details-card">
                 <h2 style="color:var(--blue); margin-top:0;">${title}</h2>
                 <div class="info-row"><span class="info-label">Type:</span><span class="info-val">${type}</span></div>
-                <button onclick="window.open('${link}', '_blank')" class="btn-primary" style="margin-top:25px;">${btnText}</button>
+                <button onclick="window.open('${link}', '_blank')" class="btn-primary" style="margin-top:25px;">Check Now 🚀</button>
                 <button onclick="showDash()" class="btn-primary" style="margin-top:10px; background:#64748b;">Close</button>
             </div>
         `;
