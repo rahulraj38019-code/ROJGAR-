@@ -9,11 +9,10 @@ import io
 app = Flask(__name__)
 CORS(app)
 
-# --- TERI NAYI API KEY ---
+# --- API KEYS ---
 SERPER_API_KEY = "675ec80f6858652b8add27fbe3ab09371a6faaae"
-# OpenRouter API Key Render ke Env se aayegi, yahan manually daalne ki zaroorat nahi hai.
 
-# Community Chat ke liye temporary storage (Jab tak DB add na ho)
+# Community Chat ke liye temporary storage
 chat_messages = [
     {"user": "Sonu_Kumar", "msg": "Bhai Railway Group D ka form kab tak aayega?", "time": "10:45 AM"},
     {"user": "Admin_Rahul", "msg": "November tak umeed hai, taiyari jaari rakhein!", "time": "10:48 AM"}
@@ -69,24 +68,14 @@ def fetch_jobs():
         else:
             query = f"latest {category} vacancies for {edu} pass 2026 India"
 
-        headers = {
-            'X-API-KEY': SERPER_API_KEY,
-            'Content-Type': 'application/json'
-        }
+        headers = {'X-API-KEY': SERPER_API_KEY, 'Content-Type': 'application/json'}
         payload = {'q': query, 'num': 20, 'gl': 'in'}
-
         response = requests.post('https://google.serper.dev/search', headers=headers, json=payload)
         search_data = response.json()
-        
-        if "organic" in search_data:
-            return jsonify(search_data['organic'])
-        else:
-            return jsonify([])
-            
+        return jsonify(search_data.get('organic', []))
     except Exception as e:
         return jsonify({"error": str(e)})
 
-# --- STEP 2: RESUME GENERATOR ROUTE ---
 @app.route('/generate_resume', methods=['POST'])
 def generate_resume():
     try:
@@ -96,29 +85,24 @@ def generate_resume():
         pdf.set_font("Arial", 'B', 20)
         pdf.cell(200, 10, txt="RESUME", ln=True, align='C')
         pdf.ln(10)
-        
         pdf.set_font("Arial", 'B', 12)
         pdf.cell(200, 10, txt=f"Name: {data.get('name', 'N/A')}", ln=True)
         pdf.cell(200, 10, txt=f"Father's Name: {data.get('father', 'N/A')}", ln=True)
         pdf.cell(200, 10, txt=f"Education: {data.get('edu', 'N/A')}", ln=True)
         pdf.ln(5)
-        
         pdf.set_font("Arial", 'B', 14)
         pdf.cell(200, 10, txt="SKILLS", ln=True)
         pdf.set_font("Arial", size=12)
         pdf.multi_cell(0, 10, txt=data.get('skills', 'N/A'))
-        
         pdf.ln(5)
         pdf.set_font("Arial", 'B', 14)
         pdf.cell(200, 10, txt="EXPERIENCE", ln=True)
         pdf.set_font("Arial", size=12)
         pdf.multi_cell(0, 10, txt=data.get('exp', 'N/A'))
-
         output = io.BytesIO()
         pdf_content = pdf.output(dest='S').encode('latin-1')
         output.write(pdf_content)
         output.seek(0)
-
         response = make_response(output.read())
         response.headers['Content-Type'] = 'application/pdf'
         response.headers['Content-Disposition'] = 'attachment; filename=resume.pdf'
@@ -126,7 +110,6 @@ def generate_resume():
     except Exception as e:
         return str(e)
 
-# --- STEP 3: COMMUNITY CHAT ROUTES ---
 @app.route('/get_messages')
 def get_messages():
     return jsonify(chat_messages)
@@ -134,31 +117,23 @@ def get_messages():
 @app.route('/send_message', methods=['POST'])
 def send_message():
     data = request.get_json()
-    new_msg = {
-        "user": data.get('user', 'Guest'),
-        "msg": data.get('msg', ''),
-        "time": "Just Now"
-    }
+    new_msg = {"user": data.get('user', 'Guest'), "msg": data.get('msg', ''), "time": "Just Now"}
     chat_messages.append(new_msg)
-    
-    # Simple Admin Bot Response (Auto-reply)
     if "?" in new_msg['msg']:
-        bot_reply = {"user": "Admin_Bot", "msg": "Aapka sawal mil gaya hai. Hum jald hi update karenge!", "time": "Just Now"}
-        chat_messages.append(bot_reply)
-        
+        chat_messages.append({"user": "Admin_Bot", "msg": "Aapka sawal mil gaya hai!", "time": "Just Now"})
     return jsonify({"status": "sent"})
 
-# --- UPDATE: AI AGENT ROUTE (OpenRouter Fix) ---
+# --- AI ROUTE FIXED ---
 @app.route('/ask_ai', methods=['POST'])
 def ask_ai():
     try:
         data = request.get_json()
-        # Frontend se chahe 'question' aaye ya 'message', dono handle ho jayenge
-        question = data.get('question') or data.get('message')
+        # Frontend 'message' bhej raha hai ya 'question', dono catch karega
+        question = data.get('message') or data.get('question')
         
         api_key = os.getenv("OPENROUTER_API_KEY")
         if not api_key:
-            return jsonify({"answer": "Error: OpenRouter API Key missing on Render!"})
+            return jsonify({"answer": "Error: API Key missing in Render Settings!"})
 
         headers = {
             "Authorization": f"Bearer {api_key}",
@@ -169,21 +144,21 @@ def ask_ai():
             "model": "google/gemini-2.0-flash-lite-preview-02-05:free",
             "messages": [
                 {"role": "system", "content": "You are a helpful Career Assistant for Rozgar Hub. Help users in Hinglish."},
-                {"role": "user", "content": question}
+                {"role": "user", "content": str(question)}
             ]
         }
         
-        response = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=payload)
+        response = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=payload, timeout=15)
         result = response.json()
         
         if 'choices' in result:
             answer = result['choices'][0]['message']['content']
-            return jsonify({"answer": answer, "reply": answer}) # Dono keys taaki purana/naya frontend dono chale
+            return jsonify({"answer": answer, "reply": answer})
         else:
-            return jsonify({"answer": "AI Response Error: " + str(result)})
+            return jsonify({"answer": f"AI Error: {result.get('error', 'Unknown response from AI')}"})
             
     except Exception as e:
-        return jsonify({"answer": "Server Error: " + str(e)})
+        return jsonify({"answer": f"Backend Error: {str(e)}"})
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=True)
