@@ -123,12 +123,11 @@ def send_message():
         chat_messages.append({"user": "Admin_Bot", "msg": "Aapka sawal mil gaya hai!", "time": "Just Now"})
     return jsonify({"status": "sent"})
 
-# --- AI ROUTE (VIDEO & FRONTEND COMPATIBLE) ---
+# --- AI ROUTE WITH AUTO-FALLBACK SYSTEM ---
 @app.route('/ask_ai', methods=['POST'])
 def ask_ai():
     try:
         data = request.get_json()
-        # Frontend se chahe message, userMsg ya question aaye, ye sab pakad lega
         question = data.get('message') or data.get('question') or data.get('userMsg')
         
         if not question:
@@ -142,28 +141,48 @@ def ask_ai():
             "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json"
         }
-        
-        payload = {
-            "model": "google/gemini-2.0-flash-lite-preview-02-05:free",
-            "messages": [
-                {"role": "system", "content": "You are Rozgar Hub AI Assistant. Help users in Hinglish."},
-                {"role": "user", "content": str(question)}
-            ]
-        }
-        
-        response = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=payload, timeout=20)
-        result = response.json()
-        
-        if 'choices' in result:
-            answer = result['choices'][0]['message']['content']
-            # Return dono keys mein taaki JS file kisi ko bhi dhoonde, mil jaye
-            return jsonify({"answer": answer, "reply": answer})
-        else:
-            return jsonify({"reply": "AI Error: Model busy hai.", "answer": "AI Error"})
+
+        # Priority List: 1. Gemini, 2. Llama, 3. Mistral
+        models = [
+            "google/gemini-2.0-flash-lite-preview-02-05:free",
+            "meta-llama/llama-3.3-70b-instruct:free",
+            "mistralai/mistral-7b-instruct:free"
+        ]
+
+        for model_name in models:
+            try:
+                payload = {
+                    "model": model_name,
+                    "messages": [
+                        {"role": "system", "content": "You are Rozgar Hub AI Assistant. Help users in Hinglish."},
+                        {"role": "user", "content": str(question)}
+                    ]
+                }
+                
+                response = requests.post(
+                    "https://openrouter.ai/api/v1/chat/completions", 
+                    headers=headers, 
+                    json=payload, 
+                    timeout=15
+                )
+                
+                result = response.json()
+                
+                if 'choices' in result and len(result['choices']) > 0:
+                    answer = result['choices'][0]['message']['content']
+                    # Dono keys bhej rahe hain compatibility ke liye
+                    return jsonify({"answer": answer, "reply": answer, "active_model": model_name})
+                
+                # Agar choice nahi mili toh agla model try karo
+                continue
+                
+            except:
+                continue # Network error ya timeout par agla model try karega
+
+        return jsonify({"reply": "Bhai, abhi saare AI models busy hain. 1 min baad try karo.", "answer": "All models busy."})
             
     except Exception as e:
         return jsonify({"reply": f"Backend Error: {str(e)}", "answer": str(e)})
 
 if __name__ == '__main__':
-    # Render ke liye port aur host default rehne do
     app.run(debug=True)
