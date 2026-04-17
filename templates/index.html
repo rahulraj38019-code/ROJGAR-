@@ -390,6 +390,8 @@
                 method: "POST",
                 headers: {
                     "Authorization": "Bearer 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",
+                    "HTTP-Referer": window.location.href,
+                    "X-Title": "Rozgar Hub",
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
@@ -400,14 +402,19 @@
                     ]
                 })
             });
-            const data = await response.json();
-            const aiReply = data.choices[0].message.content;
             
-            document.getElementById(thinkingId).remove();
-            chatBody.innerHTML += `<div class="chat-bubble bubble-left"><span class="chat-user">Rozgar AI</span>${aiReply}</div>`;
+            const data = await response.json();
+            
+            if (data.error) {
+                document.getElementById(thinkingId).innerHTML = "API Error: " + data.error.message;
+            } else {
+                const aiReply = data.choices[0].message.content;
+                document.getElementById(thinkingId).remove();
+                chatBody.innerHTML += `<div class="chat-bubble bubble-left"><span class="chat-user">Rozgar AI</span>${aiReply}</div>`;
+            }
             chatBody.scrollTop = chatBody.scrollHeight;
         } catch (err) {
-            document.getElementById(thinkingId).innerHTML = "Sorry bhai, connection error!";
+            document.getElementById(thinkingId).innerHTML = "Sorry bhai, connection error! Check Internet.";
         }
     }
 
@@ -482,7 +489,7 @@
         loadMessages();
     }
 
-    // --- API CONNECTIONS (BACKEND SE JUDE HUE) ---
+    // --- API CONNECTIONS ---
 
     async function downloadResume() {
         const btn = document.querySelector('.resume-btn');
@@ -542,8 +549,6 @@
         input.value = '';
         loadMessages();
     }
-
-    // --- OLD FUNCTIONS (STAY AS IS) ---
 
     async function fetchLive() {
         try {
