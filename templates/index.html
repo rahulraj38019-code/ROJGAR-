@@ -366,7 +366,7 @@
         }
     };
 
-    /* --- OPENROUTER AI AGENT LOGIC --- */
+    /* --- OPENROUTER AI AGENT LOGIC (FIXED ERRORS & HEADERS) --- */
     function openAIModal() { document.getElementById('ai-modal').classList.add('active'); }
     function closeAIModal(e) { if(!e || e.target.id === 'ai-modal') document.getElementById('ai-modal').classList.remove('active'); }
 
@@ -389,10 +389,10 @@
             const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                 method: "POST",
                 headers: {
-                    "Authorization": "Bearer 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",
-                    "HTTP-Referer": window.location.href,
-                    "X-Title": "Rozgar Hub",
-                    "Content-Type": "application/json"
+                    "Authorization": "Bearer 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", // Apna naya active key yahan zaroor check kar lena
+                    "Content-Type": "application/json",
+                    "HTTP-Referer": "https://rozgarhub.com", 
+                    "X-Title": "Rozgar Hub"
                 },
                 body: JSON.stringify({
                     "model": "google/gemini-2.0-flash-lite-preview-02-05:free",
@@ -402,19 +402,19 @@
                     ]
                 })
             });
-            
             const data = await response.json();
-            
-            if (data.error) {
-                document.getElementById(thinkingId).innerHTML = "API Error: " + data.error.message;
-            } else {
+            document.getElementById(thinkingId).remove();
+
+            if (data.choices && data.choices.length > 0) {
                 const aiReply = data.choices[0].message.content;
-                document.getElementById(thinkingId).remove();
                 chatBody.innerHTML += `<div class="chat-bubble bubble-left"><span class="chat-user">Rozgar AI</span>${aiReply}</div>`;
+            } else {
+                const errorMsg = data.error ? data.error.message : "API Key expire ho gayi hai ya account verify nahi hai.";
+                chatBody.innerHTML += `<div class="chat-bubble bubble-left" style="color:red;"><span class="chat-user">System Error</span>⚠️ ${errorMsg}</div>`;
             }
             chatBody.scrollTop = chatBody.scrollHeight;
         } catch (err) {
-            document.getElementById(thinkingId).innerHTML = "Sorry bhai, connection error! Check Internet.";
+            document.getElementById(thinkingId).innerHTML = "Sorry bhai, connection error!";
         }
     }
 
@@ -489,7 +489,7 @@
         loadMessages();
     }
 
-    // --- API CONNECTIONS ---
+    // --- API CONNECTIONS (BACKEND SE JUDE HUE) ---
 
     async function downloadResume() {
         const btn = document.querySelector('.resume-btn');
@@ -549,6 +549,8 @@
         input.value = '';
         loadMessages();
     }
+
+    // --- OLD FUNCTIONS (STAY AS IS) ---
 
     async function fetchLive() {
         try {
