@@ -11,7 +11,7 @@ CORS(app)
 
 # --- TERI NAYI API KEY ---
 SERPER_API_KEY = "675ec80f6858652b8add27fbe3ab09371a6faaae"
-OPENAI_API_KEY = "yahan_apni_openai_key_daalo" # Agar AI use karna ho toh
+# OpenRouter API Key Render ke Env se aayegi, yahan manually daalne ki zaroorat nahi hai.
 
 # Community Chat ke liye temporary storage (Jab tak DB add na ho)
 chat_messages = [
@@ -148,21 +148,42 @@ def send_message():
         
     return jsonify({"status": "sent"})
 
+# --- UPDATE: AI AGENT ROUTE (OpenRouter Fix) ---
 @app.route('/ask_ai', methods=['POST'])
 def ask_ai():
     try:
         data = request.get_json()
-        question = data.get('question')
-        response = requests.post(
-            "https://api.openai.com/v1/chat/completions",
-            headers={"Authorization": f"Bearer {OPENAI_API_KEY}", "Content-Type": "application/json"},
-            json={"model": "gpt-4o-mini", "messages": [{"role": "user", "content": question}]}
-        )
+        # Frontend se chahe 'question' aaye ya 'message', dono handle ho jayenge
+        question = data.get('question') or data.get('message')
+        
+        api_key = os.getenv("OPENROUTER_API_KEY")
+        if not api_key:
+            return jsonify({"answer": "Error: OpenRouter API Key missing on Render!"})
+
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json"
+        }
+        
+        payload = {
+            "model": "google/gemini-2.0-flash-lite-preview-02-05:free",
+            "messages": [
+                {"role": "system", "content": "You are a helpful Career Assistant for Rozgar Hub. Help users in Hinglish."},
+                {"role": "user", "content": question}
+            ]
+        }
+        
+        response = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=payload)
         result = response.json()
-        answer = result['choices'][0]['message']['content'] if 'choices' in result else "AI Key Error."
-        return jsonify({"answer": answer})
-    except:
-        return jsonify({"answer": "Error in AI route."})
+        
+        if 'choices' in result:
+            answer = result['choices'][0]['message']['content']
+            return jsonify({"answer": answer, "reply": answer}) # Dono keys taaki purana/naya frontend dono chale
+        else:
+            return jsonify({"answer": "AI Response Error: " + str(result)})
+            
+    except Exception as e:
+        return jsonify({"answer": "Server Error: " + str(e)})
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
