@@ -366,7 +366,7 @@
         }
     };
 
-    /* --- OPENROUTER AI AGENT LOGIC (FIXED ERRORS & HEADERS) --- */
+    /* --- OPENROUTER AI AGENT LOGIC (FIXED) --- */
     function openAIModal() { document.getElementById('ai-modal').classList.add('active'); }
     function closeAIModal(e) { if(!e || e.target.id === 'ai-modal') document.getElementById('ai-modal').classList.remove('active'); }
 
@@ -376,12 +376,10 @@
         const userMsg = input.value.trim();
         if(!userMsg) return;
 
-        // Add user message to UI
         chatBody.innerHTML += `<div class="chat-bubble bubble-right"><span class="chat-user">Aap</span>${userMsg}</div>`;
         input.value = '';
         chatBody.scrollTop = chatBody.scrollHeight;
 
-        // Thinking placeholder
         const thinkingId = "think-" + Date.now();
         chatBody.innerHTML += `<div id="${thinkingId}" class="chat-bubble bubble-left"><i>Rozgar AI soch raha hai...</i></div>`;
 
@@ -389,15 +387,19 @@
             const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                 method: "POST",
                 headers: {
-                    "Authorization": "Bearer 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", // Apna naya active key yahan zaroor check kar lena
+                    // NAYI API KEY YAHAN SET HAI
+                    "Authorization": "Bearer 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", 
                     "Content-Type": "application/json",
-                    "HTTP-Referer": "https://rozgarhub.com", 
+                    "HTTP-Referer": window.location.origin, 
                     "X-Title": "Rozgar Hub"
                 },
                 body: JSON.stringify({
                     "model": "google/gemini-2.0-flash-lite-preview-02-05:free",
                     "messages": [
-                        {"role": "system", "content": "You are a helpful Career Assistant for Rozgar Hub. Help users with govt jobs, exams, and skills in Hinglish."},
+                        {
+                            "role": "system", 
+                            "content": "You are a Career Assistant for Rozgar Hub. Help users with government jobs (UP Police, Railway, SSC) and ITI technical doubts in Hinglish. Keep it friendly."
+                        },
                         {"role": "user", "content": userMsg}
                     ]
                 })
@@ -409,7 +411,7 @@
                 const aiReply = data.choices[0].message.content;
                 chatBody.innerHTML += `<div class="chat-bubble bubble-left"><span class="chat-user">Rozgar AI</span>${aiReply}</div>`;
             } else {
-                const errorMsg = data.error ? data.error.message : "API Key expire ho gayi hai ya account verify nahi hai.";
+                const errorMsg = data.error ? data.error.message : "Kuch gadbad hui hai bhai!";
                 chatBody.innerHTML += `<div class="chat-bubble bubble-left" style="color:red;"><span class="chat-user">System Error</span>⚠️ ${errorMsg}</div>`;
             }
             chatBody.scrollTop = chatBody.scrollHeight;
@@ -419,7 +421,6 @@
     }
 
     // --- LOGIC FUNCTIONS ---
-
     function checkLogin() {
         let saved = localStorage.getItem('userHub');
         if(saved) {
@@ -489,12 +490,9 @@
         loadMessages();
     }
 
-    // --- API CONNECTIONS (BACKEND SE JUDE HUE) ---
-
     async function downloadResume() {
         const btn = document.querySelector('.resume-btn');
         btn.innerText = "Generating...";
-        
         const formData = new FormData();
         formData.append('name', user.name || 'User');
         formData.append('father', document.getElementById('res-father').value || 'N/A');
@@ -539,18 +537,14 @@
         const input = document.getElementById('chat-input');
         const msg = input.value;
         if(!msg) return;
-
         await fetch('/send_message', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({ user: user.name || "Guest", msg: msg })
         });
-
         input.value = '';
         loadMessages();
     }
-
-    // --- OLD FUNCTIONS (STAY AS IS) ---
 
     async function fetchLive() {
         try {
@@ -608,20 +602,16 @@
             document.getElementById('list').innerHTML = "<div style='padding:40px; text-align:center; font-weight:700; color:var(--blue);'>🔍 Thinking (AI)...</div>";
             history.pushState({screen: 'list'}, '');
         }
-        
         currentCategory = cat;
         let lowerCat = cat.toLowerCase();
-        
         if(lowerCat.includes('result')) { currentType = 'Result'; }
         else if(lowerCat.includes('admit')) { currentType = 'Admit Card'; }
         else { currentType = 'Info'; }
-
         hideAll(); 
         document.getElementById('main-header').classList.remove('hidden'); 
         document.getElementById('bottom-bar').classList.remove('hidden'); 
         document.getElementById('feed-sec').classList.remove('hidden'); 
         document.getElementById('back-btn').classList.add('hidden');
-        
         document.getElementById('f-title').innerText = cat.substring(0, 20).toUpperCase() + (cat.length > 20 ? '...' : ''); 
 
         try {
@@ -631,10 +621,8 @@
                 body: JSON.stringify({ category: cat, edu: user.edu || '10th', page: pageCount })
             });
             let newResults = await response.json();
-            
             lastResults = [...lastResults, ...newResults];
             renderList(lastResults);
-            
             if(newResults.length > 0 && (currentType === 'Job' || currentType === 'Info')) {
                 document.getElementById('load-more-container').classList.remove('hidden');
             } else {
@@ -645,10 +633,7 @@
         }
     }
 
-    function loadMore() {
-        pageCount++;
-        openJobs(currentCategory, true);
-    }
+    function loadMore() { pageCount++; openJobs(currentCategory, true); }
 
     function renderList(results) {
         const listDiv = document.getElementById('list');
@@ -656,7 +641,6 @@
             listDiv.innerHTML = "<div style='padding:40px; text-align:center;'>❌ No data found. Try another query.</div>";
             return;
         }
-        
         listDiv.innerHTML = results.map((item, index) => `
             <div class="job-card" onclick="viewDetails(${index})">
                 <div class="job-title">${item.title}</div>
@@ -672,11 +656,9 @@
         document.getElementById('back-btn').classList.remove('hidden');
         document.getElementById('load-more-container').classList.add('hidden');
         history.pushState({screen: 'details'}, '');
-        
         let btnText = "Open Link 🚀";
         if(currentType === 'Result') { btnText = "Check Result ✅"; }
         if(currentType === 'Admit Card') { btnText = "Download Card 📥"; }
-
         listDiv.innerHTML = `
             <div class="details-card">
                 <h2 style="color:var(--blue); margin-top:0; font-size:18px;">${item.title}</h2>
@@ -698,7 +680,6 @@
         document.getElementById('bottom-bar').classList.remove('hidden');
         document.getElementById('f-title').innerText = "LIVE UPDATE";
         history.pushState({screen: 'details'}, '');
-        
         document.getElementById('list').innerHTML = `
             <div class="details-card">
                 <h2 style="color:var(--blue); margin-top:0;">${title}</h2>
@@ -709,9 +690,7 @@
         `;
     }
 
-    function goBackToList() {
-        history.back();
-    }
+    function goBackToList() { history.back(); }
 </script>
 </body>
 </html>
