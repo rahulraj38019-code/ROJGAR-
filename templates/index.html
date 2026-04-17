@@ -1,524 +1,642 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>ROZGAR HUB V2</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROZGAR HUB - Professional Portal</title>
+    
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#007bff">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root { --main: #121212; --blue: #007bff; --light-blue: #e7f1ff; --bg: #f8fafc; --white: #ffffff; --text-muted: #64748b; --neon-glow: rgba(0, 123, 255, 0.6); --ai-gradient: linear-gradient(90deg, #4285f4, #9b72cb, #d96570); }
+        body.dark-mode { --bg: #0f172a; --white: #1e293b; --main: #f1f5f9; --text-muted: #94a3b8; --light-blue: #1e3a8a; --neon-glow: rgba(0, 210, 255, 0.8); }
+        body { background: var(--bg); font-family: 'Inter', sans-serif; margin: 0; padding: 0; padding-bottom: 120px; color: var(--main); transition: 0.3s; overflow-x: hidden; }
+        .container { max-width: 500px; margin: 0 auto; padding: 15px; }
+        
+        header { background: var(--white); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 100; box-shadow: 0 0 15px var(--neon-glow); }
+        .logo-text { font-weight: 800; font-size: 20px; color: var(--blue); letter-spacing: -0.5px; cursor: pointer; text-shadow: 0 0 10px var(--blue); }
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+        .live-panel, .dash-card, .social-link-card, .job-card, .card, .pill, .input-box, .login-card, .edu-chip, .details-card, .tracker-card, .comm-btn {
+            border: 1px solid var(--blue) !important;
+            box-shadow: 0 0 15px var(--neon-glow) !important;
+            transition: 0.3s;
+        }
 
-<style>
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:'Inter',sans-serif;
-}
+        .side-menu { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: var(--white); z-index: 1000; transition: 0.3s; box-shadow: 10px 0 30px rgba(0,0,0,0.1); padding: 25px; box-sizing: border-box; }
+        .side-menu.active { left: 0; }
+        .menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; display: none; }
+        .menu-overlay.active { display: block; }
+        .menu-item { padding: 15px 0; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 15px; cursor: pointer; font-weight: 600; font-size: 14px; }
+        
+        .live-panel { background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 24px; padding: 18px; margin-bottom: 25px; position: relative; }
+        .live-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
+        .live-dot { width: 12px; height: 12px; background: #ff4757; border-radius: 50%; animation: blink 1s infinite; box-shadow: 0 0 15px #ff4757; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+        
+        .ticker-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; height: 120px; overflow: hidden; }
+        .ticker-col { display: flex; flex-direction: column; }
+        .ticker-title { font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--blue); margin-bottom: 8px; text-align: center; background: rgba(0,123,255,0.1); padding: 4px; border-radius: 6px; }
+        .scroll-box { animation: scrollUp 20s linear infinite; }
+        @keyframes scrollUp { 0% { transform: translateY(0); } 100% { transform: translateY(-50%); } }
+        .ticker-item { font-size: 12px; color: #cbd5e1; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); text-decoration: none; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
 
-:root{
---bg:#0f172a;
---card:#111827;
---card2:#1e293b;
---text:#ffffff;
---muted:#94a3b8;
---blue:#3b82f6;
---blue2:#60a5fa;
---green:#10b981;
---danger:#ef4444;
---line:rgba(255,255,255,.08);
---glass:rgba(255,255,255,.05);
-}
+        .login-card { background: var(--white); padding: 30px 25px; border-radius: 24px; }
+        .input-box { width: 100%; padding: 16px; border-radius: 14px; font-size: 14px; font-weight: 600; box-sizing: border-box; outline: none; margin-bottom: 18px; background: var(--white); color: var(--main); }
+        label { display: block; font-size: 12px; font-weight: 800; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; }
+        .edu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px; }
+        .edu-chip { padding: 12px; border-radius: 12px; text-align: center; font-size: 13px; font-weight: 700; cursor: pointer; background: var(--white); color: var(--text-muted); }
+        .edu-chip.selected { background: var(--blue) !important; color: #fff !important; }
+        
+        .card { background: var(--white); padding: 20px; border-radius: 20px; margin-bottom: 20px; }
+        .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .dash-card { background: var(--white); padding: 15px; border-radius: 18px; text-align: center; cursor: pointer; }
+        .dash-card i { font-size: 24px; display: block; margin-bottom: 5px; font-style: normal; }
+        
+        .btn-primary { width: 100%; background: var(--blue); color: white; padding: 18px; border: none; border-radius: 15px; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 0 20px var(--blue); }
+        .btn-load { width: 100%; background: var(--white); color: var(--blue); padding: 12px; border: 1px solid var(--blue); border-radius: 12px; font-size: 14px; font-weight: 800; cursor: pointer; margin-top: 10px; }
+        
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid var(--blue); box-shadow: 0 -5px 20px var(--neon-glow); max-width: 500px; margin: 0 auto; z-index: 99; }
+        .nav-item { text-align: center; color: #94a3b8; font-size: 10px; font-weight: 700; cursor: pointer; text-decoration: none;}
+        .nav-item.active { color: var(--blue); text-shadow: 0 0 10px var(--blue); }
+        .nav-item i { font-size: 20px; display: block; margin-bottom: 3px; font-style: normal; }
+        .hidden { display: none !important; }
+        
+        .pill { background: #fff; padding: 8px 16px; border-radius: 50px; font-size: 12px; font-weight: 600; cursor: pointer; margin-bottom: 5px; color: var(--text-muted); border: 1px solid var(--blue); }
+        .pill.active-pill { background: var(--blue) !important; color: white !important; }
+        
+        .social-link-card { display: flex; align-items: center; justify-content: space-between; background: var(--white); padding: 15px; border-radius: 18px; margin-top: 10px; text-decoration: none; color: inherit; }
+        .social-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
 
-body{
-background:linear-gradient(180deg,#020617,#0f172a,#111827);
-color:var(--text);
-max-width:500px;
-margin:auto;
-min-height:100vh;
-padding-bottom:90px;
-}
+        .job-card { background: var(--white); padding: 15px; border-radius: 15px; margin-bottom: 12px; display: block; text-decoration: none; color: inherit; cursor: pointer; }
+        .job-title { font-weight: 800; font-size: 14px; color: var(--blue); margin-bottom: 5px; }
+        .job-desc { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
 
-.hidden{display:none;}
+        .details-card { background: var(--white); padding: 25px; border-radius: 24px; margin-top: 10px; position: relative; }
+        .info-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .info-label { font-size: 12px; font-weight: 800; color: var(--text-muted); }
+        .info-val { font-size: 13px; font-weight: 700; color: var(--main); }
 
-header{
-position:sticky;
-top:0;
-z-index:50;
-padding:16px;
-backdrop-filter:blur(14px);
-background:rgba(15,23,42,.7);
-border-bottom:1px solid var(--line);
-display:flex;
-justify-content:space-between;
-align-items:center;
-}
+        .year-input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--blue); margin-top: 10px; font-weight: 600; font-size: 14px; outline: none; }
 
-.logo{
-font-size:20px;
-font-weight:800;
-letter-spacing:.5px;
-background:linear-gradient(90deg,#60a5fa,#22d3ee);
--webkit-background-clip:text;
--webkit-text-fill-color:transparent;
-}
+        #ai-trigger { position: fixed; bottom: 85px; right: 20px; z-index: 1001; cursor: pointer; text-decoration: none; display: flex; flex-direction: column; align-items: center; }
+        .ai-robot { font-size: 45px; animation: float 3s ease-in-out infinite; display: block; filter: drop-shadow(0 0 15px var(--blue)); }
+        .ai-label { background: var(--blue); color: white; padding: 6px 12px; border-radius: 12px; font-size: 11px; font-weight: 800; margin-top: -5px; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
 
-.profile{
-width:40px;
-height:40px;
-border-radius:50%;
-background:linear-gradient(135deg,#3b82f6,#22d3ee);
-display:flex;
-align-items:center;
-justify-content:center;
-font-weight:800;
-}
+        .ai-search-container { position: relative; margin-bottom: 25px; border-radius: 50px; background: var(--white); border: 2px solid transparent; background-origin: border-box; background-clip: content-box, border-box; background-image: linear-gradient(var(--white), var(--white)), var(--ai-gradient); box-shadow: 0 4px 20px rgba(0,0,0,0.1); overflow: hidden; }
+        .ai-search-inner { display: flex; align-items: center; padding: 5px 15px; gap: 10px; }
+        .ai-sparkle { font-size: 20px; background: var(--ai-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; }
+        .ai-search-input { flex: 1; border: none; padding: 12px 5px; font-size: 14px; font-weight: 600; outline: none; background: transparent; color: var(--main); }
+        .ai-btn { background: var(--ai-gradient); color: white; border: none; border-radius: 50%; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        .ai-mode-tag { position: absolute; bottom: 2px; right: 60px; font-size: 8px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; }
+        
+        .voice-btn { background: none; border: none; font-size: 18px; cursor: pointer; padding: 5px; }
+        .tracker-card { background: var(--white); padding: 15px; border-radius: 18px; margin-bottom: 20px; }
+        .target-item { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 13px; font-weight: 600; }
 
-.wrap{
-padding:16px;
-}
-
-.card{
-background:var(--glass);
-border:1px solid var(--line);
-backdrop-filter:blur(10px);
-border-radius:20px;
-padding:16px;
-margin-bottom:14px;
-box-shadow:0 10px 25px rgba(0,0,0,.25);
-}
-
-.live{
-background:linear-gradient(135deg,#1d4ed8,#0f172a);
-}
-
-.row{
-display:flex;
-gap:12px;
-}
-
-.col{
-flex:1;
-}
-
-.title{
-font-size:13px;
-font-weight:700;
-color:#cbd5e1;
-margin-bottom:8px;
-}
-
-.mini{
-font-size:12px;
-color:var(--muted);
-line-height:1.6;
-}
-
-.search{
-display:flex;
-gap:10px;
-margin-top:12px;
-}
-
-.search input{
-flex:1;
-height:50px;
-border:none;
-outline:none;
-padding:0 16px;
-border-radius:16px;
-background:#0b1220;
-color:white;
-font-weight:600;
-}
-
-.btn{
-height:50px;
-padding:0 18px;
-border:none;
-border-radius:16px;
-font-weight:700;
-cursor:pointer;
-background:linear-gradient(135deg,#3b82f6,#22d3ee);
-color:white;
-}
-
-.grid{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:12px;
-}
-
-.box{
-background:var(--glass);
-border:1px solid var(--line);
-border-radius:18px;
-padding:16px;
-text-align:center;
-font-weight:700;
-cursor:pointer;
-transition:.25s;
-}
-
-.box:hover{
-transform:translateY(-4px);
-}
-
-.box span{
-display:block;
-font-size:26px;
-margin-bottom:8px;
-}
-
-.linkCard{
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:14px;
-border-radius:18px;
-background:var(--glass);
-border:1px solid var(--line);
-margin-bottom:12px;
-text-decoration:none;
-color:white;
-}
-
-.linkCard small{
-color:var(--muted);
-}
-
-.listItem{
-background:var(--glass);
-padding:15px;
-border-radius:18px;
-border:1px solid var(--line);
-margin-bottom:12px;
-cursor:pointer;
-}
-
-.listItem h4{
-font-size:14px;
-margin-bottom:6px;
-color:#60a5fa;
-}
-
-.listItem p{
-font-size:12px;
-color:var(--muted);
-line-height:1.5;
-}
-
-.bottom{
-position:fixed;
-bottom:0;
-left:0;
-right:0;
-max-width:500px;
-margin:auto;
-background:rgba(15,23,42,.92);
-backdrop-filter:blur(12px);
-display:flex;
-justify-content:space-around;
-padding:12px 0;
-border-top:1px solid var(--line);
-}
-
-.nav{
-text-align:center;
-font-size:11px;
-color:var(--muted);
-cursor:pointer;
-font-weight:700;
-}
-
-.nav.active{
-color:#60a5fa;
-}
-
-.nav span{
-display:block;
-font-size:20px;
-margin-bottom:3px;
-}
-
-.login{
-padding:20px;
-}
-
-.input{
-width:100%;
-height:52px;
-padding:0 16px;
-border:none;
-outline:none;
-background:#0b1220;
-color:white;
-border-radius:16px;
-margin-bottom:12px;
-font-weight:600;
-}
-
-.edu{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:10px;
-margin-bottom:14px;
-}
-
-.chip{
-padding:14px;
-text-align:center;
-border-radius:14px;
-background:#0b1220;
-cursor:pointer;
-font-weight:700;
-border:1px solid transparent;
-}
-
-.chip.active{
-border-color:#3b82f6;
-background:#111827;
-}
-
-.chatBox{
-height:60vh;
-overflow:auto;
-margin-bottom:12px;
-}
-
-.msg{
-padding:12px 14px;
-border-radius:16px;
-margin-bottom:10px;
-max-width:80%;
-font-size:13px;
-line-height:1.5;
-}
-
-.left{
-background:#111827;
-}
-
-.right{
-background:#2563eb;
-margin-left:auto;
-}
-
-.floatAI{
-position:fixed;
-right:18px;
-bottom:88px;
-width:58px;
-height:58px;
-border-radius:50%;
-background:linear-gradient(135deg,#3b82f6,#22d3ee);
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:28px;
-text-decoration:none;
-box-shadow:0 10px 25px rgba(59,130,246,.5);
-animation:up 2s infinite;
-}
-
-@keyframes up{
-0%,100%{transform:translateY(0);}
-50%{transform:translateY(-8px);}
-}
-</style>
+        .comm-btn { background: var(--white); padding: 18px; border-radius: 20px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; margin-top: 10px; text-decoration: none; color: inherit; }
+        .chat-container { background: var(--bg); height: 75vh; border-radius: 24px; display: flex; flex-direction: column; padding: 15px; border: 1px solid var(--blue); box-shadow: 0 0 20px var(--neon-glow); }
+        .chat-display { flex: 1; overflow-y: auto; padding-bottom: 10px; }
+        .chat-bubble { max-width: 80%; padding: 12px 16px; border-radius: 18px; margin-bottom: 12px; font-size: 13px; line-height: 1.4; position: relative; }
+        .bubble-left { background: var(--white); color: var(--main); align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid #eee; }
+        .bubble-right { background: #dcf8c6; color: #121212; align-self: flex-end; border-bottom-right-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .dark-mode .bubble-right { background: #056162; color: white; }
+        .chat-user { font-size: 10px; font-weight: 800; color: var(--blue); display: block; margin-bottom: 4px; }
+        .chat-time { font-size: 9px; opacity: 0.6; text-align: right; display: block; margin-top: 4px; }
+    </style>
 </head>
+<body id="app-body">
 
-<body>
+<a id="ai-trigger" href="https://gemini.google.com/" target="_blank">
+    <span class="ai-robot">🤖</span>
+    <div class="ai-label">ASK AI</div>
+</a>
 
-<header>
-<div class="logo">ROZGAR HUB</div>
-<div class="profile" id="profile">U</div>
+<div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
+
+<div class="side-menu" id="sideMenu">
+    <h3 style="margin-top:0; color:var(--blue);">App Settings ⚙️</h3>
+    <div class="menu-item" onclick="editProfile()">👤 Edit Profile</div>
+    <div class="menu-item" onclick="showResumeSection()">📝 Build Resume (New)</div>
+    <div class="menu-item" onclick="toggleDarkMode()">🌓 Switch Theme</div>
+    <div class="menu-item" onclick="location.reload()">🔄 Refresh Updates</div>
+    <div class="menu-item" style="color:red; border:none;" onclick="logout()">🚪 Logout</div>
+</div>
+
+<header id="main-header" class="hidden">
+    <div class="logo-text" onclick="toggleMenu()">ROZGAR HUB</div>
+    <div style="display: flex; align-items: center; gap: 15px;">
+        <div onclick="toggleDarkMode()" id="mode-btn" style="cursor:pointer; font-size: 20px;">🌙</div>
+        <div id="user-initial" style="background:var(--light-blue); color:var(--blue); width:35px; height:35px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; border: 1px solid var(--blue);">U</div>
+    </div>
 </header>
 
-<a href="https://gemini.google.com/" target="_blank" class="floatAI">🤖</a>
+<div class="container">
+    <div id="login-sec" class="hidden">
+        <div class="login-card">
+            <h1 style="text-align:center; font-weight:900;">Welcome! 🚀</h1>
+            <label>Full Name</label>
+            <input type="text" id="u-name" class="input-box" placeholder="e.g. Rahul Raj">
+            <label>Education</label>
+            <div class="edu-grid">
+                <div class="edu-chip" onclick="toggleEdu(this, '10th')">10th Pass</div>
+                <div class="edu-chip" onclick="toggleEdu(this, '12th')">12th Pass</div>
+                <div class="edu-chip" onclick="toggleEdu(this, 'ITI')">ITI Pass</div>
+                <div class="edu-chip" onclick="toggleEdu(this, 'UG')">Undergraduate</div>
+            </div>
+            <button onclick="saveLogin()" class="btn-primary">Save Profile ⚡</button>
+        </div>
+    </div>
 
-<div class="wrap">
+    <div id="resume-sec" class="hidden">
+        <h3 style="font-weight:800;">AI Resume Builder 📄</h3>
+        <div class="card">
+            <label>Father's Name</label>
+            <input type="text" id="res-father" class="input-box" placeholder="Enter Father's Name">
+            <label>Skills</label>
+            <input type="text" id="res-skills" class="input-box" placeholder="e.g. Computer, ITI, Driving">
+            <label>Experience</label>
+            <textarea id="res-exp" class="input-box" style="height:80px;" placeholder="Any past work?"></textarea>
+            <button class="btn-primary resume-btn" onclick="downloadResume()">Download Resume 📥</button>
+            <button onclick="showDash()" style="width:100%; margin-top:10px; background:none; border:none; color:var(--text-muted); font-weight:800;">Back to Home</button>
+        </div>
+    </div>
 
-<!-- LOGIN -->
-<div id="loginSec">
-<div class="card login">
-<h2 style="margin-bottom:15px;">Welcome 👋</h2>
+    <div id="dash-sec" class="hidden">
+        <div class="live-panel">
+            <div class="live-header">
+                <div class="live-dot"></div>
+                <span style="color:white; font-weight:800; font-size:14px;">LIVE UPDATES 🛰️</span>
+            </div>
+            <div class="ticker-container">
+                <div class="ticker-col">
+                    <div class="ticker-title">New Jobs</div>
+                    <div id="job-ticker" class="scroll-box"><div class="ticker-item">Loading...</div></div>
+                </div>
+                <div class="ticker-col">
+                    <div class="ticker-title">Admit Cards</div>
+                    <div id="admit-ticker" class="scroll-box"><div class="ticker-item">Loading...</div></div>
+                </div>
+            </div>
+        </div>
 
-<input class="input" id="name" placeholder="Enter Full Name">
+        <div class="ai-search-container">
+            <div class="ai-search-inner">
+                <span class="ai-sparkle">✦</span>
+                <input type="text" id="main-search-inp" class="ai-search-input" placeholder="Ask anything (Hinglish/Eng)...">
+                <button class="voice-btn" onclick="alert('Mic connected! Bolna shuru karein...')">🎙️</button>
+                <button onclick="triggerSearch()" class="ai-btn">✨</button>
+            </div>
+            <div class="ai-mode-tag">App AI Support</div>
+        </div>
 
-<div class="edu">
-<div class="chip" onclick="eduPick(this,'10th')">10th</div>
-<div class="chip" onclick="eduPick(this,'12th')">12th</div>
-<div class="chip" onclick="eduPick(this,'ITI')">ITI</div>
-<div class="chip" onclick="eduPick(this,'UG')">UG</div>
+        <div class="tracker-card">
+            <div style="font-weight:800; color:var(--blue); font-size:14px; margin-bottom:10px;">📅 DAILY EXAM TARGET</div>
+            <div class="target-item"><input type="checkbox"> Today's Current Affairs</div>
+            <div class="target-item"><input type="checkbox"> Math/Reasoning Practice</div>
+            <div class="target-item"><input type="checkbox"> Science/GK Revision</div>
+        </div>
+
+        <h3 style="font-weight:800;">Top Categories</h3>
+        <div class="dash-grid">
+            <div class="dash-card" onclick="openJobs('latest Govt job vacancy 2026 apply online')"><i>🏛️</i><span>Govt Jobs</span></div>
+            <div class="dash-card" onclick="openJobs('new Railway recruitment vacancy 2026 NTPC Group D ALP')"><i>🚂</i><span>Railway</span></div>
+            <div class="dash-card" onclick="openJobs('latest ITI Pass Govt Jobs vacancy 2026 Apprentice')"><i>⚙️</i><span>ITI Jobs</span></div>
+            <div class="dash-card" onclick="openJobs('latest Remote work from home jobs vacancy 2026')"><i>🏠</i><span>Remote/WFH</span></div>
+        </div>
+
+        <h3 style="font-weight:800; margin-top:30px;">Help Desk 👥</h3>
+        <div class="comm-btn" onclick="showCommunityChat()">
+            <div style="display:flex; align-items:center; gap:12px;">
+                <div style="background:var(--light-blue); width:45px; height:45px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:22px;">💬</div>
+                <div>
+                    <div style="font-weight:800; font-size:14px;">Community Help</div>
+                    <div style="font-size:11px; color:var(--text-muted);">Ask doubts & chat with others</div>
+                </div>
+            </div>
+            <div style="color:var(--blue); font-weight:800;">OPEN</div>
+        </div>
+
+        <h3 style="font-weight:800; margin-top:30px;">Direct Support</h3>
+        <a href="https://whatsapp.com/channel/0029VbCL3cTElagwBiU2aJ2N" target="_blank" class="social-link-card">
+            <div style="display:flex; align-items:center; gap:12px;">
+                <div class="social-icon" style="background:#e7fbf0; color:#22c55e;">💬</div>
+                <div><div style="font-weight:800; font-size:14px;">WhatsApp Channel</div><div style="font-size:11px;">Join for daily updates</div></div>
+            </div>
+            <div style="color:var(--blue); font-weight:800;">JOIN</div>
+        </a>
+
+        <a href="https://www.instagram.com/___rahul_yadav_._?igsh=b3ltc2FwaDd4bzB1" target="_blank" class="social-link-card">
+            <div style="display:flex; align-items:center; gap:12px;">
+                <div class="social-icon" style="background:#fff0f6; color:#e1306c;">📸</div>
+                <div><div style="font-weight:800; font-size:14px;">Instagram Profile</div><div style="font-size:11px;">Follow for latest updates</div></div>
+            </div>
+            <div style="color:var(--blue); font-weight:800;">FOLLOW</div>
+        </a>
+    </div>
+
+    <div id="chat-sec" class="hidden">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px;">
+            <button onclick="showDash()" style="border:none; background:none; font-size:20px; cursor:pointer;">⬅️</button>
+            <h3 style="margin:0; font-weight:800;">Community Chat</h3>
+        </div>
+        <div class="chat-container">
+            <div id="chat-display" class="chat-display"></div>
+            <div style="display:flex; gap:10px;">
+                <input type="text" id="chat-input" class="input-box" placeholder="Type your doubt..." style="margin:0;">
+                <button onclick="sendMessage()" class="ai-btn" style="border-radius:12px; width:50px; height:50px;">📤</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="res-sec" class="hidden">
+        <h3 style="font-weight:800; margin-bottom:15px;">Results Portal 📄</h3>
+        <div class="dash-grid">
+            <div class="dash-card" onclick="toggleResSub('bihar-board')"><i>🎓</i><span>Bihar Board</span></div>
+            <div class="dash-card" onclick="toggleResSub('railway')"><i>🚂</i><span>Railway</span></div>
+            <div class="dash-card" onclick="toggleResSub('ssc')"><i>🦁</i><span>SSC</span></div>
+            <div class="dash-card" onclick="toggleResSub('police')"><i>👮</i><span>Bihar Police</span></div>
+        </div>
+
+        <div id="sub-bihar-board" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
+            <div style="display:flex; gap:10px;"><button onclick="setResType(this, 'Matric')" class="pill" style="flex:1;">Matric (10th)</button><button onclick="setResType(this, 'Inter')" class="pill" style="flex:1;">Inter (12th)</button></div>
+            <input type="number" id="year-bihar" class="year-input" placeholder="Enter Year (e.g. 2025)">
+            <button onclick="finalResSearch('Bihar Board', 'year-bihar')" class="btn-primary" style="margin-top:10px;">Check Result ✅</button>
+        </div>
+
+        <div id="sub-railway" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                <button onclick="setResType(this, 'Group D')" class="pill">Group D</button>
+                <button onclick="setResType(this, 'ALP')" class="pill">ALP</button>
+                <button onclick="setResType(this, 'NTPC')" class="pill">NTPC</button>
+                <button onclick="setResType(this, 'Technician')" class="pill">Technician</button>
+            </div>
+            <input type="number" id="year-railway" class="year-input" placeholder="Enter Year (e.g. 2024)">
+            <button onclick="finalResSearch('Railway', 'year-railway')" class="btn-primary" style="margin-top:10px;">Check Result ✅</button>
+        </div>
+
+        <div id="sub-ssc" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                <button onclick="setResType(this, 'SSC MTS')" class="pill">MTS</button>
+                <button onclick="setResType(this, 'SSC GD')" class="pill">GD</button>
+                <button onclick="setResType(this, 'SSC CGL')" class="pill">CGL</button>
+                <button onclick="setResType(this, 'SSC CHSL')" class="pill">CHSL</button>
+            </div>
+            <input type="number" id="year-ssc" class="year-input" placeholder="Enter Year (e.g. 2025)">
+            <button onclick="finalResSearch('SSC', 'year-ssc')" class="btn-primary" style="margin-top:10px;">Check Result ✅</button>
+        </div>
+
+        <div id="sub-police" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                <button onclick="setResType(this, 'Constable')" class="pill">Constable</button>
+                <button onclick="setResType(this, 'SI')" class="pill">SI (Daroga)</button>
+                <button onclick="setResType(this, 'Driver')" class="pill">Driver</button>
+            </div>
+            <input type="number" id="year-police" class="year-input" placeholder="Enter Year (e.g. 2024)">
+            <button onclick="finalResSearch('Bihar Police', 'year-police')" class="btn-primary" style="margin-top:10px;">Check Result ✅</button>
+        </div>
+    </div>
+
+    <div id="feed-sec" class="hidden">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <button onclick="goBackToList()" id="back-btn" class="hidden" style="color:var(--blue); border:none; background:none; font-weight:800;">← Back</button>
+            <h3 id="f-title" style="margin:0; font-weight:800; font-size:16px;">LISTING</h3>
+            <button onclick="showDash()" style="color:var(--blue); border:none; background:none; font-weight:800;">Home</button>
+        </div>
+        <div id="list"></div>
+        <div id="load-more-container" class="hidden">
+            <button onclick="loadMore()" class="btn-load">Load More 🔄</button>
+        </div>
+    </div>
 </div>
 
-<button class="btn" style="width:100%;" onclick="saveUser()">Continue</button>
-</div>
-</div>
-
-<!-- HOME -->
-<div id="homeSec" class="hidden">
-
-<div class="card live">
-<div class="title">🔴 Live Updates</div>
-<div class="mini">
-• Railway New Vacancy 2026<br>
-• Bihar Board Result Soon<br>
-• SSC GD Admit Card Live
-</div>
-</div>
-
-<div class="card">
-<div class="title">AI Search</div>
-
-<div class="search">
-<input id="search" placeholder="Search jobs, result, admit card...">
-<button class="btn" onclick="searchNow()">Go</button>
-</div>
-</div>
-
-<div class="title" style="margin:12px 0;">Top Categories</div>
-
-<div class="grid">
-<div class="box" onclick="fakeLoad('Govt Jobs')"><span>🏛️</span>Govt Jobs</div>
-<div class="box" onclick="fakeLoad('Railway')"><span>🚂</span>Railway</div>
-<div class="box" onclick="fakeLoad('ITI Jobs')"><span>⚙️</span>ITI Jobs</div>
-<div class="box" onclick="fakeLoad('Work From Home')"><span>🏠</span>WFH</div>
-</div>
-
-<div class="title" style="margin:18px 0 10px;">Direct Support</div>
-
-<a class="linkCard" target="_blank" href="https://whatsapp.com/channel/0029VbCL3cTElagwBiU2aJ2N">
-<div>
-<b>WhatsApp Channel</b><br>
-<small>Daily updates join now</small>
-</div>
-<div>JOIN</div>
-</a>
-
-<a class="linkCard" target="_blank" href="https://www.instagram.com/___rahul_yadav_._?igsh=b3ltc2FwaDd4bzB1">
-<div>
-<b>Instagram</b><br>
-<small>Follow latest updates</small>
-</div>
-<div>FOLLOW</div>
-</a>
-
-</div>
-
-<!-- RESULTS -->
-<div id="resultSec" class="hidden">
-<div class="card">
-<div class="title">Results / Listings</div>
-<div id="resultList"></div>
-</div>
-</div>
-
-<!-- CHAT -->
-<div id="chatSec" class="hidden">
-<div class="card">
-<div class="title">Community Chat</div>
-
-<div class="chatBox" id="chatBox">
-<div class="msg left">Hello 👋 ask anything</div>
-</div>
-
-<div class="search">
-<input id="chatInput" placeholder="Type message">
-<button class="btn" onclick="sendMsg()">Send</button>
-</div>
-
-</div>
-</div>
-
-</div>
-
-<!-- BOTTOM NAV -->
-<div class="bottom">
-<div class="nav active" onclick="openTab('home',this)"><span>🏠</span>Home</div>
-<div class="nav" onclick="openTab('result',this)"><span>📄</span>Results</div>
-<div class="nav" onclick="openTab('chat',this)"><span>💬</span>Chat</div>
+<div id="bottom-bar" class="bottom-nav hidden">
+    <div class="nav-item active" onclick="showDash()"><i>🏠</i>Home</div>
+    <div class="nav-item" onclick="showResults()"><i>📄</i>Results</div>
+    <div class="nav-item" onclick="toggleMenu()"><i>⚙️</i>Settings</div>
 </div>
 
 <script>
-let user={edu:''};
+    let user = {}; let resType = ''; let currentCategory = ''; let lastResults = []; let currentType = ''; 
+    let pageCount = 1; let currentScreen = 'home';
 
-window.onload=()=>{
-let saved=localStorage.getItem("hubUser");
-if(saved){
-user=JSON.parse(saved);
-document.getElementById("loginSec").classList.add("hidden");
-document.getElementById("homeSec").classList.remove("hidden");
-document.getElementById("profile").innerText=user.name.charAt(0).toUpperCase();
-}
-}
+    window.onload = () => {
+        if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
+        checkLogin();
+        fetchLive();
+        loadMessages(); // Start chat refresh
+        setInterval(loadMessages, 5000);
+    };
 
-function eduPick(el,val){
-document.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));
-el.classList.add('active');
-user.edu=val;
-}
+    window.onpopstate = function(event) {
+        if (event.state) {
+            const screen = event.state.screen;
+            if (screen === 'home') showDash(false);
+            else if (screen === 'results') showResults(false);
+            else if (screen === 'list') {
+                document.getElementById('back-btn').classList.add('hidden');
+                if(currentType === 'Job') document.getElementById('load-more-container').classList.remove('hidden');
+                renderList(lastResults);
+            }
+        }
+    };
 
-function saveUser(){
-let n=document.getElementById("name").value;
-if(!n || !user.edu){alert("Fill all details");return;}
-user.name=n;
-localStorage.setItem("hubUser",JSON.stringify(user));
-location.reload();
-}
+    // --- LOGIC FUNCTIONS ---
 
-function openTab(type,el){
-document.querySelectorAll('.nav').forEach(x=>x.classList.remove('active'));
-el.classList.add('active');
+    function checkLogin() {
+        let saved = localStorage.getItem('userHub');
+        if(saved) {
+            user = JSON.parse(saved);
+            document.getElementById('user-initial').innerText = user.name ? user.name.charAt(0).toUpperCase() : 'U';
+            showDash(true);
+        } else {
+            hideAll();
+            document.getElementById('login-sec').classList.remove('hidden');
+        }
+    }
 
-document.getElementById("homeSec").classList.add("hidden");
-document.getElementById("resultSec").classList.add("hidden");
-document.getElementById("chatSec").classList.add("hidden");
+    function saveLogin() {
+        let name = document.getElementById('u-name').value;
+        if(!name || !user.edu) return alert("Please fill Name and Select Education!");
+        user.name = name;
+        localStorage.setItem('userHub', JSON.stringify(user));
+        location.reload();
+    }
 
-if(type=="home") document.getElementById("homeSec").classList.remove("hidden");
-if(type=="result") document.getElementById("resultSec").classList.remove("hidden");
-if(type=="chat") document.getElementById("chatSec").classList.remove("hidden");
-}
+    function toggleEdu(chip, val) {
+        document.querySelectorAll('.edu-chip').forEach(c => c.classList.remove('selected'));
+        chip.classList.add('selected');
+        user.edu = val;
+    }
 
-function fakeLoad(name){
-openTab('result',document.querySelectorAll('.nav')[1]);
-document.getElementById("resultList").innerHTML=`
-<div class='listItem'>
-<h4>${name} New Vacancy 2026</h4>
-<p>Apply online started. Qualification based openings available.</p>
-</div>
-<div class='listItem'>
-<h4>${name} Admit Card</h4>
-<p>Download admit card now from official portal.</p>
-</div>
-<div class='listItem'>
-<h4>${name} Result Update</h4>
-<p>Latest merit list and scorecard available.</p>
-</div>
-`;
-}
+    function hideAll() {
+        ['login-sec','dash-sec','res-sec','feed-sec','main-header','bottom-bar','resume-sec','chat-sec'].forEach(id => {
+            let el = document.getElementById(id);
+            if(el) el.classList.add('hidden');
+        });
+    }
 
-function searchNow(){
-let q=document.getElementById("search").value;
-if(!q)return;
-fakeLoad(q);
-}
+    function showDash(push = true) {
+        hideAll();
+        document.getElementById('main-header').classList.remove('hidden');
+        document.getElementById('dash-sec').classList.remove('hidden');
+        document.getElementById('bottom-bar').classList.remove('hidden');
+        setActiveNav(0);
+        currentScreen = 'home';
+        if(push) history.pushState({screen: 'home'}, '');
+    }
 
-function sendMsg(){
-let val=document.getElementById("chatInput").value;
-if(!val)return;
-document.getElementById("chatBox").innerHTML+=`
-<div class='msg right'>${val}</div>
-`;
-document.getElementById("chatInput").value="";
-let box=document.getElementById("chatBox");
-box.scrollTop=box.scrollHeight;
-setTimeout(()=>{
-box.innerHTML+=`<div class='msg left'>Received 👍</div>`;
-box.scrollTop=box.scrollHeight;
-},600);
-}
+    function showResults(push = true) {
+        hideAll();
+        document.getElementById('main-header').classList.remove('hidden');
+        document.getElementById('res-sec').classList.remove('hidden');
+        document.getElementById('bottom-bar').classList.remove('hidden');
+        setActiveNav(1);
+        currentScreen = 'results';
+        if(push) history.pushState({screen: 'results'}, '');
+    }
+
+    function showResumeSection() {
+        hideAll();
+        document.getElementById('main-header').classList.remove('hidden');
+        document.getElementById('resume-sec').classList.remove('hidden');
+        document.getElementById('bottom-bar').classList.remove('hidden');
+        if(document.getElementById('sideMenu').classList.contains('active')) toggleMenu();
+    }
+
+    function showCommunityChat() {
+        hideAll();
+        document.getElementById('main-header').classList.remove('hidden');
+        document.getElementById('chat-sec').classList.remove('hidden');
+        document.getElementById('bottom-bar').classList.remove('hidden');
+        loadMessages();
+    }
+
+    // --- API CONNECTIONS (BACKEND SE JUDE HUE) ---
+
+    async function downloadResume() {
+        const btn = document.querySelector('.resume-btn');
+        btn.innerText = "Generating...";
+        
+        const formData = new FormData();
+        formData.append('name', user.name || 'User');
+        formData.append('father', document.getElementById('res-father').value || 'N/A');
+        formData.append('edu', user.edu || 'N/A');
+        formData.append('skills', document.getElementById('res-skills').value || 'N/A');
+        formData.append('exp', document.getElementById('res-exp').value || 'N/A');
+
+        try {
+            const response = await fetch('/generate_resume', { method: 'POST', body: formData });
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'My_Resume.pdf';
+                document.body.appendChild(a);
+                a.click();
+                btn.innerText = "Download Success!";
+                setTimeout(() => btn.innerText = "Download Resume 📥", 2000);
+            }
+        } catch (err) { alert("Download fail!"); btn.innerText = "Try Again"; }
+    }
+
+    async function loadMessages() {
+        const chatBox = document.getElementById('chat-display');
+        if(!chatBox || document.getElementById('chat-sec').classList.contains('hidden')) return;
+        try {
+            const res = await fetch('/get_messages');
+            const messages = await res.json();
+            chatBox.innerHTML = messages.map(m => `
+                <div class="chat-bubble ${m.user.includes('Admin') ? 'bubble-right' : 'bubble-left'}">
+                    <span class="chat-user">@${m.user}</span>
+                    ${m.msg}
+                    <span class="chat-time">${m.time}</span>
+                </div>
+            `).join('');
+            chatBox.scrollTop = chatBox.scrollHeight;
+        } catch (e) { console.log("Chat error"); }
+    }
+
+    async function sendMessage() {
+        const input = document.getElementById('chat-input');
+        const msg = input.value;
+        if(!msg) return;
+
+        await fetch('/send_message', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ user: user.name || "Guest", msg: msg })
+        });
+
+        input.value = '';
+        loadMessages();
+    }
+
+    // --- OLD FUNCTIONS (STAY AS IS) ---
+
+    async function fetchLive() {
+        try {
+            const res = await fetch('/get_live_updates');
+            const data = await res.json();
+            if(data.jobs && data.jobs.length) {
+                document.getElementById('job-ticker').innerHTML = data.jobs.map(j => `<div onclick="showDetailsDirect('${j.title}', '${j.link}', 'Job')" class="ticker-item">${j.title}</div>`).join('');
+            }
+            if(data.admits && data.admits.length) {
+                document.getElementById('admit-ticker').innerHTML = data.admits.map(a => `<div onclick="showDetailsDirect('${a.title}', '${a.link}', 'Admit Card')" class="ticker-item">${a.title}</div>`).join('');
+            }
+        } catch(e) {}
+    }
+
+    function setActiveNav(idx) {
+        document.querySelectorAll('.nav-item').forEach((n,i) => i === idx ? n.classList.add('active') : n.classList.remove('active'));
+    }
+
+    function toggleMenu() { document.getElementById('sideMenu').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
+    function toggleDarkMode() { document.body.classList.toggle('dark-mode'); localStorage.setItem('darkMode', document.body.classList.contains('dark-mode')); }
+    function editProfile() { localStorage.removeItem('userHub'); location.reload(); }
+    function logout() { localStorage.removeItem('userHub'); location.reload(); }
+
+    function triggerSearch() { 
+        let v = document.getElementById('main-search-inp').value; 
+        if(!v) return;
+        openJobs(v);
+    }
+
+    function toggleResSub(id) { 
+        document.querySelectorAll('#res-sec .card').forEach(c => c.classList.add('hidden')); 
+        const sub = document.getElementById('sub-'+id);
+        if(sub) sub.classList.remove('hidden'); 
+        resType = ''; 
+    }
+
+    function setResType(btn, type) { 
+        btn.parentElement.querySelectorAll('.pill').forEach(p => p.classList.remove('active-pill')); 
+        btn.classList.add('active-pill'); 
+        resType = type; 
+    }
+
+    function finalResSearch(cat, yearId) { 
+        let yearVal = document.getElementById(yearId).value;
+        if(!resType) return alert("Pehle option select karein!"); 
+        if(!yearVal) return alert("Pehle Year (saal) daalein!");
+        let query = `${cat} ${resType} Result ${yearVal} official direct portal`;
+        openJobs(query); 
+    }
+
+    async function openJobs(cat, isLoadMore = false) { 
+        if(!isLoadMore) {
+            lastResults = [];
+            pageCount = 1;
+            document.getElementById('list').innerHTML = "<div style='padding:40px; text-align:center; font-weight:700; color:var(--blue);'>🔍 Thinking (AI)...</div>";
+            history.pushState({screen: 'list'}, '');
+        }
+        
+        currentCategory = cat;
+        let lowerCat = cat.toLowerCase();
+        
+        if(lowerCat.includes('result')) { currentType = 'Result'; }
+        else if(lowerCat.includes('admit')) { currentType = 'Admit Card'; }
+        else { currentType = 'Info'; }
+
+        hideAll(); 
+        document.getElementById('main-header').classList.remove('hidden'); 
+        document.getElementById('bottom-bar').classList.remove('hidden'); 
+        document.getElementById('feed-sec').classList.remove('hidden'); 
+        document.getElementById('back-btn').classList.add('hidden');
+        
+        document.getElementById('f-title').innerText = cat.substring(0, 20).toUpperCase() + (cat.length > 20 ? '...' : ''); 
+
+        try {
+            const response = await fetch('/fetch_jobs', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ category: cat, edu: user.edu || '10th', page: pageCount })
+            });
+            let newResults = await response.json();
+            
+            lastResults = [...lastResults, ...newResults];
+            renderList(lastResults);
+            
+            if(newResults.length > 0 && (currentType === 'Job' || currentType === 'Info')) {
+                document.getElementById('load-more-container').classList.remove('hidden');
+            } else {
+                document.getElementById('load-more-container').classList.add('hidden');
+            }
+        } catch(e) {
+            document.getElementById('list').innerHTML = "<div style='padding:40px; text-align:center;'>⚠️ Connection Error!</div>";
+        }
+    }
+
+    function loadMore() {
+        pageCount++;
+        openJobs(currentCategory, true);
+    }
+
+    function renderList(results) {
+        const listDiv = document.getElementById('list');
+        if(!results || results.length === 0) {
+            listDiv.innerHTML = "<div style='padding:40px; text-align:center;'>❌ No data found. Try another query.</div>";
+            return;
+        }
+        
+        listDiv.innerHTML = results.map((item, index) => `
+            <div class="job-card" onclick="viewDetails(${index})">
+                <div class="job-title">${item.title}</div>
+                <div class="job-desc">${item.snippet ? item.snippet.substring(0, 120) : 'Click to see full details...'}</div>
+                <div style="font-size:11px; color:var(--blue); margin-top:10px; font-weight:800;">READ MORE →</div>
+            </div>
+        `).join('');
+    }
+
+    function viewDetails(index) {
+        const item = lastResults[index];
+        const listDiv = document.getElementById('list');
+        document.getElementById('back-btn').classList.remove('hidden');
+        document.getElementById('load-more-container').classList.add('hidden');
+        history.pushState({screen: 'details'}, '');
+        
+        let btnText = "Open Link 🚀";
+        if(currentType === 'Result') { btnText = "Check Result ✅"; }
+        if(currentType === 'Admit Card') { btnText = "Download Card 📥"; }
+
+        listDiv.innerHTML = `
+            <div class="details-card">
+                <h2 style="color:var(--blue); margin-top:0; font-size:18px;">${item.title}</h2>
+                <p style="font-size:14px; line-height:1.6; color:var(--main); margin-top:15px; border-top:1px solid #eee; padding-top:15px;">
+                    ${item.snippet || 'No extra info available.'}
+                </p>
+                <button onclick="window.open('${item.link}', '_blank')" class="btn-primary" style="margin-top:20px;">
+                    ${btnText}
+                </button>
+            </div>
+        `;
+    }
+
+    function showDetailsDirect(title, link, type) {
+        currentType = type;
+        hideAll();
+        document.getElementById('main-header').classList.remove('hidden'); 
+        document.getElementById('feed-sec').classList.remove('hidden');
+        document.getElementById('bottom-bar').classList.remove('hidden');
+        document.getElementById('f-title').innerText = "LIVE UPDATE";
+        history.pushState({screen: 'details'}, '');
+        
+        document.getElementById('list').innerHTML = `
+            <div class="details-card">
+                <h2 style="color:var(--blue); margin-top:0;">${title}</h2>
+                <div class="info-row"><span class="info-label">Type:</span><span class="info-val">${type}</span></div>
+                <button onclick="window.open('${link}', '_blank')" class="btn-primary" style="margin-top:25px;">Check Now 🚀</button>
+                <button onclick="showDash()" class="btn-primary" style="margin-top:10px; background:#64748b;">Close</button>
+            </div>
+        `;
+    }
+
+    function goBackToList() {
+        history.back();
+    }
 </script>
-
 </body>
 </html>
