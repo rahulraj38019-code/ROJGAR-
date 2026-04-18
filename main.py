@@ -17,18 +17,31 @@ SERPER_API_KEY = "675ec80f6858652b8add27fbe3ab09371a6faaae"
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
 # -----------------
-# CACHE & MEMORY (Updated)
+# CACHE & MEMORY
 # -----------------
 cache = {}
 cache_time = {}
 CACHE_TTL = 300
-chat_memory = defaultdict(list) # User ki purani baatein yaad rakhne ke liye
+chat_memory = {} # V9 Memory Storage
 
 # Community Chat Data
 chat_messages = [
     {"user": "Sonu_Kumar", "msg": "Bhai Railway Group D ka form kab tak aayega?", "time": "10:45 AM"},
     {"user": "Admin_Rahul", "msg": "November tak umeed hai, taiyari jaari rakhein!", "time": "10:48 AM"}
 ]
+
+# V9 SYSTEM PROMPT
+SYSTEM_PROMPT = """
+You are V9 GOD MODE AI Assistant.
+Behave like ChatGPT. Be smart, professional, helpful, human-like.
+Rules:
+- Understand follow-up questions.
+- Remember previous messages in same chat.
+- Reply in Hindi / Hinglish / English naturally.
+- Give exact useful answers.
+- Jobs/result query me details do: post name, eligibility, date, salary, apply process.
+- Agar info unknown ho to honestly bolo.
+"""
 
 # --- BASIC ROUTES ---
 @app.route('/manifest.json')
@@ -132,96 +145,85 @@ def send_message():
 
 
 # ===============================
-# V8 ULTRA PRO MEMORY AI ENGINE
+# V9 GOD MODE AI ENGINE (FINAL)
 # ===============================
 
-MODELS = [
-    "openai/gpt-3.5-turbo",
-    "mistralai/mistral-small",
-    "google/gemini-2.0-flash-lite-preview-02-05:free"
-]
+def trim_history(chat_id):
+    if chat_id in chat_memory:
+        if len(chat_memory[chat_id]) > 20:
+            chat_memory[chat_id] = chat_memory[chat_id][-20:]
 
-def call_ai(model, messages):
+def ask_model(messages):
+    payload = {
+        "model": "openai/gpt-3.5-turbo",
+        "messages": messages,
+        "temperature": 0.7
+    }
+    headers = {
+        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+        "Content-Type": "application/json"
+    }
     try:
-        res = requests.post(
+        r = requests.post(
             "https://openrouter.ai/api/v1/chat/completions",
-            headers={
-                "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-                "Content-Type": "application/json"
-            },
-            json={
-                "model": model,
-                "messages": messages
-            },
-            timeout=8
+            headers=headers,
+            json=payload,
+            timeout=25
         )
-        if res.status_code == 200:
-            return res.json()["choices"][0]["message"]["content"]
-    except:
-        return None
+        if r.status_code == 200:
+            data = r.json()
+            return data["choices"][0]["message"]["content"]
+    except Exception as e:
+        print("AI Error:", e)
     return None
 
-def call_best_model(messages):
-    with ThreadPoolExecutor(max_workers=3) as executor:
-        futures = [executor.submit(call_ai, m, messages) for m in MODELS]
-        for f in as_completed(futures):
-            result = f.result()
-            if result:
-                return result
-    return "Abhi AI busy hai, thodi der baad try karo 🚀"
-
-@app.route('/ask_ai', methods=['POST'])
+@app.route("/ask_ai", methods=["POST"])
 def ask_ai():
     try:
         data = request.get_json()
-        # Supporting multiple field names for flexibility
-        question = (data.get("message") or data.get("question") or data.get("userMsg", "")).strip()
-        user_id = data.get("user_id", "guest")
+        user_msg = (data.get("message") or data.get("question") or "").strip()
+        chat_id = data.get("chat_id") or data.get("user_id") or "default"
 
-        if not question:
-            return jsonify({"reply": "Question likho bhai 😄"})
+        if not user_msg:
+            return jsonify({"reply": "Kuch likho bhai."})
 
-        # Cache check (Per User + Question)
-        key = f"{user_id}:{question}"
-        if key in cache and time.time() - cache_time[key] < CACHE_TTL:
-            return jsonify({"reply": cache[key], "answer": cache[key]})
+        # Memory Check
+        if chat_id not in chat_memory:
+            chat_memory[chat_id] = []
 
-        # Get last history (Last 6 entries = 3 exchanges)
-        history = chat_memory[user_id][-6:]
+        history = chat_memory[chat_id]
 
-        messages = [
-            {
-                "role": "system",
-                "content": "You are V8 Ultra Pro AI. Understand previous conversation context. Reply smartly in Hinglish like ChatGPT."
-            }
-        ]
+        # Build Messages with System Prompt
+        messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+        messages.extend(history)
+        messages.append({"role": "user", "content": user_msg})
 
-        for item in history:
-            messages.append(item)
+        # AI Call
+        reply = ask_model(messages)
 
-        messages.append({"role": "user", "content": question})
+        if not reply:
+            reply = "Bhai abhi server busy hai, thodi der baad try karo."
 
-        answer = call_best_model(messages)
-
-        # Save to Memory (Save both User and AI response)
-        chat_memory[user_id].append({"role": "user", "content": question})
-        chat_memory[user_id].append({"role": "assistant", "content": answer})
-
-        # Keep memory clean (Last 12 msgs)
-        chat_memory[user_id] = chat_memory[user_id][-12:]
-
-        # Save to Cache
-        cache[key] = answer
-        cache_time[key] = time.time()
+        # Save to Memory
+        history.append({"role": "user", "content": user_msg})
+        history.append({"role": "assistant", "content": reply})
+        trim_history(chat_id)
 
         return jsonify({
-            "reply": answer,
-            "answer": answer, # for compatibility
-            "mode": "V8_ULTRA_PRO_MEMORY"
+            "reply": reply,
+            "answer": reply, # compatibility ke liye
+            "chat_id": chat_id
         })
-
     except Exception as e:
         return jsonify({"reply": f"Error: {str(e)}"})
+
+@app.route("/clear_chat", methods=["POST"])
+def clear_chat():
+    data = request.get_json()
+    chat_id = data.get("chat_id")
+    if chat_id in chat_memory:
+        del chat_memory[chat_id]
+    return jsonify({"status": "cleared"})
 
 # ================= RUN =================
 if __name__ == '__main__':
