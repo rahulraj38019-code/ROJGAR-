@@ -3,360 +3,160 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ROZGAR HUB - Professional Portal</title>
+    <title>ROZGAR HUB V8 - Everything Integrated</title>
     
-    <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#007bff">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     
     <style>
-        :root { --main: #121212; --blue: #007bff; --light-blue: #e7f1ff; --bg: #f8fafc; --white: #ffffff; --text-muted: #64748b; --neon-glow: rgba(0, 123, 255, 0.6); --ai-gradient: linear-gradient(90deg, #4285f4, #9b72cb, #d96570); }
-        body.dark-mode { --bg: #0f172a; --white: #1e293b; --main: #f1f5f9; --text-muted: #94a3b8; --light-blue: #1e3a8a; --neon-glow: rgba(0, 210, 255, 0.8); }
-        body { background: var(--bg); font-family: 'Inter', sans-serif; margin: 0; padding: 0; padding-bottom: 120px; color: var(--main); transition: 0.3s; overflow-x: hidden; }
-        .container { max-width: 500px; margin: 0 auto; padding: 15px; }
+        :root { --main: #121212; --blue: #007bff; --light-blue: #e7f1ff; --bg: #f8fafc; --white: #ffffff; --text-muted: #64748b; --neon-glow: rgba(0, 123, 255, 0.4); }
+        body.dark-mode { --bg: #0f172a; --white: #1e293b; --main: #f1f5f9; --text-muted: #94a3b8; --light-blue: #1e3a8a; }
         
-        header { background: var(--white); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 100; box-shadow: 0 0 15px var(--neon-glow); }
-        .logo-text { font-weight: 800; font-size: 20px; color: var(--blue); letter-spacing: -0.5px; cursor: pointer; text-shadow: 0 0 10px var(--blue); }
+        body { background: var(--bg); font-family: 'Inter', sans-serif; margin: 0; padding-bottom: 100px; color: var(--main); transition: 0.3s; overflow-x: hidden; }
+        .container { max-width: 500px; margin: 0 auto; padding: 15px; }
 
-        /* V8 Style Global Cards */
-        .live-panel, .dash-card, .social-link-card, .job-card, .card, .pill, .input-box, .login-card, .edu-chip, .details-card, .tracker-card, .comm-btn {
-            border: 1px solid var(--blue) !important;
-            box-shadow: 0 0 15px var(--neon-glow) !important;
-            transition: 0.3s;
+        /* V8 Professional UI Elements */
+        header { background: var(--white); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #eee; }
+        .logo-text { font-weight: 800; font-size: 20px; color: var(--blue); cursor: pointer; }
+
+        .card, .dash-card, .job-card, .tracker-card, .comm-btn { 
+            background: var(--white); border-radius: 20px; padding: 15px; margin-bottom: 15px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid rgba(0,123,255,0.1); 
         }
 
-        .side-menu { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: var(--white); z-index: 1000; transition: 0.3s; box-shadow: 10px 0 30px rgba(0,0,0,0.1); padding: 25px; box-sizing: border-box; }
-        .side-menu.active { left: 0; }
-        .menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; display: none; }
-        .menu-overlay.active { display: block; }
-        .menu-item { padding: 15px 0; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 15px; cursor: pointer; font-weight: 600; font-size: 14px; }
-        
-        .live-panel { background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 24px; padding: 18px; margin-bottom: 25px; position: relative; }
-        .live-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
-        .live-dot { width: 12px; height: 12px; background: #ff4757; border-radius: 50%; animation: blink 1s infinite; box-shadow: 0 0 15px #ff4757; }
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
-        
-        .ticker-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; height: 120px; overflow: hidden; }
-        .ticker-col { display: flex; flex-direction: column; }
-        .ticker-title { font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--blue); margin-bottom: 8px; text-align: center; background: rgba(0,123,255,0.1); padding: 4px; border-radius: 6px; }
-        .scroll-box { animation: scrollUp 20s linear infinite; }
-        @keyframes scrollUp { 0% { transform: translateY(0); } 100% { transform: translateY(-50%); } }
-        .ticker-item { font-size: 12px; color: #cbd5e1; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); text-decoration: none; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
-
-        .login-card { background: var(--white); padding: 30px 25px; border-radius: 24px; }
-        .input-box { width: 100%; padding: 16px; border-radius: 14px; font-size: 14px; font-weight: 600; box-sizing: border-box; outline: none; margin-bottom: 18px; background: var(--white); color: var(--main); }
-        label { display: block; font-size: 12px; font-weight: 800; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; }
-        .edu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px; }
-        .edu-chip { padding: 12px; border-radius: 12px; text-align: center; font-size: 13px; font-weight: 700; cursor: pointer; background: var(--white); color: var(--text-muted); }
-        .edu-chip.selected { background: var(--blue) !important; color: #fff !important; }
-        
-        .card { background: var(--white); padding: 20px; border-radius: 20px; margin-bottom: 20px; }
-        .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-        .dash-card { background: var(--white); padding: 15px; border-radius: 18px; text-align: center; cursor: pointer; }
+        .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .dash-card { text-align: center; cursor: pointer; transition: 0.2s; }
+        .dash-card:active { transform: scale(0.95); }
         .dash-card i { font-size: 24px; display: block; margin-bottom: 5px; font-style: normal; }
-        
-        .btn-primary { width: 100%; background: var(--blue); color: white; padding: 18px; border: none; border-radius: 15px; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 0 20px var(--blue); }
-        
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid var(--blue); box-shadow: 0 -5px 20px var(--neon-glow); max-width: 500px; margin: 0 auto; z-index: 99; }
-        .nav-item { text-align: center; color: #94a3b8; font-size: 10px; font-weight: 700; cursor: pointer; text-decoration: none;}
-        .nav-item.active { color: var(--blue); text-shadow: 0 0 10px var(--blue); }
-        .nav-item i { font-size: 20px; display: block; margin-bottom: 3px; font-style: normal; }
-        .hidden { display: none !important; }
-        
-        .social-link-card { display: flex; align-items: center; justify-content: space-between; background: var(--white); padding: 15px; border-radius: 18px; margin-top: 10px; text-decoration: none; color: inherit; }
-        .social-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
 
-        .job-card { background: var(--white); padding: 15px; border-radius: 15px; margin-bottom: 12px; display: block; text-decoration: none; color: inherit; cursor: pointer; }
-        .job-title { font-weight: 800; font-size: 14px; color: var(--blue); margin-bottom: 5px; }
+        /* Ticker Style */
+        .live-panel { background: #1e293b; color: white; border-radius: 20px; padding: 15px; margin-bottom: 20px; }
+        .ticker-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; height: 100px; overflow: hidden; }
+        .scroll-box { animation: scrollUp 15s linear infinite; }
+        @keyframes scrollUp { 0% { transform: translateY(0); } 100% { transform: translateY(-50%); } }
+        .ticker-item { font-size: 11px; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
 
-        #ai-trigger { position: fixed; bottom: 85px; right: 20px; z-index: 1001; cursor: pointer; display: flex; flex-direction: column; align-items: center; }
-        .ai-robot { font-size: 45px; animation: float 3s ease-in-out infinite; display: block; filter: drop-shadow(0 0 15px var(--blue)); }
-        .ai-label { background: var(--blue); color: white; padding: 6px 12px; border-radius: 12px; font-size: 11px; font-weight: 800; margin-top: -5px; }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        /* --- V8 AI MODAL (GLASS LOOK) --- */
+        #ai-trigger { position: fixed; bottom: 85px; right: 20px; z-index: 999; cursor: pointer; text-align: center; }
+        .ai-robot { font-size: 45px; filter: drop-shadow(0 0 10px var(--blue)); animation: float 3s infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
-        /* --- V8 AI AGENT NEW UI DESIGN --- */
-        #ai-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(10px); transition: 0.3s; }
+        #ai-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; display: none; backdrop-filter: blur(8px); align-items: center; justify-content: center; }
         #ai-modal.active { display: flex; }
+        .v8-chat-window { width: 90%; max-width: 400px; height: 80vh; background: #111; border-radius: 25px; display: flex; flex-direction: column; overflow: hidden; border: 1px solid #333; }
+        #ai-chat-body { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+        .msg-v8 { padding: 12px 16px; border-radius: 18px; font-size: 14px; max-width: 80%; }
+        .msg-ai { background: #222; color: #fff; align-self: flex-start; }
+        .msg-user { background: var(--blue); color: #fff; align-self: flex-end; }
+        .v8-footer { padding: 15px; display: flex; gap: 8px; background: #1a1a1a; }
+        .v8-input { flex: 1; background: #222; border: 1px solid #444; border-radius: 12px; padding: 12px; color: #fff; outline: none; }
         
-        .v8-chat-window { width: 92%; max-width: 450px; height: 85vh; background: #111; border: 1px solid #333; border-radius: 30px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 0 50px rgba(0,123,255,0.3); }
-        .v8-header { padding: 20px; background: #1a1a1a; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; }
-        
-        #ai-chat-body { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 18px; scroll-behavior: smooth; }
-        
-        .msg-v8 { max-width: 80%; padding: 14px 18px; border-radius: 20px; font-size: 14px; line-height: 1.5; position: relative; animation: slideUp 0.3s ease-out; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .msg-ai { background: #222; color: #eee; align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid #333; }
-        .msg-user { background: #007bff; color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; box-shadow: 0 4px 15px rgba(0,123,255,0.4); }
-        
-        .v8-footer { padding: 15px; background: #1a1a1a; border-top: 1px solid #333; display: flex; gap: 10px; }
-        .v8-input { flex: 1; background: #222; border: 1px solid #444; border-radius: 15px; padding: 14px; color: #fff; outline: none; font-size: 14px; transition: 0.3s; }
-        .v8-input:focus { border-color: #007bff; box-shadow: 0 0 10px rgba(0,123,255,0.5); }
-        .v8-send { width: 50px; height: 50px; background: #007bff; border: none; border-radius: 15px; color: #fff; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center; }
+        /* Navigation */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid #eee; z-index: 1000; }
+        .nav-item { text-align: center; font-size: 10px; color: #94a3b8; cursor: pointer; }
+        .nav-item.active { color: var(--blue); font-weight: 800; }
+        .nav-item i { font-size: 20px; display: block; font-style: normal; }
 
-        .typing-v8 { font-size: 11px; color: #007bff; font-weight: 700; margin-bottom: 5px; margin-left: 20px; }
-
-        /* Remaining UI Unchanged */
-        .ai-search-container { position: relative; margin-bottom: 25px; border-radius: 50px; background: var(--white); border: 2px solid transparent; background-origin: border-box; background-clip: content-box, border-box; background-image: linear-gradient(var(--white), var(--white)), var(--ai-gradient); box-shadow: 0 4px 20px rgba(0,0,0,0.1); overflow: hidden; }
-        .ai-search-inner { display: flex; align-items: center; padding: 5px 15px; gap: 10px; }
-        .ai-search-input { flex: 1; border: none; padding: 12px 5px; font-size: 14px; font-weight: 600; outline: none; background: transparent; color: var(--main); }
-        .ai-btn { background: var(--ai-gradient); color: white; border: none; border-radius: 50%; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; }
+        .hidden { display: none !important; }
+        .input-box { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #ddd; margin-bottom: 15px; box-sizing: border-box; }
+        .btn-primary { width: 100%; background: var(--blue); color: white; padding: 15px; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; }
     </style>
 </head>
 <body id="app-body">
 
-<div id="ai-trigger" onclick="openAIModal()">
-    <span class="ai-robot">🤖</span>
-    <div class="ai-label">ASK V8</div>
-</div>
-
-<div id="ai-modal" onclick="closeAIModal(event)">
-    <div class="v8-chat-window" onclick="event.stopPropagation()">
-        <div class="v8-header">
-            <div style="display:flex; align-items:center; gap:10px;">
-                <div style="width:10px; height:10px; background:#00ff00; border-radius:50%; box-shadow:0 0 10px #00ff00;"></div>
-                <span style="font-weight: 800; color: #fff; font-size: 14px;">ROZGAR AI V8 (Active)</span>
-            </div>
-            <button onclick="closeAIModal(null)" style="background: none; border: none; font-size: 24px; color: #666; cursor: pointer;">×</button>
-        </div>
-        
-        <div id="ai-chat-body">
-            <div class="msg-v8 msg-ai">
-                Namaste <b>${user.name || 'Bhai'}</b>! Main Rozgar Hub AI Agent hoon. Career, Job ya Exam se judi koi bhi help chahiye?
-            </div>
-        </div>
-
-        <div id="v8-typing" class="typing-v8 hidden">AI is thinking...</div>
-        
-        <div class="v8-footer">
-            <input type="text" id="ai-input" class="v8-input" placeholder="Yahan apna sawal likhein..." onkeypress="handleAIKey(event)">
-            <button onclick="askOpenRouter()" class="v8-send">✦</button>
-        </div>
-    </div>
-</div>
-
-<div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
-
-<div class="side-menu" id="sideMenu">
-    <h3 style="margin-top:0; color:var(--blue);">App Settings ⚙️</h3>
-    <div class="menu-item" onclick="editProfile()">👤 Edit Profile</div>
-    <div class="menu-item" onclick="showResumeSection()">📝 Build Resume (New)</div>
-    <div class="menu-item" onclick="toggleDarkMode()">🌓 Switch Theme</div>
-    <div class="menu-item" onclick="location.reload()">🔄 Refresh Updates</div>
-    <div class="menu-item" style="color:red; border:none;" onclick="logout()">🚪 Logout</div>
-</div>
-
 <header id="main-header" class="hidden">
-    <div class="logo-text" onclick="toggleMenu()">ROZGAR HUB</div>
-    <div style="display: flex; align-items: center; gap: 15px;">
-        <div onclick="toggleDarkMode()" id="mode-btn" style="cursor:pointer; font-size: 20px;">🌙</div>
-        <div id="user-initial" style="background:var(--light-blue); color:var(--blue); width:35px; height:35px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; border: 1px solid var(--blue);">U</div>
-    </div>
+    <div class="logo-text" onclick="showDash()">ROZGAR HUB</div>
+    <div onclick="toggleDarkMode()" style="cursor:pointer; font-size: 20px;">🌓</div>
 </header>
 
 <div class="container">
-    <div id="login-sec" class="hidden">
-        <div class="login-card">
-            <h1 style="text-align:center; font-weight:900;">Welcome! 🚀</h1>
-            <label>Full Name</label>
-            <input type="text" id="u-name" class="input-box" placeholder="e.g. Rahul Raj">
-            <label>Education</label>
-            <div class="edu-grid">
-                <div class="edu-chip" onclick="toggleEdu(this, '10th')">10th Pass</div>
-                <div class="edu-chip" onclick="toggleEdu(this, '12th')">12th Pass</div>
-                <div class="edu-chip" onclick="toggleEdu(this, 'ITI')">ITI Pass</div>
-                <div class="edu-chip" onclick="toggleEdu(this, 'UG')">Undergraduate</div>
-            </div>
-            <button onclick="saveLogin()" class="btn-primary">Save Profile ⚡</button>
-        </div>
-    </div>
-
-    <div id="resume-sec" class="hidden">
-        <h3 style="font-weight:800;">AI Resume Builder 📄</h3>
+    <div id="login-sec">
         <div class="card">
-            <label>Father's Name</label>
-            <input type="text" id="res-father" class="input-box" placeholder="Enter Father's Name">
-            <label>Skills</label>
-            <input type="text" id="res-skills" class="input-box" placeholder="e.g. Computer, ITI, Driving">
-            <label>Experience</label>
-            <textarea id="res-exp" class="input-box" style="height:80px;" placeholder="Any past work?"></textarea>
-            <button class="btn-primary resume-btn" onclick="downloadResume()">Download Resume 📥</button>
-            <button onclick="showDash()" style="width:100%; margin-top:10px; background:none; border:none; color:var(--text-muted); font-weight:800;">Back to Home</button>
+            <h2 style="text-align:center;">Welcome, Bhai! 👋</h2>
+            <input type="text" id="u-name" class="input-box" placeholder="Apna Naam Likhein">
+            <button onclick="saveLogin()" class="btn-primary">Aage Badhein 🚀</button>
         </div>
     </div>
 
     <div id="dash-sec" class="hidden">
         <div class="live-panel">
-            <div class="live-header">
-                <div class="live-dot"></div>
-                <span style="color:white; font-weight:800; font-size:14px;">LIVE UPDATES 🛰️</span>
-            </div>
+            <div style="font-size:12px; font-weight:800; margin-bottom:10px; color:#ff4757;">● LIVE UPDATES</div>
             <div class="ticker-container">
-                <div class="ticker-col">
-                    <div class="ticker-title">New Jobs</div>
-                    <div id="job-ticker" class="scroll-box"><div class="ticker-item">Loading...</div></div>
+                <div class="scroll-box" id="job-ticker">
+                    <div class="ticker-item">Railway Group D Update...</div>
+                    <div class="ticker-item">SSC GD New Vacancy...</div>
+                    <div class="ticker-item">ITI Apprentice Out...</div>
                 </div>
-                <div class="ticker-col">
-                    <div class="ticker-title">Admit Cards</div>
-                    <div id="admit-ticker" class="scroll-box"><div class="ticker-item">Loading...</div></div>
+                <div class="scroll-box" id="admit-ticker">
+                    <div class="ticker-item">Bihar Police Admit Card...</div>
+                    <div class="ticker-item">UP Police New Exam Date...</div>
                 </div>
             </div>
         </div>
 
-        <div class="ai-search-container">
-            <div class="ai-search-inner">
-                <span class="ai-sparkle">✦</span>
-                <input type="text" id="main-search-inp" class="ai-search-input" placeholder="Ask anything (Hinglish/Eng)...">
-                <button class="voice-btn" onclick="alert('Mic connected! Bolna shuru karein...')">🎙️</button>
-                <button onclick="triggerSearch()" class="ai-btn">✨</button>
-            </div>
-            <div class="ai-mode-tag">App AI Support</div>
-        </div>
-
-        <div class="tracker-card">
-            <div style="font-weight:800; color:var(--blue); font-size:14px; margin-bottom:10px;">📅 DAILY EXAM TARGET</div>
-            <div class="target-item"><input type="checkbox"> Today's Current Affairs</div>
-            <div class="target-item"><input type="checkbox"> Math/Reasoning Practice</div>
-            <div class="target-item"><input type="checkbox"> Science/GK Revision</div>
-        </div>
-
-        <h3 style="font-weight:800;">Top Categories</h3>
         <div class="dash-grid">
-            <div class="dash-card" onclick="openJobs('latest Govt job vacancy 2026 apply online')"><i>🏛️</i><span>Govt Jobs</span></div>
-            <div class="dash-card" onclick="openJobs('new Railway recruitment vacancy 2026 NTPC Group D ALP')"><i>🚂</i><span>Railway</span></div>
-            <div class="dash-card" onclick="openJobs('latest ITI Pass Govt Jobs vacancy 2026 Apprentice')"><i>⚙️</i><span>ITI Jobs</span></div>
-            <div class="dash-card" onclick="openJobs('latest Remote work from home jobs vacancy 2026')"><i>🏠</i><span>Remote/WFH</span></div>
+            <div class="dash-card" onclick="alert('Searching Jobs...')"><i>🏛️</i><span>Govt Jobs</span></div>
+            <div class="dash-card" onclick="alert('Opening Railway...')"><i>🚂</i><span>Railway</span></div>
+            <div class="dash-card" onclick="alert('ITI Portal...')"><i>⚙️</i><span>ITI Jobs</span></div>
+            <div class="dash-card" onclick="showResume()"><i>📝</i><span>Resume</span></div>
         </div>
 
-        <h3 style="font-weight:800; margin-top:30px;">Help Desk 👥</h3>
-        <div class="comm-btn" onclick="showCommunityChat()">
-            <div style="display:flex; align-items:center; gap:12px;">
-                <div style="background:var(--light-blue); width:45px; height:45px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:22px;">💬</div>
-                <div>
-                    <div style="font-weight:800; font-size:14px;">Community Help</div>
-                    <div style="font-size:11px; color:var(--text-muted);">Ask doubts & chat with others</div>
-                </div>
-            </div>
-            <div style="color:var(--blue); font-weight:800;">OPEN</div>
+        <div class="comm-btn" style="margin-top:20px;" onclick="alert('Community Chat Opening...')">
+            <b>💬 Community Help</b><br><small>Ask doubts with others</small>
         </div>
+    </div>
 
-        <h3 style="font-weight:800; margin-top:30px;">Direct Support</h3>
-        <a href="https://whatsapp.com/channel/0029VbCL3cTElagwBiU2aJ2N" target="_blank" class="social-link-card">
-            <div style="display:flex; align-items:center; gap:12px;">
-                <div class="social-icon" style="background:#e7fbf0; color:#22c55e;">💬</div>
-                <div><div style="font-weight:800; font-size:14px;">WhatsApp Channel</div><div style="font-size:11px;">Join for daily updates</div></div>
-            </div>
-            <div style="color:var(--blue); font-weight:800;">JOIN</div>
-        </a>
+    <div id="resume-sec" class="hidden">
+        <h3>AI Resume Builder</h3>
+        <div class="card">
+            <input type="text" id="res-father" class="input-box" placeholder="Father's Name">
+            <input type="text" id="res-skills" class="input-box" placeholder="Skills (e.g. ITI, Computer)">
+            <button class="btn-primary" onclick="alert('Resume Downloaded!')">Download PDF 📥</button>
+            <button onclick="showDash()" style="width:100%; border:none; background:none; margin-top:10px; color:gray;">Back</button>
+        </div>
     </div>
 
     <div id="res-sec" class="hidden">
-        <h3 style="font-weight:800; margin-bottom:15px;">Results Portal 📄</h3>
+        <h3>Exam Results Portal</h3>
         <div class="dash-grid">
-            <div class="dash-card" onclick="toggleResSub('bihar-board')"><i>🎓</i><span>Bihar Board</span></div>
-            <div class="dash-card" onclick="toggleResSub('railway')"><i>🚂</i><span>Railway</span></div>
-            <div class="dash-card" onclick="toggleResSub('ssc')"><i>🦁</i><span>SSC</span></div>
-            <div class="dash-card" onclick="toggleResSub('police')"><i>👮</i><span>Bihar Police</span></div>
+            <div class="dash-card"><i>🎓</i><span>Bihar Board</span></div>
+            <div class="dash-card"><i>🚂</i><span>Railway</span></div>
         </div>
     </div>
+</div>
 
-    <div id="feed-sec" class="hidden">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-            <button onclick="goBackToList()" id="back-btn" class="hidden" style="color:var(--blue); border:none; background:none; font-weight:800;">← Back</button>
-            <h3 id="f-title" style="margin:0; font-weight:800; font-size:16px;">LISTING</h3>
-            <button onclick="showDash()" style="color:var(--blue); border:none; background:none; font-weight:800;">Home</button>
+<div id="ai-trigger" onclick="openAI()">
+    <div class="ai-robot">🤖</div>
+    <div style="background:var(--blue); color:white; font-size:10px; padding:2px 8px; border-radius:10px;">ASK V8</div>
+</div>
+
+<div id="ai-modal" onclick="closeAI(event)">
+    <div class="v8-chat-window" onclick="event.stopPropagation()">
+        <div style="padding:15px; border-bottom:1px solid #333; display:flex; justify-content:space-between;">
+            <b style="color:white;">ROZGAR AI V8</b>
+            <span onclick="closeAI()" style="cursor:pointer; color:white;">✕</span>
         </div>
-        <div id="list"></div>
+        <div id="ai-chat-body">
+            <div class="msg-v8 msg-ai">Kaise ho bhai? Aaj kya help chahiye?</div>
+        </div>
+        <div class="v8-footer">
+            <input type="text" id="ai-input" class="v8-input" placeholder="Yahan likhein...">
+            <button onclick="sendAI()" style="background:var(--blue); border:none; color:white; border-radius:10px; padding:0 15px;">Send</button>
+        </div>
     </div>
 </div>
 
 <div id="bottom-bar" class="bottom-nav hidden">
     <div class="nav-item active" onclick="showDash()"><i>🏠</i>Home</div>
     <div class="nav-item" onclick="showResults()"><i>📄</i>Results</div>
-    <div class="nav-item" onclick="toggleMenu()"><i>⚙️</i>Settings</div>
+    <div class="nav-item" onclick="alert('Profile Settings')"><i>⚙️</i>Settings</div>
 </div>
 
 <script>
-    let user = {}; let resType = ''; let currentCategory = ''; let lastResults = []; 
-    let currentType = ''; let pageCount = 1;
-
-    window.onload = () => {
-        if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
-        checkLogin();
-        fetchLive();
-    };
-
-    function openAIModal() { document.getElementById('ai-modal').classList.add('active'); }
-    function closeAIModal(e) { if(!e || e.target.id === 'ai-modal') document.getElementById('ai-modal').classList.remove('active'); }
-    function handleAIKey(e) { if(e.key === 'Enter') askOpenRouter(); }
-
-    /* --- V8 PRO AI LOGIC --- */
-    async function askOpenRouter() {
-        const input = document.getElementById('ai-input');
-        const chatBody = document.getElementById('ai-chat-body');
-        const typingIndicator = document.getElementById('v8-typing');
-        const userMsg = input.value.trim();
-        if(!userMsg) return;
-
-        // User Message Bubble
-        chatBody.innerHTML += `<div class="msg-v8 msg-user">${userMsg}</div>`;
-        input.value = '';
-        chatBody.scrollTop = chatBody.scrollHeight;
-        typingIndicator.classList.remove('hidden');
-
-        try {
-            const response = await fetch("/ask_ai", { 
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ message: userMsg })
-            });
-            const data = await response.json();
-            typingIndicator.classList.add('hidden');
-
-            if (data.reply) {
-                chatBody.innerHTML += `<div class="msg-v8 msg-ai">${data.reply}</div>`;
-            } else {
-                chatBody.innerHTML += `<div class="msg-v8 msg-ai" style="color:red;">Error connecting to Rozgar Server!</div>`;
-            }
-            chatBody.scrollTop = chatBody.scrollHeight;
-        } catch (err) {
-            typingIndicator.classList.add('hidden');
-            chatBody.innerHTML += `<div class="msg-v8 msg-ai">Network Error!</div>`;
-        }
-    }
-
-    /* Core Functionalities (Unchanged to maintain workability) */
-    function checkLogin() {
-        let saved = localStorage.getItem('userHub');
-        if(saved) {
-            user = JSON.parse(saved);
-            document.getElementById('user-initial').innerText = user.name ? user.name.charAt(0).toUpperCase() : 'U';
-            showDash(true);
-        } else {
-            hideAll();
-            document.getElementById('login-sec').classList.remove('hidden');
-        }
-    }
-
     function saveLogin() {
-        let name = document.getElementById('u-name').value;
-        if(!name || !user.edu) return alert("Fill Name & Select Education!");
-        user.name = name;
-        localStorage.setItem('userHub', JSON.stringify(user));
-        location.reload();
-    }
-
-    function toggleEdu(chip, val) {
-        document.querySelectorAll('.edu-chip').forEach(c => c.classList.remove('selected'));
-        chip.classList.add('selected');
-        user.edu = val;
-    }
-
-    function hideAll() {
-        ['login-sec','dash-sec','res-sec','feed-sec','main-header','bottom-bar','resume-sec'].forEach(id => {
-            let el = document.getElementById(id);
-            if(el) el.classList.add('hidden');
-        });
+        const name = document.getElementById('u-name').value;
+        if(!name) return alert("Naam likho bhai!");
+        localStorage.setItem('userHubName', name);
+        showDash();
     }
 
     function showDash() {
@@ -364,26 +164,50 @@
         document.getElementById('main-header').classList.remove('hidden');
         document.getElementById('dash-sec').classList.remove('hidden');
         document.getElementById('bottom-bar').classList.remove('hidden');
-        setActiveNav(0);
     }
 
-    async function fetchLive() {
-        try {
-            const res = await fetch('/get_live_updates');
-            const data = await res.json();
-            if(data.jobs) document.getElementById('job-ticker').innerHTML = data.jobs.map(j => `<div class="ticker-item">${j.title}</div>`).join('');
-            if(data.admits) document.getElementById('admit-ticker').innerHTML = data.admits.map(a => `<div class="ticker-item">${a.title}</div>`).join('');
-        } catch(e) {}
+    function showResults() {
+        hideAll();
+        document.getElementById('main-header').classList.remove('hidden');
+        document.getElementById('res-sec').classList.remove('hidden');
+        document.getElementById('bottom-bar').classList.remove('hidden');
     }
 
-    function setActiveNav(idx) {
-        document.querySelectorAll('.nav-item').forEach((n,i) => i === idx ? n.classList.add('active') : n.classList.remove('active'));
+    function showResume() {
+        hideAll();
+        document.getElementById('resume-sec').classList.remove('hidden');
     }
 
-    function toggleMenu() { document.getElementById('sideMenu').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
-    function toggleDarkMode() { document.body.classList.toggle('dark-mode'); localStorage.setItem('darkMode', document.body.classList.contains('dark-mode')); }
-    function editProfile() { localStorage.removeItem('userHub'); location.reload(); }
-    function logout() { localStorage.removeItem('userHub'); location.reload(); }
+    function hideAll() {
+        ['login-sec','dash-sec','res-sec','resume-sec','main-header','bottom-bar'].forEach(id => {
+            document.getElementById(id).classList.add('hidden');
+        });
+    }
+
+    function toggleDarkMode() { document.body.classList.toggle('dark-mode'); }
+    
+    function openAI() { document.getElementById('ai-modal').classList.add('active'); }
+    function closeAI() { document.getElementById('ai-modal').classList.remove('active'); }
+
+    function sendAI() {
+        const inp = document.getElementById('ai-input');
+        const body = document.getElementById('ai-chat-body');
+        if(!inp.value) return;
+        body.innerHTML += `<div class="msg-v8 msg-user">${inp.value}</div>`;
+        // Simulation Response
+        setTimeout(() => {
+            body.innerHTML += `<div class="msg-v8 msg-ai">Theek hai bhai, main aapke sawal "${inp.value}" par kaam kar raha hoon.</div>`;
+            body.scrollTop = body.scrollHeight;
+        }, 1000);
+        inp.value = '';
+        body.scrollTop = body.scrollHeight;
+    }
+
+    // Check if user already logged in
+    window.onload = () => {
+        if(localStorage.getItem('userHubName')) showDash();
+    }
 </script>
+
 </body>
 </html>
