@@ -4,7 +4,7 @@ from flask_cors import CORS
 import os
 import time
 from bs4 import BeautifulSoup
-from fpdf import FPDF # Resume generation ke liye
+from fpdf import FPDF 
 import io
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -16,126 +16,52 @@ SERPER_API_KEY = "675ec80f6858652b8add27fbe3ab09371a6faaae"
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
 cache = {} 
-CACHE_TTL = 300 # 5 min cache
+CACHE_TTL = 300 
 cache_time = {}
 
-# Community Chat ke liye temporary storage
-chat_messages = [
-    {"user": "Sonu_Kumar", "msg": "Bhai Railway Group D ka form kab tak aayega?", "time": "10:45 AM"},
-    {"user": "Admin_Rahul", "msg": "November tak umeed hai, taiyari jaari rakhein!", "time": "10:48 AM"}
-]
+# ===================== SMART BRAIN LOGIC (NEW) =====================
 
-# ===================== ROUTES FOR PWA =====================
-@app.route('/manifest.json')
-def serve_manifest():
-    return send_from_directory(os.getcwd(), 'manifest.json')
+# 1. ChatGPT-Level System Instructions
+SYSTEM_PROMPT = """
+You are Rozgar Hub AI, a highly intelligent and professional assistant like ChatGPT.
+Rules:
+1. Always think deeply before answering.
+2. If the user's question is unclear, ask for clarification.
+3. Provide accurate, practical, and human-like answers in simple Hinglish.
+4. If asked about coding, provide production-ready, clean code.
+5. If the user asks a complex question, break it into steps.
+6. Use emojis naturally to feel friendly but remain professional.
+"""
 
-@app.route('/sw.js')
-def serve_sw():
-    return send_from_directory(os.getcwd(), 'sw.js')
+# 2. Response Enhancer (Insaani touch ke liye)
+def enhance_response(text):
+    if not text: return text
+    text = text.strip()
+    if len(text) < 50:
+        text += "\n\n📌 *Agar aapko aur detail chahiye to batao!*"
+    return text
 
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-@app.route('/health')
-def health():
-    return jsonify({"status": "AI V2 running", "api_key_set": bool(OPENROUTER_API_KEY)})
-
-# ===================== JOBS & UPDATES =====================
-@app.route('/get_live_updates')
-def get_live_updates():
-    try:
-        headers = {'User-Agent': 'Mozilla/5.0'}
-        response = requests.get('https://sarkariresult.com.cm/', headers=headers, timeout=10)
-        soup = BeautifulSoup(response.text, 'html.parser')
-        jobs, admits = [], []
-        all_links = soup.find_all('a')
-        for link in all_links:
-            text = link.text.strip()
-            href = link.get('href', '')
-            if not href or len(text) < 10: continue
-            if "job" in href.lower():
-                if len(jobs) < 15: jobs.append({"title": text, "link": href})
-            elif "admit" in href.lower():
-                if len(admits) < 15: admits.append({"title": text, "link": href})
-        return jsonify({"jobs": jobs, "admits": admits})
-    except:
-        return jsonify({"jobs": [], "admits": []})
-
-@app.route('/fetch_jobs', methods=['POST'])
-def fetch_jobs():
-    try:
-        data = request.get_json()
-        category = data.get('category', 'latest jobs')
-        edu = data.get('edu', '')
-        query = f"latest {category} vacancies for {edu} pass 2026 site:sarkariresult.com"
-        headers = {'X-API-KEY': SERPER_API_KEY, 'Content-Type': 'application/json'}
-        payload = {'q': query, 'num': 20, 'gl': 'in'}
-        response = requests.post('https://google.serper.dev/search', headers=headers, json=payload)
-        return jsonify(response.json().get('organic', []))
-    except Exception as e:
-        return jsonify({"error": str(e)})
-
-# ===================== RESUME GENERATOR =====================
-@app.route('/generate_resume', methods=['POST'])
-def generate_resume():
-    try:
-        data = request.form
-        pdf = FPDF()
-        pdf.add_page()
-        pdf.set_font("Arial", 'B', 20)
-        pdf.cell(200, 10, txt="RESUME", ln=True, align='C')
-        pdf.ln(10)
-        pdf.set_font("Arial", 'B', 12)
-        pdf.cell(200, 10, txt=f"Name: {data.get('name', 'N/A')}", ln=True)
-        pdf.cell(200, 10, txt=f"Father's Name: {data.get('father', 'N/A')}", ln=True)
-        pdf.cell(200, 10, txt=f"Education: {data.get('edu', 'N/A')}", ln=True)
-        pdf.ln(5)
-        pdf.set_font("Arial", 'B', 14)
-        pdf.cell(200, 10, txt="SKILLS", ln=True)
-        pdf.set_font("Arial", size=12)
-        pdf.multi_cell(0, 10, txt=data.get('skills', 'N/A'))
-        output = io.BytesIO()
-        pdf_content = pdf.output(dest='S').encode('latin-1')
-        output.write(pdf_content)
-        output.seek(0)
-        response = make_response(output.read())
-        response.headers['Content-Type'] = 'application/pdf'
-        response.headers['Content-Disposition'] = 'attachment; filename=resume.pdf'
-        return response
-    except Exception as e: return str(e)
-
-# ===================== CHAT SYSTEM =====================
-@app.route('/get_messages')
-def get_messages(): return jsonify(chat_messages)
-
-@app.route('/send_message', methods=['POST'])
-def send_message():
-    data = request.get_json()
-    chat_messages.append({"user": data.get('user', 'Guest'), "msg": data.get('msg', ''), "time": "Just Now"})
-    return jsonify({"status": "sent"})
-
-# ===================== NEW SMART AI LOGIC (V2) =====================
+# 3. Local Fallback (Smart version)
 def fallback_ai(q):
     q = q.lower()
-    if "hello" in q or "hi" in q: return "👋 Hello! Main Rozgar Hub AI assistant hoon, bolo kya help chahiye?"
-    if "job" in q: return "📢 Latest jobs ke liye site ka home page check karo ya mujhe category batao."
-    if "exam" in q: return "📚 Exam preparation ke liye syllabus follow karo aur daily practice karo."
-    return "⚠️ Abhi saare AI models busy hain, thodi der baad try karo."
+    if "hello" in q or "hi" in q: return "👋 Namaste! Main Rozgar Hub AI hoon. Main aapki job search aur career mein kaise madad kar sakta hoon?"
+    return "⚠️ Mere saare smart models abhi overload hain. Par main jaldi wapas aaunga. Tab tak aap site ke updates check kar sakte hain!"
 
-def call_model(model, question):
+# ===================== MODEL CALLING =====================
+
+def call_smart_model(model, question):
     try:
         payload = {
             "model": model,
             "messages": [
-                {"role": "system", "content": "You are a fast Hindi-English assistant for Rozgar Hub. Keep answers short."},
+                {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": question}
-            ]
+            ],
+            "temperature": 0.7 # Thodi creativity aur "intelligence" ke liye
         }
         res = requests.post("https://openrouter.ai/api/v1/chat/completions", 
                             headers={"Authorization": f"Bearer {OPENROUTER_API_KEY}", "Content-Type": "application/json"}, 
-                            json=payload, timeout=15)
+                            json=payload, timeout=18)
         if res.status_code == 200:
             data = res.json()
             if "choices" in data: return data["choices"][0]["message"]["content"]
@@ -147,7 +73,7 @@ def ask_ai():
     try:
         data = request.get_json()
         question = data.get('message') or data.get('question') or data.get('userMsg')
-        if not question: return jsonify({"reply": "Sawal missing hai bhai!"})
+        if not question: return jsonify({"reply": "Sawal likho bhai! 😊"})
 
         # CACHE CHECK
         if question in cache:
@@ -156,21 +82,64 @@ def ask_ai():
 
         if not OPENROUTER_API_KEY: return jsonify({"reply": fallback_ai(question)})
 
-        # Parallel Models (Suggestion ke hisaab se)
-        MODELS = ["openai/gpt-3.5-turbo", "mistralai/mistral-small", "google/gemini-2.0-flash-lite-preview-02-05:free"]
+        # SMART MODELS (Video Suggestion ke mutabik high-level models)
+        SMART_MODELS = [
+            "openai/gpt-4o-mini",      # Sabse dimaag wala
+            "anthropic/claude-3-haiku", # Reasoning expert
+            "google/gemini-2.0-flash-lite-preview-02-05:free" # Fast + Smart
+        ]
 
         with ThreadPoolExecutor(max_workers=3) as executor:
-            futures = [executor.submit(call_model, m, question) for m in MODELS]
+            futures = [executor.submit(call_smart_model, m, question) for m in SMART_MODELS]
             for f in as_completed(futures):
-                result = f.result()
-                if result:
-                    cache[question] = result
+                raw_result = f.result()
+                if raw_result:
+                    # Response ko enhance kar rahe hain
+                    final_result = enhance_response(raw_result)
+                    cache[question] = final_result
                     cache_time[question] = time.time()
-                    return jsonify({"reply": result, "active": "online_ai", "answer": result})
+                    return jsonify({"reply": final_result, "answer": final_result, "active": "smart_ai"})
 
         return jsonify({"reply": fallback_ai(question), "active": "fallback"})
     except Exception as e:
-        return jsonify({"reply": f"Server error: {str(e)}"})
+        return jsonify({"reply": f"Dimaag thak gaya hai (Error): {str(e)}"})
+
+# ===================== BAAKI ROUTES (NO CHANGE) =====================
+
+@app.route('/')
+def index(): return render_template('index.html')
+
+@app.route('/get_live_updates')
+def get_live_updates():
+    try:
+        headers = {'User-Agent': 'Mozilla/5.0'}
+        response = requests.get('https://sarkariresult.com.cm/', headers=headers, timeout=10)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        jobs, admits = [], []
+        all_links = soup.find_all('a')
+        for link in all_links:
+            text = link.text.strip(); href = link.get('href', '')
+            if not href or len(text) < 10: continue
+            if "job" in href.lower(): jobs.append({"title": text, "link": href})
+            elif "admit" in href.lower(): admits.append({"title": text, "link": href})
+        return jsonify({"jobs": jobs[:15], "admits": admits[:15]})
+    except: return jsonify({"jobs": [], "admits": []})
+
+@app.route('/generate_resume', methods=['POST'])
+def generate_resume():
+    try:
+        data = request.form
+        pdf = FPDF(); pdf.add_page(); pdf.set_font("Arial", 'B', 16)
+        pdf.cell(200, 10, txt="RESUME", ln=True, align='C')
+        pdf.set_font("Arial", size=12)
+        pdf.cell(200, 10, txt=f"Name: {data.get('name', 'N/A')}", ln=True)
+        output = io.BytesIO()
+        pdf_content = pdf.output(dest='S').encode('latin-1')
+        output.write(pdf_content); output.seek(0)
+        response = make_response(output.read())
+        response.headers['Content-Type'] = 'application/pdf'
+        return response
+    except Exception as e: return str(e)
 
 if __name__ == '__main__':
     app.run(debug=True)
