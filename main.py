@@ -123,11 +123,12 @@ def send_message():
         chat_messages.append({"user": "Admin_Bot", "msg": "Aapka sawal mil gaya hai!", "time": "Just Now"})
     return jsonify({"status": "sent"})
 
-# --- AI ROUTE WITH AUTO-FALLBACK SYSTEM ---
+# --- VIDEO-INSPIRED SMART FALLBACK AI ROUTE ---
 @app.route('/ask_ai', methods=['POST'])
 def ask_ai():
     try:
         data = request.get_json()
+        # Frontend compatibility: Teeno keys handle kar lega
         question = data.get('message') or data.get('question') or data.get('userMsg')
         
         if not question:
@@ -142,7 +143,7 @@ def ask_ai():
             "Content-Type": "application/json"
         }
 
-        # Priority List: 1. Gemini, 2. Llama, 3. Mistral
+        # Video logic: Har model ko limited time denge (timeout=8), fail hote hi agla try karenge
         models = [
             "google/gemini-2.0-flash-lite-preview-02-05:free",
             "meta-llama/llama-3.3-70b-instruct:free",
@@ -159,21 +160,22 @@ def ask_ai():
                     ]
                 }
                 
+                # Speed-First: Agar 8 sec mein Gemini jawab nahi deta, toh turant switch karega
                 response = requests.post(
                     "https://openrouter.ai/api/v1/chat/completions", 
                     headers=headers, 
                     json=payload, 
-                    timeout=15
+                    timeout=8 
                 )
                 
-                result = response.json()
+                if response.status_code == 200:
+                    result = response.json()
+                    if 'choices' in result and len(result['choices']) > 0:
+                        answer = result['choices'][0]['message']['content']
+                        # Dono keys bhej rahe hain taaki frontend load kar sake
+                        return jsonify({"answer": answer, "reply": answer, "active_model": model_name})
                 
-                if 'choices' in result and len(result['choices']) > 0:
-                    answer = result['choices'][0]['message']['content']
-                    # Dono keys bhej rahe hain compatibility ke liye
-                    return jsonify({"answer": answer, "reply": answer, "active_model": model_name})
-                
-                # Agar choice nahi mili toh agla model try karo
+                # Agar 200 nahi aaya, toh turant loop agle model par jayega
                 continue
                 
             except:
