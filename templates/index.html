@@ -136,8 +136,11 @@
             <button onclick="closeAIModal(null)" style="background: none; border: none; font-size: 20px; color: var(--blue); cursor: pointer;">✖</button>
         </div>
         <div class="v8-chat-box">
-            <div id="ai-chat-box" class="v8-messages">
-                <div class="v8-msg v8-ai">Namaste 👋 Main V8 AI hoon. Aap kuch bhi puch sakte ho.</div>
+            <div id="ai-chat-body" class="v8-messages">
+                <div class="chat-bubble bubble-left">
+                    <span class="chat-user">V8 AI</span>
+                    Namaste 👋 Main V8 AI hoon. Aap kuch bhi puch sakte ho.
+                </div>
             </div>
             <div class="v8-input-box">
                 <input type="text" id="ai-input" class="v8-input" placeholder="Kuch bhi puchiye...">
@@ -376,72 +379,79 @@
         }
     };
 
-    // ================================
-    // 🤖 AI V8 UPDATED FUNCTIONS
-    // ================================
+    // ==================================
+    // 🤖 NEW V8 ULTRA PRO MEMORY JS
+    // ==================================
     async function askOpenRouter() {
-        const input = document.getElementById('ai-input');
-        const chatBody = document.getElementById('ai-chat-box'); // Changed to match your HTML ID
+        const input = document.getElementById("ai-input");
+        const chatBody = document.getElementById("ai-chat-body");
 
         const userMsg = input.value.trim();
+
         if (!userMsg) return;
 
-        // 👉 USER MESSAGE
-        const userBubble = document.createElement("div");
-        userBubble.className = "v8-msg v8-user";
-        userBubble.innerHTML = userMsg;
-        chatBody.appendChild(userBubble);
+        // USER BUBBLE
+        chatBody.innerHTML += `
+            <div class="chat-bubble bubble-right">
+                <span class="chat-user">Aap</span>
+                ${userMsg}
+            </div>
+        `;
 
         input.value = "";
         chatBody.scrollTop = chatBody.scrollHeight;
 
-        // 👉 AI THINKING
-        const botBubble = document.createElement("div");
-        botBubble.className = "v8-msg v8-ai";
-        botBubble.innerHTML = `<i>V8 Ultra AI soch raha hai...</i>`;
-        chatBody.appendChild(botBubble);
+        // THINKING
+        const thinkId = "think-" + Date.now();
+
+        chatBody.innerHTML += `
+            <div id="${thinkId}" class="chat-bubble bubble-left">
+                <i>V8 Ultra AI soch raha hai...</i>
+            </div>
+        `;
 
         chatBody.scrollTop = chatBody.scrollHeight;
 
         try {
             const response = await fetch("/ask_ai", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ message: userMsg })
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    message: userMsg,
+                    user_id: localStorage.getItem("userName") || "guest"
+                })
             });
 
             const data = await response.json();
 
-            // remove thinking bubble
-            botBubble.remove();
+            document.getElementById(thinkId).remove();
 
-            const aiBubble = document.createElement("div");
-            aiBubble.className = "v8-msg v8-ai";
-            chatBody.appendChild(aiBubble);
+            const botDiv = document.createElement("div");
+            botDiv.className = "chat-bubble bubble-left";
 
-            // 👉 TYPEWRITER EFFECT
-            typeWriter(aiBubble, data.reply || "No response");
+            chatBody.appendChild(botDiv);
+
+            typeWriter(botDiv, data.reply || "No reply");
+
             chatBody.scrollTop = chatBody.scrollHeight;
 
         } catch (err) {
-            botBubble.remove();
-            const errorBubble = document.createElement("div");
-            errorBubble.className = "v8-msg v8-ai";
-            errorBubble.style.color = "red";
-            errorBubble.innerHTML = "⚠️ Backend connect nahi ho pa raha";
-            chatBody.appendChild(errorBubble);
+            document.getElementById(thinkId).innerHTML = "⚠️ Backend connect nahi ho pa raha";
         }
     }
 
     function typeWriter(element, text, speed = 12) {
         let i = 0;
-        element.innerHTML = "";
+        element.innerHTML = '<span class="chat-user">V8 AI</span><br>';
+
         const interval = setInterval(() => {
             if (i < text.length) {
                 element.innerHTML += text.charAt(i);
                 i++;
                 // Auto scroll while typing
-                const chatBox = document.getElementById('ai-chat-box');
+                const chatBox = document.getElementById('ai-chat-body');
                 chatBox.scrollTop = chatBox.scrollHeight;
             } else {
                 clearInterval(interval);
@@ -449,25 +459,28 @@
         }, speed);
     }
 
-    function openAIModal() { document.getElementById('ai-modal').classList.add('active'); }
-    function closeAIModal(e) { if(!e || e.target.id === 'ai-modal') document.getElementById('ai-modal').classList.remove('active'); }
-
-    // ENTER key support
     document.addEventListener("DOMContentLoaded", () => {
         const input = document.getElementById("ai-input");
         if (input) {
-            input.addEventListener("keydown", function (e) {
-                if (e.key === "Enter") { askOpenRouter(); }
+            input.addEventListener("keydown", function(e) {
+                if (e.key === "Enter") {
+                    askOpenRouter();
+                }
             });
         }
     });
 
-    // --- ORIGINAL CORE FUNCTIONS ---
+    function openAIModal() { document.getElementById('ai-modal').classList.add('active'); }
+    function closeAIModal(e) { if(!e || e.target.id === 'ai-modal') document.getElementById('ai-modal').classList.remove('active'); }
+
+    // --- CORE APP FUNCTIONS ---
     function checkLogin() {
         let saved = localStorage.getItem('userHub');
         if(saved) {
             user = JSON.parse(saved);
             document.getElementById('user-initial').innerText = user.name ? user.name.charAt(0).toUpperCase() : 'U';
+            // Save username for AI tracking
+            localStorage.setItem("userName", user.name || "guest");
             showDash(true);
         } else {
             hideAll();
