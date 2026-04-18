@@ -125,19 +125,19 @@
     <div class="ai-modal-content">
         <div class="ai-modal-header">
             <div style="display:flex; align-items:center; gap:10px;">
-                <button onclick="closeAIModal()" style="background:none; border:none; font-size:22px; color:var(--blue); cursor:pointer;">⬅</button>
-                <span style="font-weight: 800; color: var(--blue);">🤖 ROZGAR AI V8</span>
+                <button onclick="backHomeV10()" style="background:none; border:none; font-size:22px; color:var(--blue); cursor:pointer;">⬅</button>
+                <span style="font-weight: 800; color: var(--blue);">🤖 ROZGAR AI V10 PRO</span>
             </div>
             <span style="font-size:10px; font-weight:800; color:var(--text-muted);">ONLINE</span>
         </div>
         <div class="v8-chat-box">
             <div id="ai-chat-body" class="v8-messages">
                 <div class="chat-bubble bubble-left">
-                    <span class="chat-user">V8 AI</span>
-                    Namaste 👋 Main V8 AI hoon. Main full page mode mein hoon, ab aap khul kar puchiye!
+                    Namaste 👋 Main V10 PRO AI hoon. Kuch bhi pucho.
                 </div>
             </div>
             <div class="v8-input-box">
+                <button onclick="startMicV10()" style="background:none; border:none; font-size:20px; cursor:pointer;">🎙️</button>
                 <input type="text" id="ai-input" class="v8-input" placeholder="Kuch bhi puchiye...">
                 <button onclick="askOpenRouter()" class="v8-send">➤</button>
             </div>
@@ -145,7 +145,7 @@
     </div>
 </div>
 
-<div id="ai-trigger" onclick="openAIModal()">
+<div id="ai-trigger" onclick="openV10Home()">
     <span class="ai-robot">🤖</span>
     <div class="ai-label">ASK AI</div>
 </div>
@@ -158,6 +158,7 @@
     <div class="menu-item" onclick="showResumeSection()">📝 Build Resume (New)</div>
     <div class="menu-item" onclick="toggleDarkMode()">🌓 Switch Theme</div>
     <div class="menu-item" onclick="location.reload()">🔄 Refresh Updates</div>
+    <div class="menu-item" onclick="clearAllV10()" style="color:orange;">🧹 Clear AI History</div>
     <div class="menu-item" style="color:red; border:none;" onclick="logout()">🚪 Logout</div>
 </div>
 
@@ -222,7 +223,7 @@
             <div class="ai-search-inner">
                 <span class="ai-sparkle">✦</span>
                 <input type="text" id="main-search-inp" class="ai-search-input" placeholder="Ask anything (Hinglish/Eng)...">
-                <button class="voice-btn" onclick="alert('Mic connected! Bolna shuru karein...')">🎙️</button>
+                <button class="voice-btn" onclick="startMicV10()">🎙️</button>
                 <button onclick="triggerSearch()" class="ai-btn">✨</button>
             </div>
             <div class="ai-mode-tag">App AI Support</div>
@@ -391,7 +392,7 @@
 <div id="bottom-bar" class="bottom-nav hidden">
     <div class="nav-item active" onclick="showDash()"><i>🏠</i>Home</div>
     <div class="nav-item" onclick="showResults()"><i>📄</i>Results</div>
-    <div class="nav-item" onclick="openAIModal()"><i>🤖</i>AI Chat</div>
+    <div class="nav-item" onclick="openV10Home()"><i>🤖</i>AI Chat</div>
     <div class="nav-item" onclick="toggleMenu()"><i>⚙️</i>Settings</div>
 </div>
 
@@ -400,90 +401,204 @@
     let pageCount = 1; let currentScreen = 'home';
     let isAIModalOpen = false;
 
+    // ==========================================
+    // V10 PRO UI (WhatsApp + ChatGPT Mix) Logic
+    // ==========================================
+    let v10Chats = JSON.parse(localStorage.getItem("v10_chats")) || [];
+    let activeChat = localStorage.getItem("v10_active") || null;
+
     window.onload = () => {
         if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
         checkLogin();
         fetchLive();
         loadMessages();
         setInterval(loadMessages, 5000);
-        // Push initial state
+        
+        injectV10UI();
+        renderChatList();
+
         if(localStorage.getItem('userHub')) {
             history.replaceState({screen: 'home'}, '');
         }
     };
 
-    // ==================================
-    // 🔙 MASTER BACK BUTTON LOGIC
-    // ==================================
-    window.onpopstate = function(event) {
-        // 1. Agar AI Modal khula hai toh sirf modal band karo
-        if (isAIModalOpen) {
-            document.getElementById('ai-modal').classList.remove('active');
-            document.body.style.overflow = 'auto';
-            isAIModalOpen = false;
-            return;
-        }
+    function injectV10UI() {
+        document.body.insertAdjacentHTML("beforeend", `
+        <div id="v10-home" style="position:fixed;top:0;left:0;width:100%;height:100%;background:var(--bg);color:var(--main);z-index:1999;overflow:auto;display:none;">
+            <div style="padding:18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #eee; background:var(--white);">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <button onclick="closeV10Home()" style="background:none; border:none; font-size:22px; color:var(--blue); cursor:pointer;">⬅</button>
+                    <div style="font-size:20px;font-weight:900;color:var(--blue);">AI CHAT HISTORY</div>
+                </div>
+                <input id="chatSearch" placeholder="Search..." onkeyup="searchV10(this.value)" style="background:var(--bg);color:var(--main);border:1px solid var(--blue);padding:8px 12px;border-radius:20px;width:100px;">
+            </div>
+            <div style="padding:15px;font-size:12px;opacity:.7;font-weight:800;">RECENT CONVERSATIONS</div>
+            <div id="chatList" style="padding-bottom:100px;"></div>
+            <button onclick="createChat()" style="position:fixed;right:20px;bottom:100px;background:var(--ai-gradient);color:#fff;border:none;padding:15px 20px;border-radius:40px;font-weight:900;font-size:14px;box-shadow:0 5px 15px rgba(0,0,0,0.2);z-index:2001;">+ NEW AI CHAT</button>
+        </div>
+        `);
+    }
 
-        // 2. Agar koi state hai toh us screen par jao
-        if (event.state) {
-            const screen = event.state.screen;
-            if (screen === 'home') showDash(false);
-            else if (screen === 'results') showResults(false);
-            else if (screen === 'chat') showCommunityChat(false);
-            else if (screen === 'resume') showResumeSection(false);
-            else if (screen === 'list') {
-                document.getElementById('back-btn').classList.add('hidden');
-                if(currentType === 'Job') document.getElementById('load-more-container').classList.remove('hidden');
-                renderList(lastResults);
-                // Ensure feed is visible
-                hideAll();
-                document.getElementById('main-header').classList.remove('hidden'); 
-                document.getElementById('feed-sec').classList.remove('hidden'); 
-                document.getElementById('bottom-bar').classList.remove('hidden');
-            }
+    function openV10Home() {
+        document.getElementById("v10-home").style.display = "block";
+        renderChatList();
+        history.pushState({screen: 'ai_home'}, '');
+    }
+
+    function closeV10Home() {
+        document.getElementById("v10-home").style.display = "none";
+        if(currentScreen === 'home') showDash(false);
+    }
+
+    function createChat() {
+        const id = "chat_" + Date.now();
+        v10Chats.unshift({
+            id: id,
+            title: "New Chat",
+            time: new Date().toLocaleString('hi-IN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short' }),
+            messages: []
+        });
+        activeChat = id;
+        saveV10();
+        renderChatList();
+        loadChat(id);
+    }
+
+    function saveV10() {
+        localStorage.setItem("v10_chats", JSON.stringify(v10Chats));
+        localStorage.setItem("v10_active", activeChat);
+    }
+
+    function renderChatList(list = v10Chats) {
+        const box = document.getElementById("chatList");
+        if(!box) return;
+        box.innerHTML = "";
+        list.forEach(chat => {
+            box.innerHTML += `
+            <div onclick="loadChat('${chat.id}')" style="padding:15px;border-bottom:1px solid #eee;cursor:pointer;background:var(--white);margin:5px 10px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;">
+                <div>
+                    <div style="font-weight:700;font-size:14px;color:var(--blue);">${chat.title}</div>
+                    <div style="font-size:10px;opacity:.6;">${chat.time}</div>
+                </div>
+                <div style="font-size:18px;">💬</div>
+            </div>
+            `;
+        });
+    }
+
+    function searchV10(txt) {
+        txt = txt.toLowerCase();
+        let f = v10Chats.filter(x => x.title.toLowerCase().includes(txt));
+        renderChatList(f);
+    }
+
+    function loadChat(id) {
+        activeChat = id;
+        saveV10();
+        const chat = v10Chats.find(x => x.id == id);
+        if(!chat) return;
+        
+        openAIModal();
+        const body = document.getElementById("ai-chat-body");
+        body.innerHTML = "";
+
+        if(chat.messages.length == 0) {
+            body.innerHTML = `<div class="chat-bubble bubble-left"><span class="chat-user">V10 AI</span>Namaste 👋 Main V10 PRO AI hoon. Kuch bhi pucho.</div>`;
         } else {
-            // Default back behavior
-            showDash(false);
+            chat.messages.forEach(m => {
+                body.innerHTML += `<div class="chat-bubble ${m.role=='user'?'bubble-right':'bubble-left'}">
+                    <span class="chat-user">${m.role=='user'?'Aap':'V10 AI'}</span>${m.text}
+                </div>`;
+            });
         }
-    };
+        body.scrollTop = body.scrollHeight;
+    }
 
-    // ==================================
-    // 🤖 AI LOGIC
-    // ==================================
+    function backHomeV10() {
+        closeAIModal();
+        openV10Home();
+    }
+
     async function askOpenRouter() {
-        const input = document.getElementById("ai-input");
-        const chatBody = document.getElementById("ai-chat-body");
-        const userMsg = input.value.trim();
-        if (!userMsg) return;
+        const inp = document.getElementById("ai-input");
+        const msg = inp.value.trim();
+        if(!msg) return;
 
-        chatBody.innerHTML += `<div class="chat-bubble bubble-right"><span class="chat-user">Aap</span>${userMsg}</div>`;
-        input.value = "";
-        chatBody.scrollTop = chatBody.scrollHeight;
+        const body = document.getElementById("ai-chat-body");
+        const chat = v10Chats.find(x => x.id == activeChat);
+        if(!chat) return;
 
-        const thinkId = "think-" + Date.now();
-        chatBody.innerHTML += `<div id="${thinkId}" class="chat-bubble bubble-left"><i>V8 Ultra AI soch raha hai...</i></div>`;
-        chatBody.scrollTop = chatBody.scrollHeight;
+        chat.messages.push({ role: "user", text: msg });
+        body.innerHTML += `<div class="chat-bubble bubble-right"><span class="chat-user">Aap</span>${msg}</div>`;
+
+        if(chat.title == "New Chat") {
+            chat.title = msg.substring(0, 25) + (msg.length > 25 ? "..." : "");
+        }
+
+        inp.value = "";
+        saveV10();
+        body.scrollTop = body.scrollHeight;
+
+        const thinkId = "typing-" + Date.now();
+        body.innerHTML += `<div id="${thinkId}" class="chat-bubble bubble-left"><i>Typing...</i></div>`;
+        body.scrollTop = body.scrollHeight;
 
         try {
-            const response = await fetch("/ask_ai", {
+            const res = await fetch("/ask_ai", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ message: userMsg, user_id: localStorage.getItem("userName") || "guest" })
+                body: JSON.stringify({ message: msg, chat_id: activeChat })
             });
-            const data = await response.json();
+            const data = await res.json();
             document.getElementById(thinkId).remove();
+
+            let reply = data.reply || "Server busy hai bhai.";
+            chat.messages.push({ role: "ai", text: reply });
+            
             const botDiv = document.createElement("div");
             botDiv.className = "chat-bubble bubble-left";
-            chatBody.appendChild(botDiv);
-            typeWriter(botDiv, data.reply || "No reply");
-        } catch (err) {
-            document.getElementById(thinkId).innerHTML = "⚠️ Backend connect nahi ho pa raha";
+            body.appendChild(botDiv);
+            typeWriter(botDiv, reply);
+            
+            saveV10();
+            renderChatList();
+            speakV10(reply);
+        } catch(e) {
+            document.getElementById(thinkId).innerHTML = "⚠️ Error!";
+        }
+    }
+
+    function speakV10(txt) {
+        if ('speechSynthesis' in window) {
+            let sp = new SpeechSynthesisUtterance(txt);
+            sp.lang = "hi-IN";
+            speechSynthesis.speak(sp);
+        }
+    }
+
+    function startMicV10() {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) return alert("Mic support nahi hai browser mein.");
+        const rec = new SpeechRecognition();
+        rec.lang = "hi-IN";
+        rec.start();
+        rec.onresult = function(e) {
+            document.getElementById("ai-input").value = e.results[0][0].transcript;
+            askOpenRouter();
+        };
+    }
+
+    function clearAllV10() {
+        if(confirm("Saari AI Chat delete kar dein?")) {
+            localStorage.removeItem("v10_chats");
+            localStorage.removeItem("v10_active");
+            location.reload();
         }
     }
 
     function typeWriter(element, text, speed = 12) {
         let i = 0;
-        element.innerHTML = '<span class="chat-user">V8 AI</span><br>';
+        element.innerHTML = '<span class="chat-user">V10 AI</span><br>';
         const interval = setInterval(() => {
             if (i < text.length) {
                 element.innerHTML += text.charAt(i);
@@ -494,31 +609,52 @@
         }, speed);
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
-        const input = document.getElementById("ai-input");
-        if (input) { input.addEventListener("keydown", (e) => { if (e.key === "Enter") askOpenRouter(); }); }
-    });
+    // --- Core UI Functions ---
+    window.onpopstate = function(event) {
+        if (isAIModalOpen) {
+            document.getElementById('ai-modal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+            isAIModalOpen = false;
+            return;
+        }
+        if (document.getElementById("v10-home").style.display === "block") {
+            document.getElementById("v10-home").style.display = "none";
+            return;
+        }
+        if (event.state) {
+            const screen = event.state.screen;
+            if (screen === 'home') showDash(false);
+            else if (screen === 'results') showResults(false);
+            else if (screen === 'chat') showCommunityChat(false);
+            else if (screen === 'resume') showResumeSection(false);
+            else if (screen === 'list') {
+                hideAll();
+                document.getElementById('main-header').classList.remove('hidden'); 
+                document.getElementById('feed-sec').classList.remove('hidden'); 
+                document.getElementById('bottom-bar').classList.remove('hidden');
+                renderList(lastResults);
+            }
+        } else { showDash(false); }
+    };
 
     function openAIModal() { 
         document.getElementById('ai-modal').classList.add('active'); 
         document.body.style.overflow = 'hidden'; 
         isAIModalOpen = true;
-        history.pushState({modal: 'ai'}, ''); // Push state for AI
+        history.pushState({modal: 'ai'}, '');
     }
     function closeAIModal() { 
-        if (isAIModalOpen) {
-            history.back(); // This will trigger onpopstate and close modal
-        }
+        document.getElementById('ai-modal').classList.remove('active');
+        document.body.style.overflow = 'auto';
+        isAIModalOpen = false;
     }
 
-    // --- CORE APP FUNCTIONS ---
     function checkLogin() {
         let saved = localStorage.getItem('userHub');
         if(saved) {
             user = JSON.parse(saved);
             document.getElementById('user-initial').innerText = user.name ? user.name.charAt(0).toUpperCase() : 'U';
-            localStorage.setItem("userName", user.name || "guest");
-            showDash(false); // don't push state on first load
+            showDash(false);
         } else {
             hideAll();
             document.getElementById('login-sec').classList.remove('hidden');
@@ -681,42 +817,19 @@
         openJobs(query); 
     }
 
-    // --- Magadh University Smart Logic (V2 Update) ---
     function updateMUSemButtons() {
         const session = document.getElementById('mu-session').value;
         const semDiv = document.getElementById('mu-sem-container');
         const partDiv = document.getElementById('mu-part-container');
         const examBtn = document.getElementById('mu-btn-exam');
         const admBtn = document.getElementById('mu-btn-adm');
-        
-        // Reset selections
         resType = '';
         document.querySelectorAll('.pill').forEach(p => p.classList.remove('active-pill'));
-
-        if (!session) {
-            semDiv.classList.add('hidden');
-            partDiv.classList.add('hidden');
-            return;
-        }
-
-        // Logic 1: Semester vs Part
-        if (session === "2023-27" || session === "2024-28") {
-            semDiv.classList.remove('hidden');
-            partDiv.classList.add('hidden');
-        } else {
-            semDiv.classList.add('hidden');
-            partDiv.classList.remove('hidden');
-        }
-
-        // Logic 2: Show/Hide Admission & Exam Form for completed sessions
-        const completeSessions = ["2020-23", "2021-24"];
-        if (completeSessions.includes(session)) {
-            examBtn.classList.add('hidden');
-            admBtn.classList.add('hidden');
-        } else {
-            examBtn.classList.remove('hidden');
-            admBtn.classList.remove('hidden');
-        }
+        if (!session) { semDiv.classList.add('hidden'); partDiv.classList.add('hidden'); return; }
+        if (session === "2023-27" || session === "2024-28") { semDiv.classList.remove('hidden'); partDiv.classList.add('hidden'); }
+        else { semDiv.classList.add('hidden'); partDiv.classList.remove('hidden'); }
+        if (["2020-23", "2021-24"].includes(session)) { examBtn.classList.add('hidden'); admBtn.classList.add('hidden'); }
+        else { examBtn.classList.remove('hidden'); admBtn.classList.remove('hidden'); }
     }
 
     function muAction(actionType) {
@@ -731,7 +844,7 @@
         if(!isLoadMore) {
             lastResults = []; pageCount = 1;
             document.getElementById('list').innerHTML = "<div style='padding:40px; text-align:center; font-weight:700; color:var(--blue);'>🔍 Searching...</div>";
-            history.pushState({screen: 'list'}, ''); // Push state for listing
+            history.pushState({screen: 'list'}, '');
         }
         currentCategory = cat;
         let lowerCat = cat.toLowerCase();
@@ -776,7 +889,7 @@
         const listDiv = document.getElementById('list');
         document.getElementById('back-btn').classList.remove('hidden');
         document.getElementById('load-more-container').classList.add('hidden');
-        history.pushState({screen: 'details'}, ''); // Push state for detail view
+        history.pushState({screen: 'details'}, '');
         let btnText = "Open Link 🚀";
         if(currentType === 'Result') btnText = "Check Result ✅";
         if(currentType === 'Admit Card') btnText = "Download Card 📥";
