@@ -7,19 +7,22 @@ from bs4 import BeautifulSoup
 from fpdf import FPDF 
 import io
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from collections import defaultdict
 
 app = Flask(__name__)
 CORS(app)
 
 # --- API KEYS & CONFIG ---
-# Maine Serper key wahi rakhi hai jo tumne di thi, aur OpenRouter env se lega
 SERPER_API_KEY = "675ec80f6858652b8add27fbe3ab09371a6faaae"
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
-# AI Cache System
-cache = {} 
-CACHE_TTL = 300 
+# -----------------
+# CACHE & MEMORY (Updated)
+# -----------------
+cache = {}
 cache_time = {}
+CACHE_TTL = 300
+chat_memory = defaultdict(list) # User ki purani baatein yaad rakhne ke liye
 
 # Community Chat Data
 chat_messages = [
@@ -69,7 +72,6 @@ def fetch_jobs():
         category = data.get('category', 'latest jobs')
         edu = data.get('edu', '')
         
-        # Keep your original smart query logic
         if "Railway" in category or "RRB" in category:
             query = f"RRB Railway {category} official result notice 2026 site:indianrailways.gov.in OR site:sarkariresult.com"
         elif "Bihar Board" in category:
@@ -101,7 +103,6 @@ def generate_resume():
         pdf.ln(10)
         pdf.set_font("Arial", size=12)
         pdf.cell(200, 10, txt=f"Name: {data.get('name', 'N/A')}", ln=True)
-        pdf.cell(200, 10, txt=f"Father's Name: {data.get('father', 'N/A')}", ln=True)
         pdf.cell(200, 10, txt=f"Education: {data.get('edu', 'N/A')}", ln=True)
         pdf.multi_cell(0, 10, txt=f"Skills: {data.get('skills', 'N/A')}")
         pdf.multi_cell(0, 10, txt=f"Experience: {data.get('exp', 'N/A')}")
@@ -129,7 +130,10 @@ def send_message():
     chat_messages.append(new_msg)
     return jsonify({"status": "sent"})
 
-# ================= V8 ULTRA PRO AI ENGINE =================
+
+# ===============================
+# V8 ULTRA PRO MEMORY AI ENGINE
+# ===============================
 
 MODELS = [
     "openai/gpt-3.5-turbo",
@@ -137,7 +141,7 @@ MODELS = [
     "google/gemini-2.0-flash-lite-preview-02-05:free"
 ]
 
-def call_ai(model, question):
+def call_ai(model, messages):
     try:
         res = requests.post(
             "https://openrouter.ai/api/v1/chat/completions",
@@ -147,57 +151,74 @@ def call_ai(model, question):
             },
             json={
                 "model": model,
-                "messages": [
-                    {
-                        "role": "system", 
-                        "content": "You are V8 Ultra Pro AI Assistant. Answer smartly, clearly in Hinglish like ChatGPT."
-                    },
-                    {"role": "user", "content": question}
-                ]
+                "messages": messages
             },
             timeout=8
         )
         if res.status_code == 200:
-            return res.json()['choices'][0]['message']['content']
+            return res.json()["choices"][0]["message"]["content"]
     except:
         return None
     return None
+
+def call_best_model(messages):
+    with ThreadPoolExecutor(max_workers=3) as executor:
+        futures = [executor.submit(call_ai, m, messages) for m in MODELS]
+        for f in as_completed(futures):
+            result = f.result()
+            if result:
+                return result
+    return "Abhi AI busy hai, thodi der baad try karo 🚀"
 
 @app.route('/ask_ai', methods=['POST'])
 def ask_ai():
     try:
         data = request.get_json()
-        question = data.get('message') or data.get('question') or data.get('userMsg')
+        # Supporting multiple field names for flexibility
+        question = (data.get("message") or data.get("question") or data.get("userMsg", "")).strip()
+        user_id = data.get("user_id", "guest")
 
         if not question:
             return jsonify({"reply": "Question likho bhai 😄"})
 
-        # CACHE CHECK
-        if question in cache and time.time() - cache_time[question] < CACHE_TTL:
-            return jsonify({"reply": cache[question], "answer": cache[question]})
+        # Cache check (Per User + Question)
+        key = f"{user_id}:{question}"
+        if key in cache and time.time() - cache_time[key] < CACHE_TTL:
+            return jsonify({"reply": cache[key], "answer": cache[key]})
 
-        best_answer = None
+        # Get last history (Last 6 entries = 3 exchanges)
+        history = chat_memory[user_id][-6:]
 
-        # Parallel AI execution (New V8 Ultra Logic)
-        with ThreadPoolExecutor(max_workers=3) as executor:
-            futures = [executor.submit(call_ai, m, question) for m in MODELS]
-            for f in as_completed(futures):
-                result = f.result()
-                if result:
-                    best_answer = result
-                    break
+        messages = [
+            {
+                "role": "system",
+                "content": "You are V8 Ultra Pro AI. Understand previous conversation context. Reply smartly in Hinglish like ChatGPT."
+            }
+        ]
 
-        if best_answer:
-            cache[question] = best_answer
-            cache_time[question] = time.time()
-            return jsonify({
-                "reply": best_answer, 
-                "answer": best_answer,
-                "status": "success",
-                "mode": "V8_ULTRA_PRO"
-            })
+        for item in history:
+            messages.append(item)
 
-        return jsonify({"reply": "Abhi AI busy hai, thodi der baad try karo 🚀"})
+        messages.append({"role": "user", "content": question})
+
+        answer = call_best_model(messages)
+
+        # Save to Memory (Save both User and AI response)
+        chat_memory[user_id].append({"role": "user", "content": question})
+        chat_memory[user_id].append({"role": "assistant", "content": answer})
+
+        # Keep memory clean (Last 12 msgs)
+        chat_memory[user_id] = chat_memory[user_id][-12:]
+
+        # Save to Cache
+        cache[key] = answer
+        cache_time[key] = time.time()
+
+        return jsonify({
+            "reply": answer,
+            "answer": answer, # for compatibility
+            "mode": "V8_ULTRA_PRO_MEMORY"
+        })
 
     except Exception as e:
         return jsonify({"reply": f"Error: {str(e)}"})
