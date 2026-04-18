@@ -117,10 +117,14 @@
         .v8-input-box { display: flex; gap: 10px; padding: 15px; background: var(--white); border-top: 1px solid #eee; position: fixed; bottom: 0; width: 100%; max-width: 500px; box-sizing: border-box; }
         .v8-input { flex: 1; padding: 12px; border-radius: 12px; border: 1px solid var(--blue); outline: none; font-weight: 600; background: var(--bg); color: var(--main); }
         .v8-send { width: 50px; border: none; border-radius: 12px; background: var(--ai-gradient); color: white; font-size: 18px; cursor: pointer; }
-        
-        .typing-dot { animation: typing 1s infinite; margin: 0 2px; }
-        @keyframes typing { 0% { opacity: 0.2; } 50% { opacity: 1; } 100% { opacity: 0.2; } }
-        
+
+        /* Typing Dots Animation */
+        .typing-dot { animation: typing 1s infinite; display: inline-block; margin: 0 2px; }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typing { 0%, 100% { opacity: 0.2; transform: scale(1); } 50% { opacity: 1; transform: scale(1.2); } }
+
+        /* Recent Chat Styling */
         .recent-chat-item { padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; background: var(--white); margin: 5px 10px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; }
     </style>
 </head>
@@ -133,10 +137,11 @@
                 <button onclick="backHomeV10()" style="background:none; border:none; font-size:22px; color:var(--blue); cursor:pointer;">⬅</button>
                 <span style="font-weight: 800; color: var(--blue);">🤖 ROZGAR AI V10 PRO</span>
             </div>
-            <button onclick="startNewChat()" style="background:var(--light-blue); border:none; padding:5px 10px; border-radius:8px; font-size:10px; font-weight:800; color:var(--blue);">NEW CHAT</button>
+            <span style="font-size:10px; font-weight:800; color:var(--text-muted);">ONLINE</span>
         </div>
         <div class="v8-chat-box">
-            <div id="ai-chat-body" class="v8-messages"></div>
+            <div id="ai-chat-body" class="v8-messages">
+                </div>
             <div class="v8-input-box">
                 <button id="voiceBtn" style="background:none; border:none; font-size:20px; cursor:pointer;">🎙️</button>
                 <input type="text" id="ai-input" class="v8-input" placeholder="Kuch bhi puchiye...">
@@ -159,6 +164,7 @@
     <div class="menu-item" onclick="showResumeSection()">📝 Build Resume (New)</div>
     <div class="menu-item" onclick="toggleDarkMode()">🌓 Switch Theme</div>
     <div class="menu-item" onclick="location.reload()">🔄 Refresh Updates</div>
+    <div class="menu-item" onclick="startNewChat()" style="color:var(--blue);">✨ Start New Chat</div>
     <div class="menu-item" onclick="clearAllV10()" style="color:orange;">🧹 Clear AI History</div>
     <div class="menu-item" style="color:red; border:none;" onclick="logout()">🚪 Logout</div>
 </div>
@@ -224,7 +230,7 @@
             <div class="ai-search-inner">
                 <span class="ai-sparkle">✦</span>
                 <input type="text" id="main-search-inp" class="ai-search-input" placeholder="Ask anything (Hinglish/Eng)...">
-                <button class="voice-btn" onclick="startMicV10()">🎙️</button>
+                <button class="voice-btn" onclick="startMicV10Search()">🎙️</button>
                 <button onclick="triggerSearch()" class="ai-btn">✨</button>
             </div>
             <div class="ai-mode-tag">App AI Support</div>
@@ -298,7 +304,84 @@
             <div class="dash-card" onclick="toggleResSub('ssc')"><i>🦁</i><span>SSC</span></div>
             <div class="dash-card" onclick="toggleResSub('police')"><i>👮</i><span>Bihar Police</span></div>
         </div>
+
+        <div id="sub-magadh" class="card hidden" style="margin-top:15px; background:var(--white); border: 2px solid var(--blue);">
+            <label>Select Session</label>
+            <select id="mu-session" class="year-input" style="margin-bottom:15px; width:100%;" onchange="updateMUSemButtons()">
+                <option value="">-- Choose Session --</option>
+                <option value="2024-28">Session 2024-2028</option>
+                <option value="2023-27">Session 2023-2027</option>
+                <option value="2022-26">Session 2022-2026</option>
+                <option value="2022-25">Session 2022-2025</option>
+                <option value="2021-24">Session 2021-2024</option>
+                <option value="2020-23">Session 2020-2023</option>
+            </select>
+
+            <label id="mu-type-label">Select Option</label>
+            <div id="mu-sem-container" style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:15px;" class="hidden">
+                <button onclick="setResType(this, 'Semester 1')" class="pill">Sem 1</button>
+                <button onclick="setResType(this, 'Semester 2')" class="pill">Sem 2</button>
+                <button onclick="setResType(this, 'Semester 3')" class="pill">Sem 3</button>
+                <button onclick="setResType(this, 'Semester 4')" class="pill">Sem 4</button>
+                <button onclick="setResType(this, 'Semester 5')" class="pill">Sem 5</button>
+                <button onclick="setResType(this, 'Semester 6')" class="pill">Sem 6</button>
+                <button onclick="setResType(this, 'Semester 7')" class="pill">Sem 7</button>
+                <button onclick="setResType(this, 'Semester 8')" class="pill">Sem 8</button>
+            </div>
+            <div id="mu-part-container" style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:15px;" class="hidden">
+                <button onclick="setResType(this, 'Part 1')" class="pill">Part 1</button>
+                <button onclick="setResType(this, 'Part 2')" class="pill">Part 2</button>
+                <button onclick="setResType(this, 'Part 3')" class="pill">Part 3</button>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;" id="mu-action-grid">
+                <button onclick="muAction('Result')" class="btn-primary" style="padding:12px; font-size:12px; background:#28a745;">Check Result ✅</button>
+                <button id="mu-btn-exam" onclick="muAction('Exam Form')" class="btn-primary" style="padding:12px; font-size:12px; background:#ffc107; color:black;">Exam Form 📝</button>
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px;">
+                <button id="mu-btn-adm" onclick="muAction('Admission')" class="btn-load" style="margin:0; width:100%; border-color:#17a2b8; color:#17a2b8;">Admission 🎓</button>
+                <button onclick="muAction('Admit Card')" class="btn-load" style="margin:0; width:100%;">Admit Card 📥</button>
+            </div>
         </div>
+
+        <div id="sub-bihar-board" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
+            <div style="display:flex; gap:10px;"><button onclick="setResType(this, 'Matric')" class="pill" style="flex:1;">Matric (10th)</button><button onclick="setResType(this, 'Inter')" class="pill" style="flex:1;">Inter (12th)</button></div>
+            <input type="number" id="year-bihar" class="year-input" placeholder="Enter Year (e.g. 2025)">
+            <button onclick="finalResSearch('Bihar Board', 'year-bihar')" class="btn-primary" style="margin-top:10px;">Check Result ✅</button>
+        </div>
+
+        <div id="sub-railway" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                <button onclick="setResType(this, 'Group D')" class="pill">Group D</button>
+                <button onclick="setResType(this, 'ALP')" class="pill">ALP</button>
+                <button onclick="setResType(this, 'NTPC')" class="pill">NTPC</button>
+                <button onclick="setResType(this, 'Technician')" class="pill">Technician</button>
+            </div>
+            <input type="number" id="year-railway" class="year-input" placeholder="Enter Year (e.g. 2024)">
+            <button onclick="finalResSearch('Railway', 'year-railway')" class="btn-primary" style="margin-top:10px;">Check Result ✅</button>
+        </div>
+
+        <div id="sub-ssc" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                <button onclick="setResType(this, 'SSC MTS')" class="pill">MTS</button>
+                <button onclick="setResType(this, 'SSC GD')" class="pill">GD</button>
+                <button onclick="setResType(this, 'SSC CGL')" class="pill">CGL</button>
+                <button onclick="setResType(this, 'SSC CHSL')" class="pill">CHSL</button>
+            </div>
+            <input type="number" id="year-ssc" class="year-input" placeholder="Enter Year (e.g. 2025)">
+            <button onclick="finalResSearch('SSC', 'year-ssc')" class="btn-primary" style="margin-top:10px;">Check Result ✅</button>
+        </div>
+
+        <div id="sub-police" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                <button onclick="setResType(this, 'Constable')" class="pill">Constable</button>
+                <button onclick="setResType(this, 'SI')" class="pill">SI (Daroga)</button>
+                <button onclick="setResType(this, 'Driver')" class="pill">Driver</button>
+            </div>
+            <input type="number" id="year-police" class="year-input" placeholder="Enter Year (e.g. 2024)">
+            <button onclick="finalResSearch('Bihar Police', 'year-police')" class="btn-primary" style="margin-top:10px;">Check Result ✅</button>
+        </div>
+    </div>
 
     <div id="feed-sec" class="hidden">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
@@ -321,12 +404,13 @@
 </div>
 
 <script>
+    // ========= GLOBAL STATE & CORE VARS =========
     let user = {}; let resType = ''; let currentCategory = ''; let lastResults = []; let currentType = ''; 
     let pageCount = 1; let currentScreen = 'home';
     let isAIModalOpen = false;
 
-    // AI GLOBAL STATE
-    let currentChatId = localStorage.getItem("chat_uid") || ("chat_" + Date.now());
+    // NAYA STATE (Part 3 integration)
+    let currentChatId = localStorage.getItem("chat_uid") || createNewChatId();
     let chatHistory = [];
     let isTyping = false;
 
@@ -334,9 +418,12 @@
         if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
         checkLogin();
         fetchLive();
-        injectV10UI();
+        loadMessages();
+        setInterval(loadMessages, 5000);
         
-        // Load AI History
+        injectV10UI(); // Chat history panel
+        
+        // Init AI Chat
         localStorage.setItem("chat_uid", currentChatId);
         await loadChatFromCloud();
         await loadRecentChats();
@@ -345,8 +432,9 @@
         if(localStorage.getItem('userHub')) {
             history.replaceState({screen: 'home'}, '');
         }
-        setInterval(loadMessages, 5000);
     };
+
+    function createNewChatId() { return "chat_" + Date.now(); }
 
     function injectV10UI() {
         document.body.insertAdjacentHTML("beforeend", `
@@ -358,31 +446,30 @@
                 </div>
             </div>
             <div style="padding:15px;font-size:12px;opacity:.7;font-weight:800;">RECENT CONVERSATIONS</div>
-            <div id="recentChats"></div>
+            <div id="recentChats" style="padding-bottom:100px;"></div>
             <button onclick="startNewChat()" style="position:fixed;right:20px;bottom:100px;background:var(--ai-gradient);color:#fff;border:none;padding:15px 20px;border-radius:40px;font-weight:900;font-size:14px;box-shadow:0 5px 15px rgba(0,0,0,0.2);z-index:2001;">+ NEW AI CHAT</button>
         </div>
         `);
     }
 
-    // --- AI LOGIC (PART 3 INTEGRATION) ---
+    // ==========================================
+    // AI LOGIC (Integrated from Part 3)
+    // ==========================================
+    
     async function startNewChat() {
-        currentChatId = "chat_" + Date.now();
+        if (chatHistory.length > 0) await saveChatToCloud();
+        currentChatId = createNewChatId();
         localStorage.setItem("chat_uid", currentChatId);
         chatHistory = [];
-        const body = document.getElementById("ai-chat-body");
-        body.innerHTML = "";
+        clearChatUI();
         addBotMessage("New chat started 🚀");
-        openAIModal();
         await loadRecentChats();
+        openAIModal();
     }
 
-    function addBotMessage(text) {
+    function clearChatUI() {
         const body = document.getElementById("ai-chat-body");
-        const botDiv = document.createElement("div");
-        botDiv.className = "chat-bubble bubble-left";
-        botDiv.innerHTML = `<span class="chat-user">Rozgar AI</span>${formatMessage(text)}`;
-        body.appendChild(botDiv);
-        body.scrollTop = body.scrollHeight;
+        if (body) body.innerHTML = "";
     }
 
     function addUserMessage(text) {
@@ -391,19 +478,25 @@
         body.scrollTop = body.scrollHeight;
     }
 
+    function addBotMessage(text) {
+        const body = document.getElementById("ai-chat-body");
+        body.innerHTML += `<div class="chat-bubble bubble-left"><span class="chat-user">Rozgar AI</span>${formatMessage(text)}</div>`;
+        body.scrollTop = body.scrollHeight;
+    }
+
     function showTyping() {
         if (isTyping) return;
         isTyping = true;
         const body = document.getElementById("ai-chat-body");
-        body.innerHTML += `<div class="chat-bubble bubble-left" id="typingBox"><span class="chat-user">Rozgar AI</span><span class="typing-dot">●</span><span class="typing-dot">●</span><span class="typing-dot">●</span></div>`;
+        body.innerHTML += `
+            <div class="chat-bubble bubble-left" id="typingBox">
+                <span class="chat-user">Rozgar AI</span>
+                <span class="typing-dot">●</span><span class="typing-dot">●</span><span class="typing-dot">●</span>
+            </div>`;
         body.scrollTop = body.scrollHeight;
     }
 
-    function hideTyping() {
-        isTyping = false;
-        const box = document.getElementById("typingBox");
-        if (box) box.remove();
-    }
+    function hideTyping() { isTyping = false; const box = document.getElementById("typingBox"); if (box) box.remove(); }
 
     async function askOpenRouter() {
         const input = document.getElementById("ai-input");
@@ -417,33 +510,39 @@
 
         try {
             const res = await fetch("/ask_ai_v10", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
+                method: "POST", headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ uid: currentChatId, message: msg })
             });
             const data = await res.json();
             hideTyping();
-            let reply = data.reply || "No reply from server.";
-            addBotMessage(reply);
-            chatHistory.push({ role: "assistant", content: reply });
+            addBotMessage(data.reply || "No reply");
+            chatHistory.push({ role: "assistant", content: data.reply });
+            await saveChatToCloud();
             await loadRecentChats();
         } catch (err) {
             hideTyping();
-            addBotMessage("Server busy hai bhai 😔");
+            addBotMessage("Server error 😔");
         }
+    }
+
+    async function saveChatToCloud() {
+        try {
+            await fetch("/save_chat", {
+                method: "POST", headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ uid: currentChatId, chats: chatHistory })
+            });
+        } catch (e) {}
     }
 
     async function loadChatFromCloud() {
         try {
             const res = await fetch("/load_chat", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
+                method: "POST", headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ uid: currentChatId })
             });
             const data = await res.json();
             chatHistory = data.chats || [];
-            const body = document.getElementById("ai-chat-body");
-            body.innerHTML = "";
+            clearChatUI();
             if (chatHistory.length === 0) {
                 addBotMessage("Namaste 👋 Main Rozgar AI hoon.");
             } else {
@@ -464,10 +563,10 @@
             box.innerHTML = "";
             data.users.reverse().forEach(uid => {
                 box.innerHTML += `
-                <div class="recent-chat-item">
-                    <span onclick="openRecentChat('${uid}')" style="font-weight:700; color:var(--blue);">${uid}</span>
-                    <button onclick="deleteRecentChat('${uid}')" style="background:none; border:none; cursor:pointer;">🗑️</button>
-                </div>`;
+                    <div class="recent-chat-item">
+                        <span onclick="openRecentChat('${uid}')">${uid}</span>
+                        <button onclick="deleteRecentChat('${uid}')" style="border:none; background:none; cursor:pointer;">🗑️</button>
+                    </div>`;
             });
         } catch (e) {}
     }
@@ -480,10 +579,8 @@
     }
 
     async function deleteRecentChat(uid) {
-        if(!confirm("Delete chat?")) return;
         await fetch("/delete_chat", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
+            method: "POST", headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ uid })
         });
         await loadRecentChats();
@@ -497,22 +594,55 @@
         const micBtn = document.getElementById("voiceBtn");
         if (micBtn) {
             micBtn.onclick = () => recog.start();
+            recog.onresult = e => {
+                document.getElementById("ai-input").value = e.results[0][0].transcript;
+                askOpenRouter();
+            };
         }
-        recog.onresult = e => {
-            document.getElementById("ai-input").value = e.results[0][0].transcript;
-        };
     }
+
+    function openV10Home() { document.getElementById("v10-home").style.display = "block"; loadRecentChats(); }
+    function closeV10Home() { document.getElementById("v10-home").style.display = "none"; }
+    function backHomeV10() { closeAIModal(); openV10Home(); }
 
     function formatMessage(text) { return text.replace(/\n/g, "<br>").replace(/\*\*(.*?)\*\*/g, "<b>$1</b>"); }
     function escapeHtml(str) { return str.replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
 
-    function openV10Home() { document.getElementById("v10-home").style.display = "block"; history.pushState({screen: 'ai_home'}, ''); }
-    function closeV10Home() { document.getElementById("v10-home").style.display = "none"; }
-    function backHomeV10() { closeAIModal(); openV10Home(); }
-    function openAIModal() { document.getElementById('ai-modal').classList.add('active'); isAIModalOpen = true; history.pushState({modal: 'ai'}, ''); }
-    function closeAIModal() { document.getElementById('ai-modal').classList.remove('active'); isAIModalOpen = false; }
+    // ==========================================
+    // APP UI LOGIC (Purana Wala Bina Chhede)
+    // ==========================================
 
-    // --- (Rest of standard UI functions: checkLogin, showDash, openJobs, etc.) ---
+    window.onpopstate = function(event) {
+        if (isAIModalOpen) { closeAIModal(); return; }
+        if (document.getElementById("v10-home").style.display === "block") { closeV10Home(); return; }
+        if (event.state) {
+            const screen = event.state.screen;
+            if (screen === 'home') showDash(false);
+            else if (screen === 'results') showResults(false);
+            else if (screen === 'chat') showCommunityChat(false);
+            else if (screen === 'resume') showResumeSection(false);
+            else if (screen === 'list') {
+                hideAll();
+                document.getElementById('main-header').classList.remove('hidden'); 
+                document.getElementById('feed-sec').classList.remove('hidden'); 
+                document.getElementById('bottom-bar').classList.remove('hidden');
+                renderList(lastResults);
+            }
+        } else { showDash(false); }
+    };
+
+    function openAIModal() { 
+        document.getElementById('ai-modal').classList.add('active'); 
+        document.body.style.overflow = 'hidden'; 
+        isAIModalOpen = true;
+        history.pushState({modal: 'ai'}, '');
+    }
+    function closeAIModal() { 
+        document.getElementById('ai-modal').classList.remove('active');
+        document.body.style.overflow = 'auto';
+        isAIModalOpen = false;
+    }
+
     function checkLogin() {
         let saved = localStorage.getItem('userHub');
         if(saved) {
@@ -524,19 +654,288 @@
             document.getElementById('login-sec').classList.remove('hidden');
         }
     }
+
+    function saveLogin() {
+        let name = document.getElementById('u-name').value;
+        if(!name || !user.edu) return alert("Please fill Name and Select Education!");
+        user.name = name;
+        localStorage.setItem('userHub', JSON.stringify(user));
+        location.reload();
+    }
+
+    function toggleEdu(chip, val) {
+        document.querySelectorAll('.edu-chip').forEach(c => c.classList.remove('selected'));
+        chip.classList.add('selected');
+        user.edu = val;
+    }
+
+    function hideAll() {
+        ['login-sec','dash-sec','res-sec','feed-sec','main-header','bottom-bar','resume-sec','chat-sec'].forEach(id => {
+            let el = document.getElementById(id);
+            if(el) el.classList.add('hidden');
+        });
+    }
+
     function showDash(push = true) {
         hideAll();
         document.getElementById('main-header').classList.remove('hidden');
         document.getElementById('dash-sec').classList.remove('hidden');
         document.getElementById('bottom-bar').classList.remove('hidden');
+        setActiveNav(0);
+        currentScreen = 'home';
         if(push) history.pushState({screen: 'home'}, '');
     }
-    function hideAll() {
-        ['login-sec','dash-sec','res-sec','feed-sec','main-header','bottom-bar','resume-sec','chat-sec'].forEach(id => {
-            let el = document.getElementById(id); if(el) el.classList.add('hidden');
-        });
+
+    function showResults(push = true) {
+        hideAll();
+        document.getElementById('main-header').classList.remove('hidden');
+        document.getElementById('res-sec').classList.remove('hidden');
+        document.getElementById('bottom-bar').classList.remove('hidden');
+        setActiveNav(1);
+        currentScreen = 'results';
+        if(push) history.pushState({screen: 'results'}, '');
     }
-    // ... Additional Helper Functions (toggleMenu, toggleDarkMode, etc. remain unchanged)
+
+    function showResumeSection(push = true) {
+        hideAll();
+        document.getElementById('main-header').classList.remove('hidden');
+        document.getElementById('resume-sec').classList.remove('hidden');
+        document.getElementById('bottom-bar').classList.remove('hidden');
+        if(document.getElementById('sideMenu').classList.contains('active')) toggleMenu();
+        if(push) history.pushState({screen: 'resume'}, '');
+    }
+
+    function showCommunityChat(push = true) {
+        hideAll();
+        document.getElementById('main-header').classList.remove('hidden');
+        document.getElementById('chat-sec').classList.remove('hidden');
+        document.getElementById('bottom-bar').classList.remove('hidden');
+        loadMessages();
+        if(push) history.pushState({screen: 'chat'}, '');
+    }
+
+    async function downloadResume() {
+        const btn = document.querySelector('.resume-btn');
+        btn.innerText = "Generating...";
+        const formData = new FormData();
+        formData.append('name', user.name || 'User');
+        formData.append('father', document.getElementById('res-father').value || 'N/A');
+        formData.append('edu', user.edu || 'N/A');
+        formData.append('skills', document.getElementById('res-skills').value || 'N/A');
+        formData.append('exp', document.getElementById('res-exp').value || 'N/A');
+        try {
+            const response = await fetch('/generate_resume', { method: 'POST', body: formData });
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url; a.download = 'My_Resume.pdf';
+                document.body.appendChild(a); a.click();
+                btn.innerText = "Download Success!";
+                setTimeout(() => btn.innerText = "Download Resume 📥", 2000);
+            }
+        } catch (err) { alert("Download fail!"); btn.innerText = "Try Again"; }
+    }
+
+    async function loadMessages() {
+        const chatBox = document.getElementById('chat-display');
+        if(!chatBox || document.getElementById('chat-sec').classList.contains('hidden')) return;
+        try {
+            const res = await fetch('/get_messages');
+            const messages = await res.json();
+            chatBox.innerHTML = messages.map(m => `
+                <div class="chat-bubble ${m.user.includes('Admin') ? 'bubble-right' : 'bubble-left'}">
+                    <span class="chat-user">@${m.user}</span>
+                    ${m.msg}<span class="chat-time">${m.time}</span>
+                </div>
+            `).join('');
+            chatBox.scrollTop = chatBox.scrollHeight;
+        } catch (e) {}
+    }
+
+    async function sendMessage() {
+        const input = document.getElementById('chat-input');
+        const msg = input.value;
+        if(!msg) return;
+        await fetch('/send_message', {
+            method: 'POST', headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ user: user.name || "Guest", msg: msg })
+        });
+        input.value = ''; loadMessages();
+    }
+
+    async function fetchLive() {
+        try {
+            const res = await fetch('/get_live_updates');
+            const data = await res.json();
+            if(data.jobs && data.jobs.length) {
+                document.getElementById('job-ticker').innerHTML = data.jobs.map(j => `<div onclick="showDetailsDirect('${j.title}', '${j.link}', 'Job')" class="ticker-item">${j.title}</div>`).join('');
+            }
+            if(data.admits && data.admits.length) {
+                document.getElementById('admit-ticker').innerHTML = data.admits.map(a => `<div onclick="showDetailsDirect('${a.title}', '${a.link}', 'Admit Card')" class="ticker-item">${a.title}</div>`).join('');
+            }
+        } catch(e) {}
+    }
+
+    function setActiveNav(idx) {
+        document.querySelectorAll('.nav-item').forEach((n,i) => i === idx ? n.classList.add('active') : n.classList.remove('active'));
+    }
+
+    function toggleMenu() { document.getElementById('sideMenu').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
+    function toggleDarkMode() { document.body.classList.toggle('dark-mode'); localStorage.setItem('darkMode', document.body.classList.contains('dark-mode')); }
+    function editProfile() { localStorage.removeItem('userHub'); location.reload(); }
+    function logout() { localStorage.removeItem('userHub'); location.reload(); }
+    function clearAllV10() { if(confirm("Saari AI Chat delete kar dein?")) { localStorage.removeItem("chat_uid"); location.reload(); } }
+
+    function triggerSearch() { 
+        let v = document.getElementById('main-search-inp').value; 
+        if(!v) return; openJobs(v);
+    }
+
+    function startMicV10Search() {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) return;
+        const rec = new SpeechRecognition();
+        rec.lang = "hi-IN";
+        rec.start();
+        rec.onresult = function(e) {
+            document.getElementById("main-search-inp").value = e.results[0][0].transcript;
+            triggerSearch();
+        };
+    }
+
+    function toggleResSub(id) { 
+        document.querySelectorAll('#res-sec .card').forEach(c => c.classList.add('hidden')); 
+        const sub = document.getElementById('sub-'+id);
+        if(sub) sub.classList.remove('hidden'); 
+        resType = ''; 
+    }
+
+    function setResType(btn, type) { 
+        btn.parentElement.querySelectorAll('.pill').forEach(p => p.classList.remove('active-pill')); 
+        btn.classList.add('active-pill'); resType = type; 
+    }
+
+    function finalResSearch(cat, yearId) { 
+        let yearVal = document.getElementById(yearId).value;
+        if(!resType) return alert("Pehle option select karein!"); 
+        if(!yearVal) return alert("Pehle Year (saal) daalein!");
+        let query = `${cat} ${resType} Result ${yearVal} official direct portal`;
+        openJobs(query); 
+    }
+
+    function updateMUSemButtons() {
+        const session = document.getElementById('mu-session').value;
+        const semDiv = document.getElementById('mu-sem-container');
+        const partDiv = document.getElementById('mu-part-container');
+        const examBtn = document.getElementById('mu-btn-exam');
+        const admBtn = document.getElementById('mu-btn-adm');
+        resType = '';
+        document.querySelectorAll('.pill').forEach(p => p.classList.remove('active-pill'));
+        if (!session) { semDiv.classList.add('hidden'); partDiv.classList.add('hidden'); return; }
+        if (session === "2023-27" || session === "2024-28") { semDiv.classList.remove('hidden'); partDiv.classList.add('hidden'); }
+        else { semDiv.classList.add('hidden'); partDiv.classList.remove('hidden'); }
+        if (["2020-23", "2021-24"].includes(session)) { examBtn.classList.add('hidden'); admBtn.classList.add('hidden'); }
+        else { examBtn.classList.remove('hidden'); admBtn.classList.remove('hidden'); }
+    }
+
+    function muAction(actionType) {
+        let session = document.getElementById('mu-session').value;
+        if(!session) return alert("Pehle Session chunein!");
+        if(!resType) return alert("Pehle Semester ya Year chunein!");
+        let query = `Magadh University ${session} ${resType} ${actionType} official direct link portal`;
+        openJobs(query); 
+    }
+
+    async function openJobs(cat, isLoadMore = false) { 
+        if(!isLoadMore) {
+            lastResults = []; pageCount = 1;
+            document.getElementById('list').innerHTML = "<div style='padding:40px; text-align:center; font-weight:700; color:var(--blue);'>🔍 Searching...</div>";
+            history.pushState({screen: 'list'}, '');
+        }
+        currentCategory = cat;
+        let lowerCat = cat.toLowerCase();
+        if(lowerCat.includes('result')) { currentType = 'Result'; }
+        else if(lowerCat.includes('admit')) { currentType = 'Admit Card'; }
+        else if(lowerCat.includes('admission')) { currentType = 'Admission'; }
+        else { currentType = 'Info'; }
+        hideAll(); 
+        document.getElementById('main-header').classList.remove('hidden'); 
+        document.getElementById('bottom-bar').classList.remove('hidden'); 
+        document.getElementById('feed-sec').classList.remove('hidden'); 
+        document.getElementById('f-title').innerText = cat.substring(0, 20).toUpperCase() + (cat.length > 20 ? '...' : ''); 
+        try {
+            const response = await fetch('/fetch_jobs', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ category: cat, edu: user.edu || '10th', page: pageCount })
+            });
+            let newResults = await response.json();
+            lastResults = [...lastResults, ...newResults];
+            renderList(lastResults);
+            if(newResults.length > 0) document.getElementById('load-more-container').classList.remove('hidden');
+            else document.getElementById('load-more-container').classList.add('hidden');
+        } catch(e) { document.getElementById('list').innerHTML = "<div style='padding:40px; text-align:center;'>⚠️ Error!</div>"; }
+    }
+
+    function loadMore() { pageCount++; openJobs(currentCategory, true); }
+
+    function renderList(results) {
+        const listDiv = document.getElementById('list');
+        if(!results || results.length === 0) { listDiv.innerHTML = "<div style='padding:40px; text-align:center;'>❌ No data found.</div>"; return; }
+        listDiv.innerHTML = results.map((item, index) => `
+            <div class="job-card" onclick="viewDetails(${index})">
+                <div class="job-title">${item.title}</div>
+                <div class="job-desc">${item.snippet ? item.snippet.substring(0, 120) : 'Details...'}</div>
+                <div style="font-size:11px; color:var(--blue); margin-top:10px; font-weight:800;">READ MORE →</div>
+            </div>
+        `).join('');
+    }
+
+    function viewDetails(index) {
+        const item = lastResults[index];
+        const listDiv = document.getElementById('list');
+        document.getElementById('back-btn').classList.remove('hidden');
+        document.getElementById('load-more-container').classList.add('hidden');
+        history.pushState({screen: 'details'}, '');
+        let btnText = "Open Link 🚀";
+        if(currentType === 'Result') btnText = "Check Result ✅";
+        if(currentType === 'Admit Card') btnText = "Download Card 📥";
+        if(currentType === 'Admission') btnText = "Apply For Admission 🎓";
+        listDiv.innerHTML = `
+            <div class="details-card">
+                <h2 style="color:var(--blue); margin-top:0; font-size:18px;">${item.title}</h2>
+                <p style="font-size:14px; line-height:1.6; color:var(--main); margin-top:15px;">${item.snippet || 'No extra info.'}</p>
+                <button onclick="window.open('${item.link}', '_blank')" class="btn-primary" style="margin-top:20px;">${btnText}</button>
+            </div>
+        `;
+    }
+
+    function showDetailsDirect(title, link, type) {
+        currentType = type;
+        hideAll();
+        document.getElementById('main-header').classList.remove('hidden'); 
+        document.getElementById('feed-sec').classList.remove('hidden');
+        document.getElementById('bottom-bar').classList.remove('hidden');
+        history.pushState({screen: 'details'}, '');
+        document.getElementById('list').innerHTML = `
+            <div class="details-card">
+                <h2 style="color:var(--blue); margin-top:0;">${title}</h2>
+                <button onclick="window.open('${link}', '_blank')" class="btn-primary" style="margin-top:25px;">Check Now 🚀</button>
+            </div>
+        `;
+    }
+
+    function goBackToList() { history.back(); }
+
+    // Enter Key Send Logic
+    document.addEventListener("keydown", e => {
+        if (e.key === "Enter") {
+            const active = document.activeElement;
+            if (active && active.id === "ai-input") {
+                askOpenRouter();
+            }
+        }
+    });
 </script>
 </body>
 </html>
