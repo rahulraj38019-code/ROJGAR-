@@ -290,10 +290,40 @@
     <div id="res-sec" class="hidden">
         <h3 style="font-weight:800; margin-bottom:15px;">Results Portal 📄</h3>
         <div class="dash-grid">
-            <div class="dash-card" onclick="toggleResSub('bihar-board')"><i>🎓</i><span>Bihar Board</span></div>
+            <div class="dash-card" onclick="toggleResSub('magadh')" style="border: 2px solid var(--blue); background: var(--light-blue);"><i>🎓</i><span style="font-weight:800;">Magadh Uni.</span></div>
+            <div class="dash-card" onclick="toggleResSub('bihar-board')"><i>🏫</i><span>Bihar Board</span></div>
             <div class="dash-card" onclick="toggleResSub('railway')"><i>🚂</i><span>Railway</span></div>
             <div class="dash-card" onclick="toggleResSub('ssc')"><i>🦁</i><span>SSC</span></div>
             <div class="dash-card" onclick="toggleResSub('police')"><i>👮</i><span>Bihar Police</span></div>
+        </div>
+
+        <div id="sub-magadh" class="card hidden" style="margin-top:15px; background:var(--white); border: 2px solid var(--blue);">
+            <label>Select Session</label>
+            <select id="mu-session" class="year-input" style="margin-bottom:15px; width:100%;">
+                <option value="">-- Choose Session --</option>
+                <option value="2024-28">Session 2024-2028</option>
+                <option value="2023-27">Session 2023-2027</option>
+                <option value="2022-26">Session 2022-2026</option>
+                <option value="2022-25">Session 2022-2025</option>
+                <option value="2021-24">Session 2021-2024</option>
+                <option value="2020-23">Session 2020-2023</option>
+            </select>
+
+            <label>Select Semester/Year</label>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:15px;">
+                <button onclick="setResType(this, 'Semester 1')" class="pill">Sem 1</button>
+                <button onclick="setResType(this, 'Semester 2')" class="pill">Sem 2</button>
+                <button onclick="setResType(this, 'Semester 3')" class="pill">Sem 3</button>
+                <button onclick="setResType(this, 'Semester 4')" class="pill">Sem 4</button>
+                <button onclick="setResType(this, 'Part 2')" class="pill">Part 2</button>
+                <button onclick="setResType(this, 'Part 3')" class="pill">Part 3</button>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <button onclick="muAction('Result')" class="btn-primary" style="padding:12px; font-size:12px; background:#28a745;">Check Result ✅</button>
+                <button onclick="muAction('Exam Form')" class="btn-primary" style="padding:12px; font-size:12px; background:#ffc107; color:black;">Exam Form 📝</button>
+            </div>
+            <button onclick="muAction('Admit Card')" class="btn-load" style="margin-top:10px; width:100%;">Download Admit Card 📥</button>
         </div>
 
         <div id="sub-bihar-board" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
@@ -606,6 +636,15 @@
         if(!resType) return alert("Pehle option select karein!"); 
         if(!yearVal) return alert("Pehle Year (saal) daalein!");
         let query = `${cat} ${resType} Result ${yearVal} official direct portal`;
+        openJobs(query); 
+    }
+
+    // --- Magadh University Specific Logic ---
+    function muAction(actionType) {
+        let session = document.getElementById('mu-session').value;
+        if(!session) return alert("Pehle Session chunein!");
+        if(!resType) return alert("Pehle Semester ya Year chunein!");
+        let query = `Magadh University ${session} ${resType} ${actionType} direct link meebportal org`;
         openJobs(query); 
     }
 
