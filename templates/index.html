@@ -99,19 +99,31 @@
         .comm-btn { background: var(--white); padding: 18px; border-radius: 20px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; margin-top: 10px; text-decoration: none; color: inherit; }
         .chat-container { background: var(--bg); height: 75vh; border-radius: 24px; display: flex; flex-direction: column; padding: 15px; border: 1px solid var(--blue); box-shadow: 0 0 20px var(--neon-glow); }
         .chat-display { flex: 1; overflow-y: auto; padding-bottom: 10px; }
+        
+        /* --- AI AGENT V8 MODAL STYLES --- */
+        #ai-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+        #ai-modal.active { display: flex; }
+        .ai-modal-content { width: 95%; max-width: 450px; background: #121212; border-radius: 20px; height: 85vh; display: flex; flex-direction: column; overflow: hidden; border: 1px solid #333; box-shadow: 0 0 40px rgba(0,0,0,0.5); }
+        .ai-modal-header { background: #1a1a1a; padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; }
+        #ai-chat-body { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 15px; background: #0f0f0f; }
+        
+        /* V8 Bubble Styles */
+        .v8-bubble { max-width: 85%; padding: 12px 16px; border-radius: 15px; font-size: 14px; line-height: 1.5; color: white; position: relative; }
+        .v8-ai { background: #262626; align-self: flex-start; border-bottom-left-radius: 2px; }
+        .v8-user { background: #007bff; align-self: flex-end; border-bottom-right-radius: 2px; }
+        .v8-time { font-size: 10px; opacity: 0.5; margin-top: 5px; display: block; }
+        .v8-typing { color: var(--blue); font-style: italic; font-size: 12px; margin-bottom: 10px; }
+
+        .ai-v8-input-box { padding: 15px; background: #1a1a1a; display: flex; gap: 10px; border-top: 1px solid #333; }
+        .v8-input { flex: 1; background: #262626; border: 1px solid #444; border-radius: 10px; padding: 12px; color: white; outline: none; font-family: inherit; }
+        .v8-send { background: #007bff; color: white; border: none; border-radius: 10px; width: 45px; cursor: pointer; font-size: 18px; }
+
         .chat-bubble { max-width: 80%; padding: 12px 16px; border-radius: 18px; margin-bottom: 12px; font-size: 13px; line-height: 1.4; position: relative; }
         .bubble-left { background: var(--white); color: var(--main); align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid #eee; }
         .bubble-right { background: #dcf8c6; color: #121212; align-self: flex-end; border-bottom-right-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .dark-mode .bubble-right { background: #056162; color: white; }
         .chat-user { font-size: 10px; font-weight: 800; color: var(--blue); display: block; margin-bottom: 4px; }
         .chat-time { font-size: 9px; opacity: 0.6; text-align: right; display: block; margin-top: 4px; }
-
-        /* --- AI AGENT MODAL STYLES --- */
-        #ai-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; display: none; align-items: center; justify-content: center; }
-        #ai-modal.active { display: flex; }
-        .ai-modal-content { width: 90%; max-width: 450px; background: var(--bg); border-radius: 24px; height: 80vh; display: flex; flex-direction: column; overflow: hidden; border: 2px solid var(--blue); box-shadow: 0 0 30px var(--blue); }
-        .ai-modal-header { background: var(--white); padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--blue); }
-        #ai-chat-body { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; }
     </style>
 </head>
 <body id="app-body">
@@ -124,15 +136,19 @@
 <div id="ai-modal" onclick="closeAIModal(event)">
     <div class="ai-modal-content" onclick="event.stopPropagation()">
         <div class="ai-modal-header">
-            <span style="font-weight: 800; color: var(--blue);">🤖 ROZGAR AI AGENT</span>
-            <button onclick="closeAIModal(null)" style="background: none; border: none; font-size: 20px; color: var(--blue); cursor: pointer;">✖</button>
+            <span style="font-weight: 800; color: #007bff; font-size: 16px;">🚀 ROZGAR AI V8</span>
+            <button onclick="closeAIModal(null)" style="background: none; border: none; font-size: 22px; color: #666; cursor: pointer;">✖</button>
         </div>
         <div id="ai-chat-body">
-            <div class="chat-bubble bubble-left">Namaste! Main Rozgar Hub ka AI Agent hoon. Aap mujhse kisi bhi job, exam ya carrier ke bare mein puch sakte hain.</div>
+            <div class="v8-bubble v8-ai">
+                Namaste! Main Rozgar Hub ka advanced AI V8 hoon. Main aapke career, exams aur skills ke sawalon ka turant jawab de sakta hoon.
+                <span class="v8-time">AI Assistant</span>
+            </div>
         </div>
-        <div style="padding: 15px; background: var(--white); display: flex; gap: 10px; border-top: 1px solid #eee;">
-            <input type="text" id="ai-input" class="input-box" placeholder="Kuch bhi puchiye..." style="margin:0; flex:1;">
-            <button onclick="askOpenRouter()" class="ai-btn" style="width: 50px; height: 50px; border-radius: 12px;">✨</button>
+        <div id="v8-loader" class="v8-typing hidden" style="padding: 0 15px;">AI thinking...</div>
+        <div class="ai-v8-input-box">
+            <input type="text" id="ai-input" class="v8-input" placeholder="Kuch bhi puchiye (Hinglish)..." onkeypress="handleAIKey(event)">
+            <button onclick="askOpenRouter()" class="v8-send">✨</button>
         </div>
     </div>
 </div>
@@ -353,58 +369,56 @@
         setInterval(loadMessages, 5000);
     };
 
-    window.onpopstate = function(event) {
-        if (event.state) {
-            const screen = event.state.screen;
-            if (screen === 'home') showDash(false);
-            else if (screen === 'results') showResults(false);
-            else if (screen === 'list') {
-                document.getElementById('back-btn').classList.add('hidden');
-                if(currentType === 'Job') document.getElementById('load-more-container').classList.remove('hidden');
-                renderList(lastResults);
-            }
-        }
-    };
-
     function openAIModal() { document.getElementById('ai-modal').classList.add('active'); }
     function closeAIModal(e) { if(!e || e.target.id === 'ai-modal') document.getElementById('ai-modal').classList.remove('active'); }
 
-    /* --- SECURE AI LOGIC --- */
+    function handleAIKey(e) { if(e.key === 'Enter') askOpenRouter(); }
+
+    /* --- V8 AI LOGIC (CHATGPT STYLE) --- */
     async function askOpenRouter() {
         const input = document.getElementById('ai-input');
         const chatBody = document.getElementById('ai-chat-body');
+        const loader = document.getElementById('v8-loader');
         const userMsg = input.value.trim();
         if(!userMsg) return;
 
-        chatBody.innerHTML += `<div class="chat-bubble bubble-right"><span class="chat-user">Aap</span>${userMsg}</div>`;
+        // User message bubble
+        chatBody.innerHTML += `
+            <div class="v8-bubble v8-user">
+                ${userMsg}
+                <span class="v8-time">You</span>
+            </div>`;
+        
         input.value = '';
         chatBody.scrollTop = chatBody.scrollHeight;
-
-        const thinkingId = "think-" + Date.now();
-        chatBody.innerHTML += `<div id="${thinkingId}" class="chat-bubble bubble-left"><i>Rozgar AI soch raha hai...</i></div>`;
+        loader.classList.remove('hidden');
 
         try {
-            // Frontend se key hide karne ke liye hum /ask_ai backend endpoint ka use karenge 
-            // jo Render par environment variable read karega.
             const response = await fetch("/ask_ai", { 
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ message: userMsg })
+                body: JSON.stringify({ message: userMsg, user_id: user.name || "user_123" })
             });
             const data = await response.json();
-            document.getElementById(thinkingId).remove();
+            loader.classList.add('hidden');
 
             if (data.reply) {
-                chatBody.innerHTML += `<div class="chat-bubble bubble-left"><span class="chat-user">Rozgar AI</span>${data.reply}</div>`;
+                chatBody.innerHTML += `
+                    <div class="v8-bubble v8-ai">
+                        ${data.reply}
+                        <span class="v8-time">Rozgar AI V8</span>
+                    </div>`;
             } else {
-                chatBody.innerHTML += `<div class="chat-bubble bubble-left" style="color:red;">⚠️ Error: ${data.error || 'Server error'}</div>`;
+                chatBody.innerHTML += `<div class="v8-bubble v8-ai" style="color:#ff4444;">Sorry, kuch error aaya.</div>`;
             }
             chatBody.scrollTop = chatBody.scrollHeight;
         } catch (err) {
-            document.getElementById(thinkingId).innerHTML = "Sorry bhai, backend se connect nahi ho pa raha!";
+            loader.classList.add('hidden');
+            chatBody.innerHTML += `<div class="v8-bubble v8-ai">Internet issue ya server down hai bhai!</div>`;
         }
     }
 
+    /* --- OLD APP LOGIC (UNCHANGED) --- */
     function checkLogin() {
         let saved = localStorage.getItem('userHub');
         if(saved) {
