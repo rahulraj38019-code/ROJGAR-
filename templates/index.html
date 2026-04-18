@@ -106,40 +106,35 @@
         .chat-user { font-size: 10px; font-weight: 800; color: var(--blue); display: block; margin-bottom: 4px; }
         .chat-time { font-size: 9px; opacity: 0.6; text-align: right; display: block; margin-top: 4px; }
 
-        /* ================= AI CHAT V8 UI ================= */
-        .v8-chat-box { display: flex; flex-direction: column; height: 100%; background: var(--bg); border-radius: 18px; overflow: hidden; }
-        .v8-messages { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
-        .v8-msg { max-width: 80%; padding: 12px 15px; border-radius: 16px; font-size: 13px; line-height: 1.4; }
-        .v8-user { align-self: flex-end; background: #2d7eff; color: white; border-bottom-right-radius: 4px; }
-        .v8-ai { align-self: flex-start; background: var(--white); border: 1px solid #eee; border-bottom-left-radius: 4px; }
-        .v8-input-box { display: flex; gap: 10px; padding: 12px; background: var(--white); border-top: 1px solid #eee; }
-        .v8-input { flex: 1; padding: 12px; border-radius: 12px; border: 1px solid #ccc; outline: none; font-weight: 600; }
-        .v8-send { width: 50px; border: none; border-radius: 12px; background: var(--ai-gradient); color: white; font-size: 18px; cursor: pointer; }
-
-        #ai-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; display: none; align-items: center; justify-content: center; }
+        /* ================= AI CHAT V8 FULL SCREEN UI ================= */
+        #ai-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 2000; display: none; align-items: flex-start; justify-content: center; }
         #ai-modal.active { display: flex; }
-        .ai-modal-content { width: 90%; max-width: 450px; background: var(--bg); border-radius: 24px; height: 80vh; display: flex; flex-direction: column; overflow: hidden; border: 2px solid var(--blue); box-shadow: 0 0 30px var(--blue); }
-        .ai-modal-header { background: var(--white); padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--blue); }
+        .ai-modal-content { width: 100%; max-width: 500px; background: var(--bg); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        .ai-modal-header { background: var(--white); padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--blue); box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        
+        .v8-chat-box { display: flex; flex-direction: column; height: 100%; background: var(--bg); }
+        .v8-messages { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; padding-bottom: 100px; }
+        .v8-input-box { display: flex; gap: 10px; padding: 15px; background: var(--white); border-top: 1px solid #eee; position: fixed; bottom: 0; width: 100%; max-width: 500px; box-sizing: border-box; }
+        .v8-input { flex: 1; padding: 12px; border-radius: 12px; border: 1px solid var(--blue); outline: none; font-weight: 600; background: var(--bg); color: var(--main); }
+        .v8-send { width: 50px; border: none; border-radius: 12px; background: var(--ai-gradient); color: white; font-size: 18px; cursor: pointer; }
     </style>
 </head>
 <body id="app-body">
 
-<div id="ai-trigger" onclick="openAIModal()">
-    <span class="ai-robot">🤖</span>
-    <div class="ai-label">ASK AI</div>
-</div>
-
-<div id="ai-modal" onclick="closeAIModal(event)">
-    <div class="ai-modal-content" onclick="event.stopPropagation()">
+<div id="ai-modal">
+    <div class="ai-modal-content">
         <div class="ai-modal-header">
-            <span style="font-weight: 800; color: var(--blue);">🤖 ROZGAR AI V8</span>
-            <button onclick="closeAIModal(null)" style="background: none; border: none; font-size: 20px; color: var(--blue); cursor: pointer;">✖</button>
+            <div style="display:flex; align-items:center; gap:10px;">
+                <button onclick="closeAIModal()" style="background:none; border:none; font-size:22px; color:var(--blue); cursor:pointer;">⬅</button>
+                <span style="font-weight: 800; color: var(--blue);">🤖 ROZGAR AI V8</span>
+            </div>
+            <span style="font-size:10px; font-weight:800; color:var(--text-muted);">ONLINE</span>
         </div>
         <div class="v8-chat-box">
             <div id="ai-chat-body" class="v8-messages">
                 <div class="chat-bubble bubble-left">
                     <span class="chat-user">V8 AI</span>
-                    Namaste 👋 Main V8 AI hoon. Aap kuch bhi puch sakte ho.
+                    Namaste 👋 Main V8 AI hoon. Main full page mode mein hoon, ab aap khul kar puchiye!
                 </div>
             </div>
             <div class="v8-input-box">
@@ -148,6 +143,11 @@
             </div>
         </div>
     </div>
+</div>
+
+<div id="ai-trigger" onclick="openAIModal()">
+    <span class="ai-robot">🤖</span>
+    <div class="ai-label">ASK AI</div>
 </div>
 
 <div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
@@ -351,6 +351,7 @@
 <div id="bottom-bar" class="bottom-nav hidden">
     <div class="nav-item active" onclick="showDash()"><i>🏠</i>Home</div>
     <div class="nav-item" onclick="showResults()"><i>📄</i>Results</div>
+    <div class="nav-item" onclick="openAIModal()"><i>🤖</i>AI Chat</div>
     <div class="nav-item" onclick="toggleMenu()"><i>⚙️</i>Settings</div>
 </div>
 
@@ -380,63 +381,34 @@
     };
 
     // ==================================
-    // 🤖 NEW V8 ULTRA PRO MEMORY JS
+    // 🤖 AI LOGIC (BACKEND INTEGRATION)
     // ==================================
     async function askOpenRouter() {
         const input = document.getElementById("ai-input");
         const chatBody = document.getElementById("ai-chat-body");
-
         const userMsg = input.value.trim();
-
         if (!userMsg) return;
 
-        // USER BUBBLE
-        chatBody.innerHTML += `
-            <div class="chat-bubble bubble-right">
-                <span class="chat-user">Aap</span>
-                ${userMsg}
-            </div>
-        `;
-
+        chatBody.innerHTML += `<div class="chat-bubble bubble-right"><span class="chat-user">Aap</span>${userMsg}</div>`;
         input.value = "";
         chatBody.scrollTop = chatBody.scrollHeight;
 
-        // THINKING
         const thinkId = "think-" + Date.now();
-
-        chatBody.innerHTML += `
-            <div id="${thinkId}" class="chat-bubble bubble-left">
-                <i>V8 Ultra AI soch raha hai...</i>
-            </div>
-        `;
-
+        chatBody.innerHTML += `<div id="${thinkId}" class="chat-bubble bubble-left"><i>V8 Ultra AI soch raha hai...</i></div>`;
         chatBody.scrollTop = chatBody.scrollHeight;
 
         try {
             const response = await fetch("/ask_ai", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    message: userMsg,
-                    user_id: localStorage.getItem("userName") || "guest"
-                })
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: userMsg, user_id: localStorage.getItem("userName") || "guest" })
             });
-
             const data = await response.json();
-
             document.getElementById(thinkId).remove();
-
             const botDiv = document.createElement("div");
             botDiv.className = "chat-bubble bubble-left";
-
             chatBody.appendChild(botDiv);
-
             typeWriter(botDiv, data.reply || "No reply");
-
-            chatBody.scrollTop = chatBody.scrollHeight;
-
         } catch (err) {
             document.getElementById(thinkId).innerHTML = "⚠️ Backend connect nahi ho pa raha";
         }
@@ -445,33 +417,29 @@
     function typeWriter(element, text, speed = 12) {
         let i = 0;
         element.innerHTML = '<span class="chat-user">V8 AI</span><br>';
-
         const interval = setInterval(() => {
             if (i < text.length) {
                 element.innerHTML += text.charAt(i);
                 i++;
-                // Auto scroll while typing
                 const chatBox = document.getElementById('ai-chat-body');
                 chatBox.scrollTop = chatBox.scrollHeight;
-            } else {
-                clearInterval(interval);
-            }
+            } else { clearInterval(interval); }
         }, speed);
     }
 
     document.addEventListener("DOMContentLoaded", () => {
         const input = document.getElementById("ai-input");
-        if (input) {
-            input.addEventListener("keydown", function(e) {
-                if (e.key === "Enter") {
-                    askOpenRouter();
-                }
-            });
-        }
+        if (input) { input.addEventListener("keydown", (e) => { if (e.key === "Enter") askOpenRouter(); }); }
     });
 
-    function openAIModal() { document.getElementById('ai-modal').classList.add('active'); }
-    function closeAIModal(e) { if(!e || e.target.id === 'ai-modal') document.getElementById('ai-modal').classList.remove('active'); }
+    function openAIModal() { 
+        document.getElementById('ai-modal').classList.add('active'); 
+        document.body.style.overflow = 'hidden'; // Stop scrolling behind
+    }
+    function closeAIModal() { 
+        document.getElementById('ai-modal').classList.remove('active'); 
+        document.body.style.overflow = 'auto'; 
+    }
 
     // --- CORE APP FUNCTIONS ---
     function checkLogin() {
@@ -479,7 +447,6 @@
         if(saved) {
             user = JSON.parse(saved);
             document.getElementById('user-initial').innerText = user.name ? user.name.charAt(0).toUpperCase() : 'U';
-            // Save username for AI tracking
             localStorage.setItem("userName", user.name || "guest");
             showDash(true);
         } else {
@@ -560,10 +527,8 @@
                 const blob = await response.blob();
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
-                a.href = url;
-                a.download = 'My_Resume.pdf';
-                document.body.appendChild(a);
-                a.click();
+                a.href = url; a.download = 'My_Resume.pdf';
+                document.body.appendChild(a); a.click();
                 btn.innerText = "Download Success!";
                 setTimeout(() => btn.innerText = "Download Resume 📥", 2000);
             }
@@ -579,8 +544,7 @@
             chatBox.innerHTML = messages.map(m => `
                 <div class="chat-bubble ${m.user.includes('Admin') ? 'bubble-right' : 'bubble-left'}">
                     <span class="chat-user">@${m.user}</span>
-                    ${m.msg}
-                    <span class="chat-time">${m.time}</span>
+                    ${m.msg}<span class="chat-time">${m.time}</span>
                 </div>
             `).join('');
             chatBox.scrollTop = chatBox.scrollHeight;
@@ -592,12 +556,10 @@
         const msg = input.value;
         if(!msg) return;
         await fetch('/send_message', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
+            method: 'POST', headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({ user: user.name || "Guest", msg: msg })
         });
-        input.value = '';
-        loadMessages();
+        input.value = ''; loadMessages();
     }
 
     async function fetchLive() {
@@ -624,8 +586,7 @@
 
     function triggerSearch() { 
         let v = document.getElementById('main-search-inp').value; 
-        if(!v) return;
-        openJobs(v);
+        if(!v) return; openJobs(v);
     }
 
     function toggleResSub(id) { 
@@ -637,8 +598,7 @@
 
     function setResType(btn, type) { 
         btn.parentElement.querySelectorAll('.pill').forEach(p => p.classList.remove('active-pill')); 
-        btn.classList.add('active-pill'); 
-        resType = type; 
+        btn.classList.add('active-pill'); resType = type; 
     }
 
     function finalResSearch(cat, yearId) { 
@@ -651,8 +611,7 @@
 
     async function openJobs(cat, isLoadMore = false) { 
         if(!isLoadMore) {
-            lastResults = [];
-            pageCount = 1;
+            lastResults = []; pageCount = 1;
             document.getElementById('list').innerHTML = "<div style='padding:40px; text-align:center; font-weight:700; color:var(--blue);'>🔍 Searching...</div>";
             history.pushState({screen: 'list'}, '');
         }
@@ -668,8 +627,7 @@
         document.getElementById('f-title').innerText = cat.substring(0, 20).toUpperCase() + (cat.length > 20 ? '...' : ''); 
         try {
             const response = await fetch('/fetch_jobs', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ category: cat, edu: user.edu || '10th', page: pageCount })
             });
             let newResults = await response.json();
@@ -677,19 +635,14 @@
             renderList(lastResults);
             if(newResults.length > 0) document.getElementById('load-more-container').classList.remove('hidden');
             else document.getElementById('load-more-container').classList.add('hidden');
-        } catch(e) {
-            document.getElementById('list').innerHTML = "<div style='padding:40px; text-align:center;'>⚠️ Error!</div>";
-        }
+        } catch(e) { document.getElementById('list').innerHTML = "<div style='padding:40px; text-align:center;'>⚠️ Error!</div>"; }
     }
 
     function loadMore() { pageCount++; openJobs(currentCategory, true); }
 
     function renderList(results) {
         const listDiv = document.getElementById('list');
-        if(!results || results.length === 0) {
-            listDiv.innerHTML = "<div style='padding:40px; text-align:center;'>❌ No data found.</div>";
-            return;
-        }
+        if(!results || results.length === 0) { listDiv.innerHTML = "<div style='padding:40px; text-align:center;'>❌ No data found.</div>"; return; }
         listDiv.innerHTML = results.map((item, index) => `
             <div class="job-card" onclick="viewDetails(${index})">
                 <div class="job-title">${item.title}</div>
