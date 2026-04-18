@@ -1,20 +1,31 @@
 import requests
-from flask import Flask, render_template, request, jsonify, send_from_directory, make_response
+from flask import Flask, render_template, request, jsonify, send_from_directory, make_response, send_file
 from flask_cors import CORS
 import os
+import json
 import time
+import uuid
 from bs4 import BeautifulSoup
 from fpdf import FPDF 
 import io
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from collections import defaultdict
+from werkzeug.utils import secure_filename
+from PyPDF2 import PdfReader
 
 app = Flask(__name__)
 CORS(app)
 
-# --- API KEYS & CONFIG ---
+# ===============================
+# CONFIG & API KEYS
+# ===============================
 SERPER_API_KEY = "675ec80f6858652b8add27fbe3ab09371a6faaae"
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+
+UPLOAD_FOLDER = "uploads"
+CHAT_FOLDER = "saved_chats"
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(CHAT_FOLDER, exist_ok=True)
 
 # -----------------
 # CACHE & MEMORY
@@ -22,8 +33,8 @@ OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 cache = {}
 cache_time = {}
 CACHE_TTL = 300
-chat_memory = {} # V9 Memory Storage
-CHAT_STORE = {} # New V9 Pro Storage
+chat_memory = {} 
+users_db = {}
 
 # Community Chat Data
 chat_messages = [
@@ -39,18 +50,22 @@ MODELS = [
     "mistralai/mistral-small"
 ]
 
-# V9 PRO SYSTEM PROMPT
-SYSTEM_PROMPT = """
-You are Rozgar Hub AI Pro (V9 GOD MODE).
-Behave like ChatGPT. Be smart, professional, helpful, human-like.
-Reply smartly in Hinglish/Hindi/English naturally.
-Remember previous messages.
-Rules:
-- Jobs/result query me details do: post name, eligibility, date, salary, apply process.
-- For jobs/results give: Full details, Eligibility, Age, Last date, Apply mode, Selection process.
-- If user asks chart/image: reply with text layout.
-- Agar info unknown ho to honestly bolo.
-"""
+# ===============================
+# HELPERS (CHAT FILE SYSTEM)
+# ===============================
+def get_chat_file(uid):
+    return f"{CHAT_FOLDER}/{uid}.json"
+
+def load_user_chat(uid):
+    path = get_chat_file(uid)
+    if os.path.exists(path):
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return []
+
+def save_user_chat(uid, data):
+    with open(get_chat_file(uid), "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
 
 # --- BASIC ROUTES ---
 @app.route('/manifest.json')
@@ -65,7 +80,18 @@ def serve_sw():
 def index():
     return render_template('index.html')
 
-# --- LIVE UPDATES (RESULT SECTION) ---
+# =========================================================
+# LOGIN & LIVE UPDATES
+# =========================================================
+@app.route("/login", methods=["POST"])
+def login():
+    data = request.json
+    username = data.get("username", "").strip()
+    if not username:
+        return jsonify({"status": "error", "msg": "Username required"})
+    users_db[username] = True
+    return jsonify({"status": "success", "username": username})
+
 @app.route('/get_live_updates')
 def get_live_updates():
     try:
@@ -113,6 +139,21 @@ def fetch_jobs():
     except Exception as e:
         return jsonify({"error": str(e)})
 
+# ===============================
+# LIVE SEARCH (V10)
+# ===============================
+@app.route("/live_search", methods=["POST"])
+def live_search():
+    try:
+        data = request.json
+        q = data.get("query")
+        headers = {"X-API-KEY": SERPER_API_KEY, "Content-Type": "application/json"}
+        payload = {"q": q, "gl": "in", "hl": "en"}
+        r = requests.post("https://google.serper.dev/search", headers=headers, json=payload)
+        return jsonify(r.json())
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
 # --- RESUME GENERATOR ---
 @app.route('/generate_resume', methods=['POST'])
 def generate_resume():
@@ -128,7 +169,6 @@ def generate_resume():
         pdf.cell(200, 10, txt=f"Education: {data.get('edu', 'N/A')}", ln=True)
         pdf.multi_cell(0, 10, txt=f"Skills: {data.get('skills', 'N/A')}")
         pdf.multi_cell(0, 10, txt=f"Experience: {data.get('exp', 'N/A')}")
-        
         output = io.BytesIO()
         pdf_content = pdf.output(dest='S').encode('latin-1')
         output.write(pdf_content)
@@ -140,7 +180,114 @@ def generate_resume():
     except Exception as e:
         return str(e)
 
-# --- CHAT SYSTEM ---
+# ===============================
+# FILE & PDF HANDLING
+# ===============================
+@app.route("/upload_file", methods=["POST"])
+def upload_file():
+    try:
+        file = request.files["file"]
+        filename = secure_filename(file.filename)
+        path = os.path.join(UPLOAD_FOLDER, filename)
+        file.save(path)
+        return jsonify({"success": True, "filename": filename, "path": path})
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
+@app.route("/read_pdf", methods=["POST"])
+def read_pdf():
+    try:
+        file = request.files["file"]
+        filename = secure_filename(file.filename)
+        path = os.path.join(UPLOAD_FOLDER, filename)
+        file.save(path)
+        reader = PdfReader(path)
+        text = ""
+        for page in reader.pages:
+            text += page.extract_text() + "\n"
+        return jsonify({"success": True, "text": text[:15000]})
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
+# ===============================
+# IMAGE & AI ROUTES
+# ===============================
+@app.route("/generate_image", methods=["POST"])
+def generate_image():
+    try:
+        data = request.json
+        prompt = data.get("prompt")
+        payload = {"model": "openai/dall-e-3", "prompt": prompt, "n": 1}
+        headers = {"Authorization": f"Bearer {OPENROUTER_API_KEY}", "Content-Type": "application/json"}
+        r = requests.post("https://openrouter.ai/api/v1/images/generations", headers=headers, json=payload)
+        return jsonify(r.json())
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
+@app.route("/ask_ai_v10", methods=["POST"])
+def ask_ai_v10():
+    try:
+        data = request.json
+        uid = data.get("uid", "guest")
+        msg = data.get("message")
+        history = load_user_chat(uid)
+        history.append({"role": "user", "content": msg})
+        payload = {"model": "openai/gpt-4o-mini", "messages": history[-12:]}
+        headers = {"Authorization": f"Bearer {OPENROUTER_API_KEY}", "Content-Type": "application/json"}
+        r = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=payload, timeout=40)
+        ans = r.json()["choices"][0]["message"]["content"]
+        history.append({"role": "assistant", "content": ans})
+        save_user_chat(uid, history)
+        return jsonify({"reply": ans})
+    except Exception as e:
+        return jsonify({"reply": "AI busy hai bhai", "error": str(e)})
+
+# ===============================
+# CHAT MANAGEMENT
+# ===============================
+@app.route("/save_chat", methods=["POST"])
+def save_chat():
+    try:
+        data = request.json
+        uid = data.get("uid")
+        chats = data.get("chats")
+        save_user_chat(uid, chats)
+        return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
+@app.route("/load_chat", methods=["POST"])
+def load_chat():
+    try:
+        data = request.json
+        uid = data.get("uid")
+        chats = load_user_chat(uid)
+        return jsonify({"success": True, "chats": chats})
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
+@app.route("/recent_chats", methods=["GET"])
+def recent_chats():
+    try:
+        files = os.listdir(CHAT_FOLDER)
+        users = [x.replace(".json", "") for x in files if x.endswith(".json")]
+        return jsonify({"users": users})
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
+@app.route("/delete_chat", methods=["POST"])
+def delete_chat():
+    try:
+        data = request.json
+        uid = data.get("uid")
+        path = get_chat_file(uid)
+        if os.path.exists(path):
+            os.remove(path)
+        return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
+# --- COMMUNITY CHAT SYSTEM ---
 @app.route('/get_messages')
 def get_messages():
     return jsonify(chat_messages)
@@ -151,121 +298,6 @@ def send_message():
     new_msg = {"user": data.get('user', 'Guest'), "msg": data.get('msg', ''), "time": "Now"}
     chat_messages.append(new_msg)
     return jsonify({"status": "sent"})
-
-
-# ===============================
-# V9 GOD MODE AI ENGINE (FINAL MERGED)
-# ===============================
-
-def ask_model(messages):
-    headers = {
-        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-        "Content-Type": "application/json"
-    }
-    for model in MODELS:
-        try:
-            payload = {
-                "model": model,
-                "messages": messages,
-                "temperature": 0.7
-            }
-            r = requests.post(
-                "https://openrouter.ai/api/v1/chat/completions",
-                headers=headers,
-                json=payload,
-                timeout=20
-            )
-            if r.status_code == 200:
-                data = r.json()
-                return data["choices"][0]["message"]["content"]
-        except Exception as e:
-            continue
-    return None
-
-@app.route("/ask_ai", methods=["POST"])
-def ask_ai():
-    try:
-        data = request.get_json()
-        user_msg = (data.get("message") or data.get("question") or "").strip()
-        chat_id = data.get("chat_id") or data.get("user_id") or "default"
-
-        if not user_msg:
-            return jsonify({"reply": "Question bhejo bhai."})
-
-        if chat_id not in CHAT_STORE:
-            CHAT_STORE[chat_id] = []
-
-        history = CHAT_STORE[chat_id]
-        messages = [{"role": "system", "content": SYSTEM_PROMPT}]
-        
-        # Add last 10 messages for context
-        for item in history[-10:]:
-            messages.append(item)
-            
-        messages.append({"role": "user", "content": user_msg})
-
-        reply = ask_model(messages)
-
-        if not reply:
-            reply = "⚠️ Sab AI model busy hain. Thodi der baad try karo."
-
-        # Save to Memory
-        history.append({"role": "user", "content": user_msg})
-        history.append({"role": "assistant", "content": reply})
-        CHAT_STORE[chat_id] = history
-
-        return jsonify({
-            "reply": reply,
-            "answer": reply, # compatibility
-            "chat_id": chat_id
-        })
-    except Exception as e:
-        return jsonify({"reply": f"Error: {str(e)}"})
-
-@app.route("/get_chats")
-def get_chats():
-    result = []
-    for cid, msgs in CHAT_STORE.items():
-        title = "New Chat"
-        for m in msgs:
-            if m["role"] == "user":
-                title = m["content"][:30]
-                break
-        result.append({"id": cid, "title": title})
-    return jsonify(result)
-
-@app.route("/get_chat/<chat_id>")
-def get_chat(chat_id):
-    return jsonify(CHAT_STORE.get(chat_id, []))
-
-@app.route("/delete_chat/<chat_id>", methods=["POST"])
-def delete_chat(chat_id):
-    if chat_id in CHAT_STORE:
-        del CHAT_STORE[chat_id]
-    return jsonify({"status": "deleted"})
-
-@app.route("/clear_chat", methods=["POST"])
-def clear_chat():
-    data = request.get_json()
-    chat_id = data.get("chat_id")
-    if chat_id in CHAT_STORE:
-        del CHAT_STORE[chat_id]
-    return jsonify({"status": "cleared"})
-
-@app.route("/generate_image", methods=["POST"])
-def generate_image():
-    data = request.get_json()
-    prompt = data.get("prompt", "")
-    return jsonify({
-        "reply": f"🖼️ Image Prompt Ready: {prompt}",
-        "image_url": "https://dummyimage.com/600x400/000/fff&text=AI+IMAGE"
-    })
-
-@app.route("/voice_ai", methods=["POST"])
-def voice_ai():
-    return jsonify({
-        "reply": "🎤 Voice feature frontend se connect karo."
-    })
 
 # ================= RUN =================
 if __name__ == '__main__':
