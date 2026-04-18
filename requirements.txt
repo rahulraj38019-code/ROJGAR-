@@ -1,22 +1,12 @@
-# Web Framework & Core
 Flask
 Flask-Cors
 requests
 beautifulsoup4
-fpdf
 gunicorn
 python-dotenv
-
-# AI & Async Operations
+fpdf2
 openai
-httpx
-aiohttp
-
-# Performance & Utilities
-cachetools
+sqlite-utils
+gevent
 Pillow
-
-# Database & Future Scalability
-SQLAlchemy
-SpeechRecognition
-pydub
+orjson
