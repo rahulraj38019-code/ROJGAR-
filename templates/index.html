@@ -275,7 +275,7 @@
 
     <div id="chat-sec" class="hidden">
         <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px;">
-            <button onclick="goBackToList()" style="border:none; background:none; font-size:20px; cursor:pointer;">⬅️</button>
+            <button onclick="showDash()" style="border:none; background:none; font-size:20px; cursor:pointer;">⬅️</button>
             <h3 style="margin:0; font-weight:800;">Community Chat</h3>
         </div>
         <div class="chat-container">
@@ -311,14 +311,14 @@
 
             <label id="mu-type-label">Select Option</label>
             <div id="mu-sem-container" style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:15px;" class="hidden">
-                <button onclick="setResType(this, 'Semester 1')" class="pill s-btn" data-sem="1">Sem 1</button>
-                <button onclick="setResType(this, 'Semester 2')" class="pill s-btn" data-sem="2">Sem 2</button>
-                <button onclick="setResType(this, 'Semester 3')" class="pill s-btn" data-sem="3">Sem 3</button>
-                <button onclick="setResType(this, 'Semester 4')" class="pill s-btn" data-sem="4">Sem 4</button>
-                <button onclick="setResType(this, 'Semester 5')" class="pill s-btn" data-sem="5">Sem 5</button>
-                <button onclick="setResType(this, 'Semester 6')" class="pill s-btn" data-sem="6">Sem 6</button>
-                <button onclick="setResType(this, 'Semester 7')" class="pill s-btn" data-sem="7">Sem 7</button>
-                <button onclick="setResType(this, 'Semester 8')" class="pill s-btn" data-sem="8">Sem 8</button>
+                <button onclick="setResType(this, 'Semester 1')" class="pill">Sem 1</button>
+                <button onclick="setResType(this, 'Semester 2')" class="pill">Sem 2</button>
+                <button onclick="setResType(this, 'Semester 3')" class="pill">Sem 3</button>
+                <button onclick="setResType(this, 'Semester 4')" class="pill">Sem 4</button>
+                <button onclick="setResType(this, 'Semester 5')" class="pill">Sem 5</button>
+                <button onclick="setResType(this, 'Semester 6')" class="pill">Sem 6</button>
+                <button onclick="setResType(this, 'Semester 7')" class="pill">Sem 7</button>
+                <button onclick="setResType(this, 'Semester 8')" class="pill">Sem 8</button>
             </div>
             <div id="mu-part-container" style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:15px;" class="hidden">
                 <button onclick="setResType(this, 'Part 1')" class="pill">Part 1</button>
@@ -398,47 +398,58 @@
 <script>
     let user = {}; let resType = ''; let currentCategory = ''; let lastResults = []; let currentType = ''; 
     let pageCount = 1; let currentScreen = 'home';
+    let isAIModalOpen = false;
 
     window.onload = () => {
         if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
-        // Initial state for back button
-        history.replaceState({screen: 'home'}, '');
         checkLogin();
         fetchLive();
         loadMessages();
         setInterval(loadMessages, 5000);
+        // Push initial state
+        if(localStorage.getItem('userHub')) {
+            history.replaceState({screen: 'home'}, '');
+        }
     };
 
-    // --- UNIVERSAL BACK BUTTON LOGIC ---
+    // ==================================
+    // 🔙 MASTER BACK BUTTON LOGIC
+    // ==================================
     window.onpopstate = function(event) {
+        // 1. Agar AI Modal khula hai toh sirf modal band karo
+        if (isAIModalOpen) {
+            document.getElementById('ai-modal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+            isAIModalOpen = false;
+            return;
+        }
+
+        // 2. Agar koi state hai toh us screen par jao
         if (event.state) {
             const screen = event.state.screen;
             if (screen === 'home') showDash(false);
             else if (screen === 'results') showResults(false);
+            else if (screen === 'chat') showCommunityChat(false);
+            else if (screen === 'resume') showResumeSection(false);
             else if (screen === 'list') {
-                hideAll();
-                document.getElementById('main-header').classList.remove('hidden');
-                document.getElementById('bottom-bar').classList.remove('hidden');
-                document.getElementById('feed-sec').classList.remove('hidden');
                 document.getElementById('back-btn').classList.add('hidden');
+                if(currentType === 'Job') document.getElementById('load-more-container').classList.remove('hidden');
                 renderList(lastResults);
-            }
-            else if (screen === 'resume') {
+                // Ensure feed is visible
                 hideAll();
-                document.getElementById('resume-sec').classList.remove('hidden');
-                document.getElementById('bottom-bar').classList.remove('hidden');
-            }
-            else if (screen === 'chat') {
-                hideAll();
-                document.getElementById('chat-sec').classList.remove('hidden');
+                document.getElementById('main-header').classList.remove('hidden'); 
+                document.getElementById('feed-sec').classList.remove('hidden'); 
                 document.getElementById('bottom-bar').classList.remove('hidden');
             }
         } else {
-            // Default fall back
+            // Default back behavior
             showDash(false);
         }
     };
 
+    // ==================================
+    // 🤖 AI LOGIC
+    // ==================================
     async function askOpenRouter() {
         const input = document.getElementById("ai-input");
         const chatBody = document.getElementById("ai-chat-body");
@@ -491,19 +502,23 @@
     function openAIModal() { 
         document.getElementById('ai-modal').classList.add('active'); 
         document.body.style.overflow = 'hidden'; 
+        isAIModalOpen = true;
+        history.pushState({modal: 'ai'}, ''); // Push state for AI
     }
     function closeAIModal() { 
-        document.getElementById('ai-modal').classList.remove('active'); 
-        document.body.style.overflow = 'auto'; 
+        if (isAIModalOpen) {
+            history.back(); // This will trigger onpopstate and close modal
+        }
     }
 
+    // --- CORE APP FUNCTIONS ---
     function checkLogin() {
         let saved = localStorage.getItem('userHub');
         if(saved) {
             user = JSON.parse(saved);
             document.getElementById('user-initial').innerText = user.name ? user.name.charAt(0).toUpperCase() : 'U';
             localStorage.setItem("userName", user.name || "guest");
-            showDash(false);
+            showDash(false); // don't push state on first load
         } else {
             hideAll();
             document.getElementById('login-sec').classList.remove('hidden');
@@ -537,6 +552,7 @@
         document.getElementById('dash-sec').classList.remove('hidden');
         document.getElementById('bottom-bar').classList.remove('hidden');
         setActiveNav(0);
+        currentScreen = 'home';
         if(push) history.pushState({screen: 'home'}, '');
     }
 
@@ -546,25 +562,26 @@
         document.getElementById('res-sec').classList.remove('hidden');
         document.getElementById('bottom-bar').classList.remove('hidden');
         setActiveNav(1);
+        currentScreen = 'results';
         if(push) history.pushState({screen: 'results'}, '');
     }
 
-    function showResumeSection() {
+    function showResumeSection(push = true) {
         hideAll();
         document.getElementById('main-header').classList.remove('hidden');
         document.getElementById('resume-sec').classList.remove('hidden');
         document.getElementById('bottom-bar').classList.remove('hidden');
         if(document.getElementById('sideMenu').classList.contains('active')) toggleMenu();
-        history.pushState({screen: 'resume'}, '');
+        if(push) history.pushState({screen: 'resume'}, '');
     }
 
-    function showCommunityChat() {
+    function showCommunityChat(push = true) {
         hideAll();
         document.getElementById('main-header').classList.remove('hidden');
         document.getElementById('chat-sec').classList.remove('hidden');
         document.getElementById('bottom-bar').classList.remove('hidden');
         loadMessages();
-        history.pushState({screen: 'chat'}, '');
+        if(push) history.pushState({screen: 'chat'}, '');
     }
 
     async function downloadResume() {
@@ -664,16 +681,15 @@
         openJobs(query); 
     }
 
-    // --- Magadh University SMART LOGIC (V2 Update) ---
+    // --- Magadh University Smart Logic (V2 Update) ---
     function updateMUSemButtons() {
         const session = document.getElementById('mu-session').value;
         const semDiv = document.getElementById('mu-sem-container');
         const partDiv = document.getElementById('mu-part-container');
-        const semButtons = document.querySelectorAll('.s-btn');
         const examBtn = document.getElementById('mu-btn-exam');
         const admBtn = document.getElementById('mu-btn-adm');
         
-        // Reset state
+        // Reset selections
         resType = '';
         document.querySelectorAll('.pill').forEach(p => p.classList.remove('active-pill'));
 
@@ -683,29 +699,18 @@
             return;
         }
 
-        // Logic 1: Semester vs Part Visibility
+        // Logic 1: Semester vs Part
         if (session === "2023-27" || session === "2024-28") {
             semDiv.classList.remove('hidden');
             partDiv.classList.add('hidden');
-            
-            // Logic 2: Limit semesters for Session 2023-27 (Show only 1-5)
-            if(session === "2023-27") {
-                semButtons.forEach(btn => {
-                    let sNum = parseInt(btn.getAttribute('data-sem'));
-                    if(sNum > 5) btn.style.display = 'none';
-                    else btn.style.display = 'block';
-                });
-            } else {
-                semButtons.forEach(btn => btn.style.display = 'block');
-            }
         } else {
             semDiv.classList.add('hidden');
             partDiv.classList.remove('hidden');
         }
 
-        // Logic 3: Hide Admission/Form for old sessions
-        const oldSessions = ["2020-23", "2021-24"];
-        if (oldSessions.includes(session)) {
+        // Logic 2: Show/Hide Admission & Exam Form for completed sessions
+        const completeSessions = ["2020-23", "2021-24"];
+        if (completeSessions.includes(session)) {
             examBtn.classList.add('hidden');
             admBtn.classList.add('hidden');
         } else {
@@ -718,13 +723,6 @@
         let session = document.getElementById('mu-session').value;
         if(!session) return alert("Pehle Session chunein!");
         if(!resType) return alert("Pehle Semester ya Year chunein!");
-
-        // Logic 4: Check if Exam Conducted (English Message)
-        if(actionType === 'Result' && session === "2023-27" && resType === 'Semester 5') {
-            alert("Examination not conducted yet for this semester.");
-            return;
-        }
-
         let query = `Magadh University ${session} ${resType} ${actionType} official direct link portal`;
         openJobs(query); 
     }
@@ -733,7 +731,7 @@
         if(!isLoadMore) {
             lastResults = []; pageCount = 1;
             document.getElementById('list').innerHTML = "<div style='padding:40px; text-align:center; font-weight:700; color:var(--blue);'>🔍 Searching...</div>";
-            history.pushState({screen: 'list'}, '');
+            history.pushState({screen: 'list'}, ''); // Push state for listing
         }
         currentCategory = cat;
         let lowerCat = cat.toLowerCase();
@@ -778,7 +776,7 @@
         const listDiv = document.getElementById('list');
         document.getElementById('back-btn').classList.remove('hidden');
         document.getElementById('load-more-container').classList.add('hidden');
-        history.pushState({screen: 'details'}, '');
+        history.pushState({screen: 'details'}, ''); // Push state for detail view
         let btnText = "Open Link 🚀";
         if(currentType === 'Result') btnText = "Check Result ✅";
         if(currentType === 'Admit Card') btnText = "Download Card 📥";
