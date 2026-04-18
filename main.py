@@ -5,12 +5,17 @@ import os
 from bs4 import BeautifulSoup
 from fpdf import FPDF # Resume generation ke liye
 import io
+import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 app = Flask(__name__)
 CORS(app)
 
 # --- API KEYS ---
 SERPER_API_KEY = "675ec80f6858652b8add27fbe3ab09371a6faaae"
+
+# --- CACHE (SMART SPEED BOOST) ---
+ai_cache = {}
 
 # Community Chat ke liye temporary storage
 chat_messages = [
@@ -123,68 +128,75 @@ def send_message():
         chat_messages.append({"user": "Admin_Bot", "msg": "Aapka sawal mil gaya hai!", "time": "Just Now"})
     return jsonify({"status": "sent"})
 
-# --- VIDEO-INSPIRED SMART FALLBACK AI ROUTE ---
+# --- LOCAL FALLBACK AI ---
+def local_fallback(question):
+    q = question.lower()
+    if "hello" in q or "hi" in q:
+        return "Hello bhai 👋 main Rozgar AI hoon, bolo kya help chahiye?"
+    if "job" in q:
+        return "Jobs ke liye Rozgar Hub pe latest updates check karo 👍"
+    if "bihar" in q:
+        return "Bihar related update ke liye main help kar sakta hoon 😊"
+    return "Abhi saare AI models busy hain 😅 thodi der baad try karo."
+
+# --- NEW PARALLEL AI ROUTE (FROM VIDEO SUGGESTION) ---
 @app.route('/ask_ai', methods=['POST'])
 def ask_ai():
     try:
         data = request.get_json()
-        # Frontend compatibility: Teeno keys handle kar lega
         question = data.get('message') or data.get('question') or data.get('userMsg')
-        
+
         if not question:
-            return jsonify({"reply": "Bhai, sawal toh likho!", "answer": "Bhai, sawal toh likho!"})
+            return jsonify({"reply": "Sawal likho bhai 😅"})
+
+        # CACHE CHECK
+        if question in ai_cache:
+            return jsonify({"reply": ai_cache[question], "answer": ai_cache[question], "cached": True})
 
         api_key = os.getenv("OPENROUTER_API_KEY")
         if not api_key:
-            return jsonify({"reply": "API Key missing in Render!", "answer": "API Key missing!"})
+            return jsonify({"reply": local_fallback(question)})
 
-        headers = {
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json"
-        }
+        headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
 
-        # Video logic: Har model ko limited time denge (timeout=8), fail hote hi agla try karenge
         models = [
             "google/gemini-2.0-flash-lite-preview-02-05:free",
             "meta-llama/llama-3.3-70b-instruct:free",
             "mistralai/mistral-7b-instruct:free"
         ]
 
-        for model_name in models:
+        def call_model(model_name):
             try:
                 payload = {
                     "model": model_name,
                     "messages": [
-                        {"role": "system", "content": "You are Rozgar Hub AI Assistant. Help users in Hinglish."},
-                        {"role": "user", "content": str(question)}
+                        {"role": "system", "content": "You are Rozgar Hub AI. Reply in simple Hinglish."},
+                        {"role": "user", "content": question}
                     ]
                 }
-                
-                # Speed-First: Agar 8 sec mein Gemini jawab nahi deta, toh turant switch karega
-                response = requests.post(
-                    "https://openrouter.ai/api/v1/chat/completions", 
-                    headers=headers, 
-                    json=payload, 
-                    timeout=8 
-                )
-                
+                response = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=payload, timeout=12)
                 if response.status_code == 200:
                     result = response.json()
-                    if 'choices' in result and len(result['choices']) > 0:
-                        answer = result['choices'][0]['message']['content']
-                        # Dono keys bhej rahe hain taaki frontend load kar sake
-                        return jsonify({"answer": answer, "reply": answer, "active_model": model_name})
-                
-                # Agar 200 nahi aaya, toh turant loop agle model par jayega
-                continue
-                
+                    if "choices" in result:
+                        return result["choices"][0]["message"]["content"]
             except:
-                continue # Network error ya timeout par agla model try karega
+                return None
+            return None
 
-        return jsonify({"reply": "Bhai, abhi saare AI models busy hain. 1 min baad try karo.", "answer": "All models busy."})
-            
+        # PARALLEL EXECUTION: Teeno models ko ek saath call karega
+        with ThreadPoolExecutor(max_workers=3) as executor:
+            futures = [executor.submit(call_model, m) for m in models]
+            for future in as_completed(futures):
+                result = future.result()
+                if result:
+                    ai_cache[question] = result  # SAVE TO CACHE
+                    return jsonify({"reply": result, "answer": result})
+
+        # FINAL FALLBACK: Agar koi model nahi chala
+        return jsonify({"reply": local_fallback(question)})
+
     except Exception as e:
-        return jsonify({"reply": f"Backend Error: {str(e)}", "answer": str(e)})
+        return jsonify({"reply": f"Server error: {str(e)}"})
 
 if __name__ == '__main__':
     app.run(debug=True)
