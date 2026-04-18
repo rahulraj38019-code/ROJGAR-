@@ -69,7 +69,6 @@ def fetch_jobs():
         category = data.get('category', 'latest jobs')
         edu = data.get('edu', '')
         
-        # Wahi purana logic taaki search buttons chalein
         if "Railway" in category or "RRB" in category:
             query = f"RRB Railway {category} official result notice 2026 site:indianrailways.gov.in OR site:sarkariresult.com"
         elif "Bihar Board" in category:
@@ -131,22 +130,38 @@ def send_message():
     chat_messages.append(new_msg)
     return jsonify({"status": "sent"})
 
-# --- SMART AI SYSTEM (PARALLEL & STABLE) ---
+# ================= V8 AI ENGINE UPDATED =================
+
 def fallback_ai(q):
     q = q.lower()
-    if "hello" in q or "hi" in q: return "👋 Hello! Main Rozgar Hub AI assistant hoon."
-    if "job" in q: return "📢 Latest jobs ke liye site ka section check karo."
-    return "⚠️ AI models busy hain, thodi der baad try karein."
+    if "hello" in q or "hi" in q:
+        return "👋 Hello! Main Rozgar Hub AI hoon."
+    if "job" in q:
+        return "📢 Jobs section me latest vacancies check karo."
+    return "⚠️ Abhi AI busy hai, thodi der baad try karo."
 
 def call_model(model, question):
     try:
-        payload = {"model": model, "messages": [{"role": "system", "content": "Short Hinglish response."}, {"role": "user", "content": question}]}
-        res = requests.post("https://openrouter.ai/api/v1/chat/completions", 
-                            headers={"Authorization": f"Bearer {OPENROUTER_API_KEY}", "Content-Type": "application/json"}, 
-                            json=payload, timeout=12)
+        payload = {
+            "model": model,
+            "messages": [
+                {"role": "system", "content": "You are a smart, helpful, professional AI assistant. Always reply in simple Hinglish."},
+                {"role": "user", "content": question}
+            ]
+        }
+        res = requests.post(
+            "https://openrouter.ai/api/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+                "Content-Type": "application/json"
+            },
+            json=payload,
+            timeout=10
+        )
         if res.status_code == 200:
             return res.json()['choices'][0]['message']['content']
-    except: return None
+    except:
+        return None
     return None
 
 @app.route('/ask_ai', methods=['POST'])
@@ -154,13 +169,21 @@ def ask_ai():
     try:
         data = request.get_json()
         question = data.get('message') or data.get('question') or data.get('userMsg')
-        if not question: return jsonify({"reply": "Question?"})
 
-        if question in cache and (time.time() - cache_time[question] < CACHE_TTL):
+        if not question:
+            return jsonify({"reply": "Ask something..."})
+
+        # CACHE CHECK
+        if question in cache and time.time() - cache_time[question] < CACHE_TTL:
             return jsonify({"reply": cache[question], "answer": cache[question]})
 
-        MODELS = ["openai/gpt-3.5-turbo", "mistralai/mistral-small", "google/gemini-2.0-flash-lite-preview-02-05:free"]
-        
+        # ⭐ SMART MODEL ORDER (V8 STYLE)
+        MODELS = [
+            "google/gemini-2.0-flash-exp:free",
+            "openai/gpt-4o-mini",
+            "mistralai/mistral-small"
+        ]
+
         with ThreadPoolExecutor(max_workers=3) as executor:
             futures = [executor.submit(call_model, m, question) for m in MODELS]
             for f in as_completed(futures):
@@ -171,8 +194,10 @@ def ask_ai():
                     return jsonify({"reply": result, "answer": result})
 
         return jsonify({"reply": fallback_ai(question)})
-    except Exception as e:
-        return jsonify({"reply": f"Error: {e}"})
 
+    except Exception as e:
+        return jsonify({"reply": f"Error: {str(e)}"})
+
+# ================= RUN =================
 if __name__ == '__main__':
     app.run(debug=True)
