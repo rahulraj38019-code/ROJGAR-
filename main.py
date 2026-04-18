@@ -23,6 +23,7 @@ cache = {}
 cache_time = {}
 CACHE_TTL = 300
 chat_memory = {} # V9 Memory Storage
+CHAT_STORE = {} # New V9 Pro Storage
 
 # Community Chat Data
 chat_messages = [
@@ -30,16 +31,24 @@ chat_messages = [
     {"user": "Admin_Rahul", "msg": "November tak umeed hai, taiyari jaari rakhein!", "time": "10:48 AM"}
 ]
 
-# V9 SYSTEM PROMPT
+# MODEL LIST (AUTO FALLBACK)
+MODELS = [
+    "openai/gpt-4o-mini",
+    "openai/gpt-3.5-turbo",
+    "google/gemini-2.0-flash-lite-preview-02-05:free",
+    "mistralai/mistral-small"
+]
+
+# V9 PRO SYSTEM PROMPT
 SYSTEM_PROMPT = """
-You are V9 GOD MODE AI Assistant.
+You are Rozgar Hub AI Pro (V9 GOD MODE).
 Behave like ChatGPT. Be smart, professional, helpful, human-like.
+Reply smartly in Hinglish/Hindi/English naturally.
+Remember previous messages.
 Rules:
-- Understand follow-up questions.
-- Remember previous messages in same chat.
-- Reply in Hindi / Hinglish / English naturally.
-- Give exact useful answers.
 - Jobs/result query me details do: post name, eligibility, date, salary, apply process.
+- For jobs/results give: Full details, Eligibility, Age, Last date, Apply mode, Selection process.
+- If user asks chart/image: reply with text layout.
 - Agar info unknown ho to honestly bolo.
 """
 
@@ -145,36 +154,32 @@ def send_message():
 
 
 # ===============================
-# V9 GOD MODE AI ENGINE (FINAL)
+# V9 GOD MODE AI ENGINE (FINAL MERGED)
 # ===============================
 
-def trim_history(chat_id):
-    if chat_id in chat_memory:
-        if len(chat_memory[chat_id]) > 20:
-            chat_memory[chat_id] = chat_memory[chat_id][-20:]
-
 def ask_model(messages):
-    payload = {
-        "model": "openai/gpt-3.5-turbo",
-        "messages": messages,
-        "temperature": 0.7
-    }
     headers = {
         "Authorization": f"Bearer {OPENROUTER_API_KEY}",
         "Content-Type": "application/json"
     }
-    try:
-        r = requests.post(
-            "https://openrouter.ai/api/v1/chat/completions",
-            headers=headers,
-            json=payload,
-            timeout=25
-        )
-        if r.status_code == 200:
-            data = r.json()
-            return data["choices"][0]["message"]["content"]
-    except Exception as e:
-        print("AI Error:", e)
+    for model in MODELS:
+        try:
+            payload = {
+                "model": model,
+                "messages": messages,
+                "temperature": 0.7
+            }
+            r = requests.post(
+                "https://openrouter.ai/api/v1/chat/completions",
+                headers=headers,
+                json=payload,
+                timeout=20
+            )
+            if r.status_code == 200:
+                data = r.json()
+                return data["choices"][0]["message"]["content"]
+        except Exception as e:
+            continue
     return None
 
 @app.route("/ask_ai", methods=["POST"])
@@ -185,45 +190,82 @@ def ask_ai():
         chat_id = data.get("chat_id") or data.get("user_id") or "default"
 
         if not user_msg:
-            return jsonify({"reply": "Kuch likho bhai."})
+            return jsonify({"reply": "Question bhejo bhai."})
 
-        # Memory Check
-        if chat_id not in chat_memory:
-            chat_memory[chat_id] = []
+        if chat_id not in CHAT_STORE:
+            CHAT_STORE[chat_id] = []
 
-        history = chat_memory[chat_id]
-
-        # Build Messages with System Prompt
+        history = CHAT_STORE[chat_id]
         messages = [{"role": "system", "content": SYSTEM_PROMPT}]
-        messages.extend(history)
+        
+        # Add last 10 messages for context
+        for item in history[-10:]:
+            messages.append(item)
+            
         messages.append({"role": "user", "content": user_msg})
 
-        # AI Call
         reply = ask_model(messages)
 
         if not reply:
-            reply = "Bhai abhi server busy hai, thodi der baad try karo."
+            reply = "⚠️ Sab AI model busy hain. Thodi der baad try karo."
 
         # Save to Memory
         history.append({"role": "user", "content": user_msg})
         history.append({"role": "assistant", "content": reply})
-        trim_history(chat_id)
+        CHAT_STORE[chat_id] = history
 
         return jsonify({
             "reply": reply,
-            "answer": reply, # compatibility ke liye
+            "answer": reply, # compatibility
             "chat_id": chat_id
         })
     except Exception as e:
         return jsonify({"reply": f"Error: {str(e)}"})
 
+@app.route("/get_chats")
+def get_chats():
+    result = []
+    for cid, msgs in CHAT_STORE.items():
+        title = "New Chat"
+        for m in msgs:
+            if m["role"] == "user":
+                title = m["content"][:30]
+                break
+        result.append({"id": cid, "title": title})
+    return jsonify(result)
+
+@app.route("/get_chat/<chat_id>")
+def get_chat(chat_id):
+    return jsonify(CHAT_STORE.get(chat_id, []))
+
+@app.route("/delete_chat/<chat_id>", methods=["POST"])
+def delete_chat(chat_id):
+    if chat_id in CHAT_STORE:
+        del CHAT_STORE[chat_id]
+    return jsonify({"status": "deleted"})
+
 @app.route("/clear_chat", methods=["POST"])
 def clear_chat():
     data = request.get_json()
     chat_id = data.get("chat_id")
-    if chat_id in chat_memory:
-        del chat_memory[chat_id]
+    if chat_id in CHAT_STORE:
+        del CHAT_STORE[chat_id]
     return jsonify({"status": "cleared"})
+
+@app.route("/generate_image", methods=["POST"])
+def generate_image():
+    data = request.get_json()
+    prompt = data.get("prompt", "")
+    return jsonify({
+        "reply": f"🖼️ Image Prompt Ready: {prompt}",
+        "image_url": "https://dummyimage.com/600x400/000/fff&text=AI+IMAGE"
+    })
+
+@app.route("/voice_ai", methods=["POST"])
+def voice_ai():
+    return jsonify({
+        "reply": "🎤 Voice feature frontend se connect karo."
+    })
 
 # ================= RUN =================
 if __name__ == '__main__':
