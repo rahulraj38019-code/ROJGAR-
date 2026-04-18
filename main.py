@@ -2,20 +2,22 @@ import requests
 from flask import Flask, render_template, request, jsonify, send_from_directory, make_response
 from flask_cors import CORS
 import os
+import time
 from bs4 import BeautifulSoup
 from fpdf import FPDF # Resume generation ke liye
 import io
-import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 app = Flask(__name__)
 CORS(app)
 
-# --- API KEYS ---
+# ===================== CONFIG & CACHE =====================
 SERPER_API_KEY = "675ec80f6858652b8add27fbe3ab09371a6faaae"
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
-# --- CACHE (SMART SPEED BOOST) ---
-ai_cache = {}
+cache = {} 
+CACHE_TTL = 300 # 5 min cache
+cache_time = {}
 
 # Community Chat ke liye temporary storage
 chat_messages = [
@@ -23,6 +25,7 @@ chat_messages = [
     {"user": "Admin_Rahul", "msg": "November tak umeed hai, taiyari jaari rakhein!", "time": "10:48 AM"}
 ]
 
+# ===================== ROUTES FOR PWA =====================
 @app.route('/manifest.json')
 def serve_manifest():
     return send_from_directory(os.getcwd(), 'manifest.json')
@@ -35,10 +38,15 @@ def serve_sw():
 def index():
     return render_template('index.html')
 
+@app.route('/health')
+def health():
+    return jsonify({"status": "AI V2 running", "api_key_set": bool(OPENROUTER_API_KEY)})
+
+# ===================== JOBS & UPDATES =====================
 @app.route('/get_live_updates')
 def get_live_updates():
     try:
-        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+        headers = {'User-Agent': 'Mozilla/5.0'}
         response = requests.get('https://sarkariresult.com.cm/', headers=headers, timeout=10)
         soup = BeautifulSoup(response.text, 'html.parser')
         jobs, admits = [], []
@@ -47,9 +55,9 @@ def get_live_updates():
             text = link.text.strip()
             href = link.get('href', '')
             if not href or len(text) < 10: continue
-            if "job" in href.lower() or "recruit" in href.lower():
+            if "job" in href.lower():
                 if len(jobs) < 15: jobs.append({"title": text, "link": href})
-            elif "admit" in href.lower() or "hall-ticket" in href.lower():
+            elif "admit" in href.lower():
                 if len(admits) < 15: admits.append({"title": text, "link": href})
         return jsonify({"jobs": jobs, "admits": admits})
     except:
@@ -61,26 +69,15 @@ def fetch_jobs():
         data = request.get_json()
         category = data.get('category', 'latest jobs')
         edu = data.get('edu', '')
-        
-        if "Railway" in category or "RRB" in category:
-            query = f"RRB Railway {category} official result notice 2026 site:indianrailways.gov.in OR site:sarkariresult.com"
-        elif "Bihar Board" in category:
-            query = f"BSEB {category} official result 2026 site:biharboardonline.bihar.gov.in OR site:sarkariresult.com"
-        elif "SSC" in category:
-            query = f"SSC {category} merit list result site:ssc.gov.in OR site:sarkariresult.com"
-        elif "Police" in category:
-            query = f"Bihar Police {category} result update site:csbc.bih.nic.in OR site:sarkariresult.com"
-        else:
-            query = f"latest {category} vacancies for {edu} pass 2026 India"
-
+        query = f"latest {category} vacancies for {edu} pass 2026 site:sarkariresult.com"
         headers = {'X-API-KEY': SERPER_API_KEY, 'Content-Type': 'application/json'}
         payload = {'q': query, 'num': 20, 'gl': 'in'}
         response = requests.post('https://google.serper.dev/search', headers=headers, json=payload)
-        search_data = response.json()
-        return jsonify(search_data.get('organic', []))
+        return jsonify(response.json().get('organic', []))
     except Exception as e:
         return jsonify({"error": str(e)})
 
+# ===================== RESUME GENERATOR =====================
 @app.route('/generate_resume', methods=['POST'])
 def generate_resume():
     try:
@@ -99,11 +96,6 @@ def generate_resume():
         pdf.cell(200, 10, txt="SKILLS", ln=True)
         pdf.set_font("Arial", size=12)
         pdf.multi_cell(0, 10, txt=data.get('skills', 'N/A'))
-        pdf.ln(5)
-        pdf.set_font("Arial", 'B', 14)
-        pdf.cell(200, 10, txt="EXPERIENCE", ln=True)
-        pdf.set_font("Arial", size=12)
-        pdf.multi_cell(0, 10, txt=data.get('exp', 'N/A'))
         output = io.BytesIO()
         pdf_content = pdf.output(dest='S').encode('latin-1')
         output.write(pdf_content)
@@ -112,89 +104,71 @@ def generate_resume():
         response.headers['Content-Type'] = 'application/pdf'
         response.headers['Content-Disposition'] = 'attachment; filename=resume.pdf'
         return response
-    except Exception as e:
-        return str(e)
+    except Exception as e: return str(e)
 
+# ===================== CHAT SYSTEM =====================
 @app.route('/get_messages')
-def get_messages():
-    return jsonify(chat_messages)
+def get_messages(): return jsonify(chat_messages)
 
 @app.route('/send_message', methods=['POST'])
 def send_message():
     data = request.get_json()
-    new_msg = {"user": data.get('user', 'Guest'), "msg": data.get('msg', ''), "time": "Just Now"}
-    chat_messages.append(new_msg)
-    if "?" in new_msg['msg']:
-        chat_messages.append({"user": "Admin_Bot", "msg": "Aapka sawal mil gaya hai!", "time": "Just Now"})
+    chat_messages.append({"user": data.get('user', 'Guest'), "msg": data.get('msg', ''), "time": "Just Now"})
     return jsonify({"status": "sent"})
 
-# --- LOCAL FALLBACK AI ---
-def local_fallback(question):
-    q = question.lower()
-    if "hello" in q or "hi" in q:
-        return "Hello bhai 👋 main Rozgar AI hoon, bolo kya help chahiye?"
-    if "job" in q:
-        return "Jobs ke liye Rozgar Hub pe latest updates check karo 👍"
-    if "bihar" in q:
-        return "Bihar related update ke liye main help kar sakta hoon 😊"
-    return "Abhi saare AI models busy hain 😅 thodi der baad try karo."
+# ===================== NEW SMART AI LOGIC (V2) =====================
+def fallback_ai(q):
+    q = q.lower()
+    if "hello" in q or "hi" in q: return "👋 Hello! Main Rozgar Hub AI assistant hoon, bolo kya help chahiye?"
+    if "job" in q: return "📢 Latest jobs ke liye site ka home page check karo ya mujhe category batao."
+    if "exam" in q: return "📚 Exam preparation ke liye syllabus follow karo aur daily practice karo."
+    return "⚠️ Abhi saare AI models busy hain, thodi der baad try karo."
 
-# --- NEW PARALLEL AI ROUTE (FROM VIDEO SUGGESTION) ---
+def call_model(model, question):
+    try:
+        payload = {
+            "model": model,
+            "messages": [
+                {"role": "system", "content": "You are a fast Hindi-English assistant for Rozgar Hub. Keep answers short."},
+                {"role": "user", "content": question}
+            ]
+        }
+        res = requests.post("https://openrouter.ai/api/v1/chat/completions", 
+                            headers={"Authorization": f"Bearer {OPENROUTER_API_KEY}", "Content-Type": "application/json"}, 
+                            json=payload, timeout=15)
+        if res.status_code == 200:
+            data = res.json()
+            if "choices" in data: return data["choices"][0]["message"]["content"]
+    except: return None
+    return None
+
 @app.route('/ask_ai', methods=['POST'])
 def ask_ai():
     try:
         data = request.get_json()
         question = data.get('message') or data.get('question') or data.get('userMsg')
-
-        if not question:
-            return jsonify({"reply": "Sawal likho bhai 😅"})
+        if not question: return jsonify({"reply": "Sawal missing hai bhai!"})
 
         # CACHE CHECK
-        if question in ai_cache:
-            return jsonify({"reply": ai_cache[question], "answer": ai_cache[question], "cached": True})
+        if question in cache:
+            if time.time() - cache_time[question] < CACHE_TTL:
+                return jsonify({"reply": cache[question], "cached": True})
 
-        api_key = os.getenv("OPENROUTER_API_KEY")
-        if not api_key:
-            return jsonify({"reply": local_fallback(question)})
+        if not OPENROUTER_API_KEY: return jsonify({"reply": fallback_ai(question)})
 
-        headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
+        # Parallel Models (Suggestion ke hisaab se)
+        MODELS = ["openai/gpt-3.5-turbo", "mistralai/mistral-small", "google/gemini-2.0-flash-lite-preview-02-05:free"]
 
-        models = [
-            "google/gemini-2.0-flash-lite-preview-02-05:free",
-            "meta-llama/llama-3.3-70b-instruct:free",
-            "mistralai/mistral-7b-instruct:free"
-        ]
-
-        def call_model(model_name):
-            try:
-                payload = {
-                    "model": model_name,
-                    "messages": [
-                        {"role": "system", "content": "You are Rozgar Hub AI. Reply in simple Hinglish."},
-                        {"role": "user", "content": question}
-                    ]
-                }
-                response = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=payload, timeout=12)
-                if response.status_code == 200:
-                    result = response.json()
-                    if "choices" in result:
-                        return result["choices"][0]["message"]["content"]
-            except:
-                return None
-            return None
-
-        # PARALLEL EXECUTION: Teeno models ko ek saath call karega
         with ThreadPoolExecutor(max_workers=3) as executor:
-            futures = [executor.submit(call_model, m) for m in models]
-            for future in as_completed(futures):
-                result = future.result()
+            futures = [executor.submit(call_model, m, question) for m in MODELS]
+            for f in as_completed(futures):
+                result = f.result()
                 if result:
-                    ai_cache[question] = result  # SAVE TO CACHE
-                    return jsonify({"reply": result, "answer": result})
+                    cache[question] = result
+                    cache_time[question] = time.time()
+                    return jsonify({"reply": result, "active": "online_ai", "answer": result})
 
-        # FINAL FALLBACK: Agar koi model nahi chala
-        return jsonify({"reply": local_fallback(question)})
-
+        return jsonify({"reply": fallback_ai(question), "active": "fallback"})
     except Exception as e:
         return jsonify({"reply": f"Server error: {str(e)}"})
 
