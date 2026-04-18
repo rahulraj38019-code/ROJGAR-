@@ -299,7 +299,7 @@
 
         <div id="sub-magadh" class="card hidden" style="margin-top:15px; background:var(--white); border: 2px solid var(--blue);">
             <label>Select Session</label>
-            <select id="mu-session" class="year-input" style="margin-bottom:15px; width:100%;">
+            <select id="mu-session" class="year-input" style="margin-bottom:15px; width:100%;" onchange="updateMUSemButtons()">
                 <option value="">-- Choose Session --</option>
                 <option value="2024-28">Session 2024-2028</option>
                 <option value="2023-27">Session 2023-2027</option>
@@ -309,21 +309,31 @@
                 <option value="2020-23">Session 2020-2023</option>
             </select>
 
-            <label>Select Semester/Year</label>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:15px;">
+            <label id="mu-type-label">Select Option</label>
+            <div id="mu-sem-container" style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:15px;" class="hidden">
                 <button onclick="setResType(this, 'Semester 1')" class="pill">Sem 1</button>
                 <button onclick="setResType(this, 'Semester 2')" class="pill">Sem 2</button>
                 <button onclick="setResType(this, 'Semester 3')" class="pill">Sem 3</button>
                 <button onclick="setResType(this, 'Semester 4')" class="pill">Sem 4</button>
+                <button onclick="setResType(this, 'Semester 5')" class="pill">Sem 5</button>
+                <button onclick="setResType(this, 'Semester 6')" class="pill">Sem 6</button>
+                <button onclick="setResType(this, 'Semester 7')" class="pill">Sem 7</button>
+                <button onclick="setResType(this, 'Semester 8')" class="pill">Sem 8</button>
+            </div>
+            <div id="mu-part-container" style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:15px;" class="hidden">
+                <button onclick="setResType(this, 'Part 1')" class="pill">Part 1</button>
                 <button onclick="setResType(this, 'Part 2')" class="pill">Part 2</button>
                 <button onclick="setResType(this, 'Part 3')" class="pill">Part 3</button>
             </div>
 
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;" id="mu-action-grid">
                 <button onclick="muAction('Result')" class="btn-primary" style="padding:12px; font-size:12px; background:#28a745;">Check Result ✅</button>
-                <button onclick="muAction('Exam Form')" class="btn-primary" style="padding:12px; font-size:12px; background:#ffc107; color:black;">Exam Form 📝</button>
+                <button id="mu-btn-exam" onclick="muAction('Exam Form')" class="btn-primary" style="padding:12px; font-size:12px; background:#ffc107; color:black;">Exam Form 📝</button>
             </div>
-            <button onclick="muAction('Admit Card')" class="btn-load" style="margin-top:10px; width:100%;">Download Admit Card 📥</button>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px;">
+                <button id="mu-btn-adm" onclick="muAction('Admission')" class="btn-load" style="margin:0; width:100%; border-color:#17a2b8; color:#17a2b8;">Admission 🎓</button>
+                <button onclick="muAction('Admit Card')" class="btn-load" style="margin:0; width:100%;">Admit Card 📥</button>
+            </div>
         </div>
 
         <div id="sub-bihar-board" class="card hidden" style="margin-top:15px; background:var(--light-blue);">
@@ -464,7 +474,7 @@
 
     function openAIModal() { 
         document.getElementById('ai-modal').classList.add('active'); 
-        document.body.style.overflow = 'hidden'; // Stop scrolling behind
+        document.body.style.overflow = 'hidden'; 
     }
     function closeAIModal() { 
         document.getElementById('ai-modal').classList.remove('active'); 
@@ -639,12 +649,49 @@
         openJobs(query); 
     }
 
-    // --- Magadh University Specific Logic ---
+    // --- Magadh University Smart Logic (V2 Update) ---
+    function updateMUSemButtons() {
+        const session = document.getElementById('mu-session').value;
+        const semDiv = document.getElementById('mu-sem-container');
+        const partDiv = document.getElementById('mu-part-container');
+        const examBtn = document.getElementById('mu-btn-exam');
+        const admBtn = document.getElementById('mu-btn-adm');
+        
+        // Reset selections
+        resType = '';
+        document.querySelectorAll('.pill').forEach(p => p.classList.remove('active-pill'));
+
+        if (!session) {
+            semDiv.classList.add('hidden');
+            partDiv.classList.add('hidden');
+            return;
+        }
+
+        // Logic 1: Semester vs Part
+        if (session === "2023-27" || session === "2024-28") {
+            semDiv.classList.remove('hidden');
+            partDiv.classList.add('hidden');
+        } else {
+            semDiv.classList.add('hidden');
+            partDiv.classList.remove('hidden');
+        }
+
+        // Logic 2: Show/Hide Admission & Exam Form for completed sessions
+        const completeSessions = ["2020-23", "2021-24"];
+        if (completeSessions.includes(session)) {
+            examBtn.classList.add('hidden');
+            admBtn.classList.add('hidden');
+        } else {
+            examBtn.classList.remove('hidden');
+            admBtn.classList.remove('hidden');
+        }
+    }
+
     function muAction(actionType) {
         let session = document.getElementById('mu-session').value;
         if(!session) return alert("Pehle Session chunein!");
         if(!resType) return alert("Pehle Semester ya Year chunein!");
-        let query = `Magadh University ${session} ${resType} ${actionType} direct link meebportal org`;
+        let query = `Magadh University ${session} ${resType} ${actionType} official direct link portal`;
         openJobs(query); 
     }
 
@@ -658,6 +705,7 @@
         let lowerCat = cat.toLowerCase();
         if(lowerCat.includes('result')) { currentType = 'Result'; }
         else if(lowerCat.includes('admit')) { currentType = 'Admit Card'; }
+        else if(lowerCat.includes('admission')) { currentType = 'Admission'; }
         else { currentType = 'Info'; }
         hideAll(); 
         document.getElementById('main-header').classList.remove('hidden'); 
@@ -700,6 +748,7 @@
         let btnText = "Open Link 🚀";
         if(currentType === 'Result') btnText = "Check Result ✅";
         if(currentType === 'Admit Card') btnText = "Download Card 📥";
+        if(currentType === 'Admission') btnText = "Apply For Admission 🎓";
         listDiv.innerHTML = `
             <div class="details-card">
                 <h2 style="color:var(--blue); margin-top:0; font-size:18px;">${item.title}</h2>
