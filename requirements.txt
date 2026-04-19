@@ -2,11 +2,7 @@ Flask
 Flask-Cors
 requests
 beautifulsoup4
+fpdf2
+PyPDF2
 gunicorn
 python-dotenv
-fpdf2
-openai
-sqlite-utils
-gevent
-Pillow
-orjson
