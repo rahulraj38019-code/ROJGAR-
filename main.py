@@ -69,15 +69,46 @@ def save_user_chat(uid, data):
     with open(get_chat_file(uid), "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
-def ai_chat(messages, model="openai/gpt-4o-mini"):
-    url = "https://openrouter.ai/api/v1/chat/completions"
+# --- NEW FUNCTIONS (STEP 1 & 2) ---
+def get_live_data(query):
+    headers = {"X-API-KEY": SERPER_API_KEY, "Content-Type": "application/json"}
+    payload = {"q": query, "gl": "in", "hl": "en"}
+
+    r = requests.post(
+        "https://google.serper.dev/search",
+        headers=headers,
+        json=payload,
+        timeout=10
+    )
+
+    results = r.json().get("organic", [])
+
+    context = ""
+    for item in results[:5]:
+        context += f"- {item.get('title')} : {item.get('snippet')}\n"
+
+    return context
+
+def ask_ai(messages):
     headers = {
         "Authorization": f"Bearer {OPENROUTER_API_KEY}",
         "Content-Type": "application/json"
     }
-    payload = {"model": model, "messages": messages}
-    r = requests.post(url, headers=headers, json=payload, timeout=40)
-    return r.json()
+
+    payload = {
+        "model": "openai/gpt-4o-mini",
+        "messages": messages,
+        "temperature": 0.7
+    }
+
+    r = requests.post(
+        "https://openrouter.ai/api/v1/chat/completions",
+        headers=headers,
+        json=payload,
+        timeout=40
+    )
+
+    return r.json()["choices"][0]["message"]["content"]
 
 # --- BASIC ROUTES ---
 @app.route('/manifest.json')
@@ -132,7 +163,7 @@ def fetch_jobs():
         data = request.get_json()
         category = data.get('category', 'latest jobs')
         edu = data.get('edu', '')
-        query = data.get('query') # From new code
+        query = data.get('query')
 
         if query:
             final_query = query
@@ -258,33 +289,58 @@ def generate_image():
     except Exception as e:
         return jsonify({"error": str(e)})
 
+# --- UPDATED ROUTE (STEP 3) ---
 @app.route("/ask_ai_v10", methods=["POST"])
-@app.route("/ask", methods=["POST"])
 def ask_ai_v10():
     try:
         data = request.json
-        uid = data.get("uid", "guest")
         msg = data.get("message")
-        
-        # Merged logic for persistence and memory
+        uid = data.get("uid", "guest")
+
         history = load_user_chat(uid)
-        if not history:
-            history = chat_memory.get(uid, [])
-            
+
+        # 🔥 detect if live data needed
+        keywords = ["job", "latest", "news", "result", "update", "vacancy"]
+        need_live = any(k in msg.lower() for k in keywords)
+
+        live_context = ""
+        if need_live:
+            live_context = get_live_data(msg)
+
+        system_prompt = f"""
+You are ROJGAR-HUB V10 ULTRA AI.
+
+RULES:
+- Always use latest info if provided
+- If live data exists, prioritize it
+- Be accurate and simple
+- If unsure, say "latest update may vary"
+
+LIVE DATA:
+{live_context}
+"""
+
+        messages = [{"role": "system", "content": system_prompt}]
+        messages += history[-10:]
+        messages.append({"role": "user", "content": msg})
+
+        answer = ask_ai(messages)
+
         history.append({"role": "user", "content": msg})
-        
-        res = ai_chat(history[-15:])
-        ans = res["choices"][0]["message"]["content"]
-        
-        history.append({"role": "assistant", "content": ans})
-        
-        # Save to both locations
+        history.append({"role": "assistant", "content": answer})
+
         save_user_chat(uid, history)
-        chat_memory[uid] = history
-        
-        return jsonify({"reply": ans})
+
+        return jsonify({
+            "reply": answer,
+            "live_used": bool(live_context)
+        })
+
     except Exception as e:
-        return jsonify({"reply": "AI busy hai bhai", "error": str(e)})
+        return jsonify({
+            "reply": "AI system busy hai bhai 😅",
+            "error": str(e)
+        })
 
 # ===============================
 # CHAT MANAGEMENT
