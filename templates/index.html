@@ -126,6 +126,10 @@
 
         /* Recent Chat Styling */
         .recent-chat-item { padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; background: var(--white); margin: 5px 10px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; }
+        
+        /* NEW DASHBOARD BOX STYLING */
+        .box { display:none; background:var(--white); padding:15px; border-radius:10px; margin-bottom:10px; }
+        pre { white-space:pre-wrap; background:#f1f5f9; padding:10px; border-radius:8px; font-size:12px; color:var(--main); border:1px solid #eee;}
     </style>
 </head>
 <body id="app-body">
@@ -161,6 +165,7 @@
 <div class="side-menu" id="sideMenu">
     <h3 style="margin-top:0; color:var(--blue);">App Settings ⚙️</h3>
     <div class="menu-item" onclick="editProfile()">👤 Edit Profile</div>
+    <div class="menu-item" onclick="showV10UltraDash()">🔥 V10 Ultra Dash</div>
     <div class="menu-item" onclick="showResumeSection()">📝 Build Resume (New)</div>
     <div class="menu-item" onclick="toggleDarkMode()">🌓 Switch Theme</div>
     <div class="menu-item" onclick="location.reload()">🔄 Refresh Updates</div>
@@ -192,6 +197,30 @@
             </div>
             <button onclick="saveLogin()" class="btn-primary">Save Profile ⚡</button>
         </div>
+    </div>
+
+    <div id="v10-ultra-dash" class="hidden">
+        <h3 style="font-weight:800; color:var(--blue);">🔥 V10 ULTRA AI TOOLS</h3>
+        <div class="dash-grid" style="margin-bottom:20px;">
+            <div class="edu-chip" onclick="showBox('ocr-box')">Image to Text</div>
+            <div class="edu-chip" onclick="showBox('pdf-box')">PDF Reader</div>
+        </div>
+
+        <div id="ocr-box" class="box">
+            <label>Upload Image for OCR</label>
+            <input type="file" id="img-input" class="input-box" accept="image/*">
+            <button onclick="performOCR()" class="btn-primary">Extract Text 🔍</button>
+            <pre id="ocrout" style="margin-top:10px;">Text result will appear here...</pre>
+        </div>
+
+        <div id="pdf-box" class="box">
+            <label>Upload PDF File</label>
+            <input type="file" id="pdfFile-input" class="input-box" accept=".pdf">
+            <button onclick="readPDFFile()" class="btn-primary">Read PDF 📄</button>
+            <pre id="pdfout" style="margin-top:10px;">PDF text will appear here...</pre>
+        </div>
+        
+        <button onclick="showDash()" class="btn-load">Back to Home</button>
     </div>
 
     <div id="resume-sec" class="hidden">
@@ -405,11 +434,12 @@
 
 <script>
     // ========= GLOBAL STATE & CORE VARS =========
+    const API = ""; // Keep empty for relative path or set your local URL
     let user = {}; let resType = ''; let currentCategory = ''; let lastResults = []; let currentType = ''; 
     let pageCount = 1; let currentScreen = 'home';
     let isAIModalOpen = false;
 
-    // NAYA STATE (Part 3 integration)
+    // NAYA STATE
     let currentChatId = localStorage.getItem("chat_uid") || createNewChatId();
     let chatHistory = [];
     let isTyping = false;
@@ -453,7 +483,7 @@
     }
 
     // ==========================================
-    // AI LOGIC (Integrated from Part 3)
+    // AI LOGIC
     // ==========================================
     
     async function startNewChat() {
@@ -587,7 +617,7 @@
     }
 
     function initVoiceInput() {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const SpeechRecognition = window.SpeechRecognition || window.webkitRecognition || window.webkitSpeechRecognition;
         if (!SpeechRecognition) return;
         const recog = new SpeechRecognition();
         recog.lang = "hi-IN";
@@ -609,7 +639,47 @@
     function escapeHtml(str) { return str.replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
 
     // ==========================================
-    // APP UI LOGIC (Purana Wala Bina Chhede)
+    // NEW V10 ULTRA DASHBOARD LOGIC
+    // ==========================================
+    function showV10UltraDash() {
+        hideAll();
+        document.getElementById('v10-ultra-dash').classList.remove('hidden');
+        document.getElementById('main-header').classList.remove('hidden');
+        document.getElementById('bottom-bar').classList.remove('hidden');
+        if(document.getElementById('sideMenu').classList.contains('active')) toggleMenu();
+    }
+
+    function showBox(id) {
+        document.querySelectorAll('.box').forEach(b => b.style.display = 'none');
+        document.getElementById(id).style.display = 'block';
+    }
+
+    async function performOCR() {
+        let file = document.getElementById('img-input').files[0];
+        if(!file) return alert("Select image first!");
+        document.getElementById('ocrout').innerText = "Processing OCR...";
+        let fd = new FormData(); fd.append("file", file);
+        try {
+            let res = await fetch("/ocr", {method:"POST", body:fd});
+            let data = await res.json();
+            document.getElementById('ocrout').innerText = data.text || "No text found.";
+        } catch(e) { document.getElementById('ocrout').innerText = "OCR Failed!"; }
+    }
+
+    async function readPDFFile() {
+        let file = document.getElementById('pdfFile-input').files[0];
+        if(!file) return alert("Select PDF first!");
+        document.getElementById('pdfout').innerText = "Reading PDF...";
+        let fd = new FormData(); fd.append("file", file);
+        try {
+            let res = await fetch("/read_pdf", {method:"POST", body:fd});
+            let data = await res.json();
+            document.getElementById('pdfout').innerText = data.text || "Could not extract text.";
+        } catch(e) { document.getElementById('pdfout').innerText = "PDF Reading Failed!"; }
+    }
+
+    // ==========================================
+    // APP UI LOGIC
     // ==========================================
 
     window.onpopstate = function(event) {
@@ -670,7 +740,7 @@
     }
 
     function hideAll() {
-        ['login-sec','dash-sec','res-sec','feed-sec','main-header','bottom-bar','resume-sec','chat-sec'].forEach(id => {
+        ['login-sec','dash-sec','res-sec','feed-sec','main-header','bottom-bar','resume-sec','chat-sec','v10-ultra-dash'].forEach(id => {
             let el = document.getElementById(id);
             if(el) el.classList.add('hidden');
         });
