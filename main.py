@@ -12,6 +12,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from collections import defaultdict
 from werkzeug.utils import secure_filename
 from PyPDF2 import PdfReader
+from PIL import Image
+import pytesseract
 
 app = Flask(__name__)
 CORS(app)
@@ -51,7 +53,7 @@ MODELS = [
 ]
 
 # ===============================
-# HELPERS (CHAT FILE SYSTEM)
+# HELPERS & UTIL
 # ===============================
 def get_chat_file(uid):
     return f"{CHAT_FOLDER}/{uid}.json"
@@ -66,6 +68,16 @@ def load_user_chat(uid):
 def save_user_chat(uid, data):
     with open(get_chat_file(uid), "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
+
+def ai_chat(messages, model="openai/gpt-4o-mini"):
+    url = "https://openrouter.ai/api/v1/chat/completions"
+    headers = {
+        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+        "Content-Type": "application/json"
+    }
+    payload = {"model": model, "messages": messages}
+    r = requests.post(url, headers=headers, json=payload, timeout=40)
+    return r.json()
 
 # --- BASIC ROUTES ---
 @app.route('/manifest.json')
@@ -114,25 +126,29 @@ def get_live_updates():
 
 # --- JOB SEARCH SECTION ---
 @app.route('/fetch_jobs', methods=['POST'])
+@app.route('/jobs', methods=['POST'])
 def fetch_jobs():
     try:
         data = request.get_json()
         category = data.get('category', 'latest jobs')
         edu = data.get('edu', '')
-        
-        if "Railway" in category or "RRB" in category:
-            query = f"RRB Railway {category} official result notice 2026 site:indianrailways.gov.in OR site:sarkariresult.com"
+        query = data.get('query') # From new code
+
+        if query:
+            final_query = query
+        elif "Railway" in category or "RRB" in category:
+            final_query = f"RRB Railway {category} official result notice 2026 site:indianrailways.gov.in OR site:sarkariresult.com"
         elif "Bihar Board" in category:
-            query = f"BSEB {category} official result 2026 site:biharboardonline.bihar.gov.in OR site:sarkariresult.com"
+            final_query = f"BSEB {category} official result 2026 site:biharboardonline.bihar.gov.in OR site:sarkariresult.com"
         elif "SSC" in category:
-            query = f"SSC {category} merit list result site:ssc.gov.in OR site:sarkariresult.com"
+            final_query = f"SSC {category} merit list result site:ssc.gov.in OR site:sarkariresult.com"
         elif "Police" in category:
-            query = f"Bihar Police {category} result update site:csbc.bih.nic.in OR site:sarkariresult.com"
+            final_query = f"Bihar Police {category} result update site:csbc.bih.nic.in OR site:sarkariresult.com"
         else:
-            query = f"latest {category} vacancies for {edu} pass 2026 India"
+            final_query = f"latest {category} vacancies for {edu} pass 2026 India"
 
         headers = {'X-API-KEY': SERPER_API_KEY, 'Content-Type': 'application/json'}
-        payload = {'q': query, 'num': 20, 'gl': 'in'}
+        payload = {'q': final_query, 'num': 20, 'gl': 'in'}
         response = requests.post('https://google.serper.dev/search', headers=headers, json=payload)
         search_data = response.json()
         return jsonify(search_data.get('organic', []))
@@ -156,34 +172,43 @@ def live_search():
 
 # --- RESUME GENERATOR ---
 @app.route('/generate_resume', methods=['POST'])
+@app.route('/resume', methods=['POST'])
 def generate_resume():
     try:
-        data = request.form
+        if request.is_json:
+            data = request.json
+        else:
+            data = request.form
+            
         pdf = FPDF()
         pdf.add_page()
         pdf.set_font("Arial", 'B', 16)
-        pdf.cell(200, 10, txt="V8 ULTRA RESUME", ln=True, align='C')
+        pdf.cell(200, 10, txt="V10 ULTRA RESUME", ln=True, align='C')
         pdf.ln(10)
         pdf.set_font("Arial", size=12)
-        pdf.cell(200, 10, txt=f"Name: {data.get('name', 'N/A')}", ln=True)
-        pdf.cell(200, 10, txt=f"Education: {data.get('edu', 'N/A')}", ln=True)
-        pdf.multi_cell(0, 10, txt=f"Skills: {data.get('skills', 'N/A')}")
-        pdf.multi_cell(0, 10, txt=f"Experience: {data.get('exp', 'N/A')}")
+        
+        if not request.is_json:
+            pdf.cell(200, 10, txt=f"Name: {data.get('name', 'N/A')}", ln=True)
+            pdf.cell(200, 10, txt=f"Education: {data.get('edu', 'N/A')}", ln=True)
+            pdf.multi_cell(0, 10, txt=f"Skills: {data.get('skills', 'N/A')}")
+            pdf.multi_cell(0, 10, txt=f"Experience: {data.get('exp', 'N/A')}")
+        else:
+            for k, v in data.items():
+                pdf.cell(200, 10, f"{k}: {v}", ln=True)
+
         output = io.BytesIO()
         pdf_content = pdf.output(dest='S').encode('latin-1')
         output.write(pdf_content)
         output.seek(0)
-        response = make_response(output.read())
-        response.headers['Content-Type'] = 'application/pdf'
-        response.headers['Content-Disposition'] = 'attachment; filename=resume.pdf'
-        return response
+        return send_file(output, download_name="resume.pdf", as_attachment=True)
     except Exception as e:
         return str(e)
 
 # ===============================
-# FILE & PDF HANDLING
+# FILE & PDF & OCR HANDLING
 # ===============================
 @app.route("/upload_file", methods=["POST"])
+@app.route("/upload", methods=["POST"])
 def upload_file():
     try:
         file = request.files["file"]
@@ -202,10 +227,18 @@ def read_pdf():
         path = os.path.join(UPLOAD_FOLDER, filename)
         file.save(path)
         reader = PdfReader(path)
-        text = ""
-        for page in reader.pages:
-            text += page.extract_text() + "\n"
+        text = "".join([p.extract_text() or "" for p in reader.pages])
         return jsonify({"success": True, "text": text[:15000]})
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
+@app.route("/ocr", methods=["POST"])
+def ocr():
+    try:
+        file = request.files["file"]
+        img = Image.open(file)
+        text = pytesseract.image_to_string(img)
+        return jsonify({"success": True, "text": text})
     except Exception as e:
         return jsonify({"error": str(e)})
 
@@ -213,6 +246,7 @@ def read_pdf():
 # IMAGE & AI ROUTES
 # ===============================
 @app.route("/generate_image", methods=["POST"])
+@app.route("/image", methods=["POST"])
 def generate_image():
     try:
         data = request.json
@@ -225,19 +259,29 @@ def generate_image():
         return jsonify({"error": str(e)})
 
 @app.route("/ask_ai_v10", methods=["POST"])
+@app.route("/ask", methods=["POST"])
 def ask_ai_v10():
     try:
         data = request.json
         uid = data.get("uid", "guest")
         msg = data.get("message")
+        
+        # Merged logic for persistence and memory
         history = load_user_chat(uid)
+        if not history:
+            history = chat_memory.get(uid, [])
+            
         history.append({"role": "user", "content": msg})
-        payload = {"model": "openai/gpt-4o-mini", "messages": history[-12:]}
-        headers = {"Authorization": f"Bearer {OPENROUTER_API_KEY}", "Content-Type": "application/json"}
-        r = requests.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=payload, timeout=40)
-        ans = r.json()["choices"][0]["message"]["content"]
+        
+        res = ai_chat(history[-15:])
+        ans = res["choices"][0]["message"]["content"]
+        
         history.append({"role": "assistant", "content": ans})
+        
+        # Save to both locations
         save_user_chat(uid, history)
+        chat_memory[uid] = history
+        
         return jsonify({"reply": ans})
     except Exception as e:
         return jsonify({"reply": "AI busy hai bhai", "error": str(e)})
@@ -289,15 +333,21 @@ def delete_chat():
 
 # --- COMMUNITY CHAT SYSTEM ---
 @app.route('/get_messages')
+@app.route('/chat/get')
 def get_messages():
     return jsonify(chat_messages)
 
 @app.route('/send_message', methods=['POST'])
+@app.route('/chat/send', methods=['POST'])
 def send_message():
     data = request.get_json()
-    new_msg = {"user": data.get('user', 'Guest'), "msg": data.get('msg', ''), "time": "Now"}
+    new_msg = {
+        "user": data.get('user', 'Guest'), 
+        "msg": data.get('msg', ''), 
+        "time": time.strftime("%I:%M %p") if "time" not in data else data.get("time")
+    }
     chat_messages.append(new_msg)
-    return jsonify({"status": "sent"})
+    return jsonify({"status": "sent", "ok": True})
 
 # ================= RUN =================
 if __name__ == '__main__':
