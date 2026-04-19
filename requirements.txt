@@ -10,3 +10,4 @@ sqlite-utils
 gevent
 Pillow
 orjson
+PyPUP2
