@@ -1,8 +1,11 @@
 Flask
-Flask-Cors
+flask-cors
 requests
 beautifulsoup4
 fpdf2
 PyPDF2
 gunicorn
 python-dotenv
+Pillow
+pytesseract
+werkzeug
