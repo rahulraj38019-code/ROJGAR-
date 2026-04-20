@@ -1,6 +1,6 @@
 const CACHE_NAME = "vidyajobs-ai-v2";
 
-// sirf basic files cache karo (safe version)
+// sirf basic safe files (over-cache mat karo)
 const urlsToCache = [
   "/",
   "/index.html",
@@ -11,23 +11,23 @@ const urlsToCache = [
 ];
 
 // INSTALL
-self.addEventListener("install", event => {
+self.addEventListener("install", (event) => {
+  self.skipWaiting(); // force update
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
+    caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(urlsToCache);
     })
   );
-  self.skipWaiting();
 });
 
-// ACTIVATE (old cache remove)
-self.addEventListener("activate", event => {
+// ACTIVATE (purana cache hata do)
+self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then(cacheNames => {
+    caches.keys().then((keys) => {
       return Promise.all(
-        cacheNames.map(name => {
-          if (name !== CACHE_NAME) {
-            return caches.delete(name);
+        keys.map((key) => {
+          if (key !== CACHE_NAME) {
+            return caches.delete(key);
           }
         })
       );
@@ -36,8 +36,8 @@ self.addEventListener("activate", event => {
   self.clients.claim();
 });
 
-// FETCH (NO BLANK / NO STUCK)
-self.addEventListener("fetch", event => {
+// FETCH (safe fallback)
+self.addEventListener("fetch", (event) => {
   event.respondWith(
     fetch(event.request).catch(() => {
       return caches.match(event.request);
