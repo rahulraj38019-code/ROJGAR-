@@ -49,9 +49,10 @@ chat_messages = [
 MODELS = [
     "openai/gpt-4o-mini",
     "openai/gpt-3.5-turbo",
-    "google/gemini-2.0-flash-lite-preview-02-05:free",
+    "google/gemini-2.0-flash",
+    "google/gemini-1.5-flash",
     "mistralai/mistral-small"
-]
+]"
 
 # ===============================
 # HELPERS & UTIL
