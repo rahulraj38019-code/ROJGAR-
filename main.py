@@ -225,11 +225,8 @@ def ask_ai_v10():
         if any(k in msg.lower() for k in keywords):
             live_context = get_live_data(msg)
 
-        # Added explicit VidyaJobs and Creator branding in system prompt
         system_prompt = f"""
-You are VidyaJobs.AI V10 ULTRA AI, powered by RAHUL GAMING.
-You specialize in jobs, results, and admit card updates. 
-Provide accurate info based on the context below.
+You are VidyaJobs.AI V10 ULTRA AI.
 
 LIVE DATA:
 {live_context}
@@ -284,17 +281,11 @@ def msgs():
 @app.route("/send_message", methods=["POST"])
 def send():
     d = request.json
-    new_msg = {
+    chat_messages.append({
         "user": d.get("user", "Guest"),
         "msg": d.get("msg", ""),
         "time": time.strftime("%I:%M %p")
-    }
-    chat_messages.append(new_msg)
-    
-    # Message Limit logic for performance (bina delete kiye)
-    if len(chat_messages) > 100:
-        chat_messages.pop(0)
-        
+    })
     return jsonify({"ok": True})
 
 # ================= RUN =================
