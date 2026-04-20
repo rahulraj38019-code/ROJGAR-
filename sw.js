@@ -1,6 +1,6 @@
-const CACHE_NAME = "vidyajobs-ai-v2";
+const CACHE_NAME = "vidyajobs-ai-v3";
 
-// sirf basic safe files (over-cache mat karo)
+// ONLY essential files (safe for AppCreator24)
 const urlsToCache = [
   "/",
   "/index.html",
@@ -12,7 +12,7 @@ const urlsToCache = [
 
 // INSTALL
 self.addEventListener("install", (event) => {
-  self.skipWaiting(); // force update
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(urlsToCache);
@@ -20,7 +20,7 @@ self.addEventListener("install", (event) => {
   );
 });
 
-// ACTIVATE (purana cache hata do)
+// ACTIVATE → FORCE OLD CACHE DELETE
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
@@ -36,11 +36,15 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
 });
 
-// FETCH (safe fallback)
+// FETCH → NETWORK FIRST (VERY IMPORTANT FOR LIVE APP)
 self.addEventListener("fetch", (event) => {
   event.respondWith(
-    fetch(event.request).catch(() => {
-      return caches.match(event.request);
-    })
+    fetch(event.request)
+      .then((res) => {
+        return res;
+      })
+      .catch(() => {
+        return caches.match(event.request);
+      })
   );
 });
