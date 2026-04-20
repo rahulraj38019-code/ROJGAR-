@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ROZGAR HUB - Professional Portal</title>
+    <title>VIDYAJOBS.AI - Professional Portal</title>
     
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#007bff">
@@ -139,7 +139,7 @@
         <div class="ai-modal-header">
             <div style="display:flex; align-items:center; gap:10px;">
                 <button onclick="backHomeV10()" style="background:none; border:none; font-size:22px; color:var(--blue); cursor:pointer;">⬅</button>
-                <span style="font-weight: 800; color: var(--blue);">🤖 ROZGAR AI V10 PRO</span>
+                <span style="font-weight: 800; color: var(--blue);">🤖 VIDYAJOBS.AI V10 PRO</span>
             </div>
             <span style="font-size:10px; font-weight:800; color:var(--text-muted);">ONLINE</span>
         </div>
@@ -175,7 +175,7 @@
 </div>
 
 <header id="main-header" class="hidden">
-    <div class="logo-text" onclick="toggleMenu()">ROZGAR HUB</div>
+    <div class="logo-text" onclick="toggleMenu()">VIDYAJOBS.AI</div>
     <div style="display: flex; align-items: center; gap: 15px;">
         <div onclick="toggleDarkMode()" id="mode-btn" style="cursor:pointer; font-size: 20px;">🌙</div>
         <div id="user-initial" style="background:var(--light-blue); color:var(--blue); width:35px; height:35px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; border: 1px solid var(--blue);">U</div>
@@ -434,7 +434,7 @@
 
 <script>
     // ========= GLOBAL STATE & CORE VARS =========
-    const API = ""; // Keep empty for relative path or set your local URL
+    const API = ""; 
     let user = {}; let resType = ''; let currentCategory = ''; let lastResults = []; let currentType = ''; 
     let pageCount = 1; let currentScreen = 'home';
     let isAIModalOpen = false;
@@ -451,7 +451,7 @@
         loadMessages();
         setInterval(loadMessages, 5000);
         
-        injectV10UI(); // Chat history panel
+        injectV10UI(); 
         
         // Init AI Chat
         localStorage.setItem("chat_uid", currentChatId);
@@ -510,7 +510,7 @@
 
     function addBotMessage(text) {
         const body = document.getElementById("ai-chat-body");
-        body.innerHTML += `<div class="chat-bubble bubble-left"><span class="chat-user">Rozgar AI</span>${formatMessage(text)}</div>`;
+        body.innerHTML += `<div class="chat-bubble bubble-left"><span class="chat-user">VidyaJobs.AI</span>${formatMessage(text)}</div>`;
         body.scrollTop = body.scrollHeight;
     }
 
@@ -520,7 +520,7 @@
         const body = document.getElementById("ai-chat-body");
         body.innerHTML += `
             <div class="chat-bubble bubble-left" id="typingBox">
-                <span class="chat-user">Rozgar AI</span>
+                <span class="chat-user">VidyaJobs.AI</span>
                 <span class="typing-dot">●</span><span class="typing-dot">●</span><span class="typing-dot">●</span>
             </div>`;
         body.scrollTop = body.scrollHeight;
@@ -574,7 +574,7 @@
             chatHistory = data.chats || [];
             clearChatUI();
             if (chatHistory.length === 0) {
-                addBotMessage("Namaste 👋 Main Rozgar AI hoon.");
+                addBotMessage("Namaste 👋 Main VidyaJobs.AI hoon.");
             } else {
                 chatHistory.forEach(m => {
                     if (m.role === "user") addUserMessage(m.content);
@@ -997,7 +997,6 @@
 
     function goBackToList() { history.back(); }
 
-    // Enter Key Send Logic
     document.addEventListener("keydown", e => {
         if (e.key === "Enter") {
             const active = document.activeElement;
