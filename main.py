@@ -69,7 +69,7 @@ def save_user_chat(uid, data):
     with open(get_chat_file(uid), "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
-# --- NEW FUNCTIONS (STEP 1 & 2) ---
+# --- NEW FUNCTIONS ---
 def get_live_data(query):
     headers = {"X-API-KEY": SERPER_API_KEY, "Content-Type": "application/json"}
     payload = {"q": query, "gl": "in", "hl": "en"}
@@ -214,7 +214,7 @@ def generate_resume():
         pdf = FPDF()
         pdf.add_page()
         pdf.set_font("Arial", 'B', 16)
-        pdf.cell(200, 10, txt="V10 ULTRA RESUME", ln=True, align='C')
+        pdf.cell(200, 10, txt="VidyaJobs.AI ULTRA RESUME", ln=True, align='C')
         pdf.ln(10)
         pdf.set_font("Arial", size=12)
         
@@ -289,7 +289,7 @@ def generate_image():
     except Exception as e:
         return jsonify({"error": str(e)})
 
-# --- UPDATED ROUTE (STEP 3) ---
+# --- UPDATED AI ROUTE ---
 @app.route("/ask_ai_v10", methods=["POST"])
 def ask_ai_v10():
     try:
@@ -308,7 +308,7 @@ def ask_ai_v10():
             live_context = get_live_data(msg)
 
         system_prompt = f"""
-You are ROJGAR-HUB V10 ULTRA AI.
+You are VidyaJobs.AI V10 ULTRA AI.
 
 RULES:
 - Always use latest info if provided
