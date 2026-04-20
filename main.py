@@ -23,6 +23,7 @@ CORS(app)
 # ===============================
 SERPER_API_KEY = "675ec80f6858652b8add27fbe3ab09371a6faaae"
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 UPLOAD_FOLDER = "uploads"
 CHAT_FOLDER = "saved_chats"
