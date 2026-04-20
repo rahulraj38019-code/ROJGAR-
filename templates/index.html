@@ -1,21 +1,990 @@
-<!DOCTYPE html>
-<html lang="hi">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!DOCTYPE html>  <html lang="hi">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>VIDYAJOBS.AI - Professional Portal</title>  <link rel="manifest" href="/manifest.json">  
+<meta name="theme-color" content="#007bff">  
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">  
+  
+<style>  
+    :root { --main: #121212; --blue: #007bff; --light-blue: #e7f1ff; --bg: #f8fafc; --white: #ffffff; --text-muted: #64748b; --neon-glow: rgba(0, 123, 255, 0.6); --ai-gradient: linear-gradient(90deg, #4285f4, #9b72cb, #d96570); }  
+    body.dark-mode { --bg: #0f172a; --white: #1e293b; --main: #f1f5f9; --text-muted: #94a3b8; --light-blue: #1e3a8a; --neon-glow: rgba(0, 210, 255, 0.8); }  
+    body { background: var(--bg); font-family: 'Inter', sans-serif; margin: 0; padding: 0; padding-bottom: 120px; color: var(--main); transition: 0.3s; overflow-x: hidden; }  
+    .container { max-width: 500px; margin: 0 auto; padding: 15px; }  
+      
+    header { background: var(--white); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 100; box-shadow: 0 0 15px var(--neon-glow); }  
+    .logo-text { font-weight: 800; font-size: 20px; color: var(--blue); letter-spacing: -0.5px; cursor: pointer; text-shadow: 0 0 10px var(--blue); }  
 
-<title>VIDYAJOBS.AI</title>
+    .live-panel, .dash-card, .social-link-card, .job-card, .card, .pill, .input-box, .login-card, .edu-chip, .details-card, .tracker-card, .comm-btn {  
+        border: 1px solid var(--blue) !important;  
+        box-shadow: 0 0 15px var(--neon-glow) !important;  
+        transition: 0.3s;  
+    }  
 
-<link rel="stylesheet" href="/static/style.css">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-</head>
+    .side-menu { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: var(--white); z-index: 1000; transition: 0.3s; box-shadow: 10px 0 30px rgba(0,0,0,0.1); padding: 25px; box-sizing: border-box; }  
+    .side-menu.active { left: 0; }  
+    .menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; display: none; }  
+    .menu-overlay.active { display: block; }  
+    .menu-item { padding: 15px 0; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 15px; cursor: pointer; font-weight: 600; font-size: 14px; }  
+      
+    .live-panel { background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 24px; padding: 18px; margin-bottom: 25px; position: relative; }  
+    .live-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }  
+    .live-dot { width: 12px; height: 12px; background: #ff4757; border-radius: 50%; animation: blink 1s infinite; box-shadow: 0 0 15px #ff4757; }  
+    @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }  
+      
+    .ticker-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; height: 120px; overflow: hidden; }  
+    .ticker-col { display: flex; flex-direction: column; }  
+    .ticker-title { font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--blue); margin-bottom: 8px; text-align: center; background: rgba(0,123,255,0.1); padding: 4px; border-radius: 6px; }  
+    .scroll-box { animation: scrollUp 20s linear infinite; }  
+    @keyframes scrollUp { 0% { transform: translateY(0); } 100% { transform: translateY(-50%); } }  
+    .ticker-item { font-size: 12px; color: #cbd5e1; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); text-decoration: none; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }  
 
-<body>
+    .login-card { background: var(--white); padding: 30px 25px; border-radius: 24px; }  
+    .input-box { width: 100%; padding: 16px; border-radius: 14px; font-size: 14px; font-weight: 600; box-sizing: border-box; outline: none; margin-bottom: 18px; background: var(--white); color: var(--main); }  
+    label { display: block; font-size: 12px; font-weight: 800; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; }  
+    .edu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px; }  
+    .edu-chip { padding: 12px; border-radius: 12px; text-align: center; font-size: 13px; font-weight: 700; cursor: pointer; background: var(--white); color: var(--text-muted); }  
+    .edu-chip.selected { background: var(--blue) !important; color: #fff !important; }  
+      
+    .card { background: var(--white); padding: 20px; border-radius: 20px; margin-bottom: 20px; }  
+    .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }  
+    .dash-card { background: var(--white); padding: 15px; border-radius: 18px; text-align: center; cursor: pointer; }  
+    .dash-card i { font-size: 24px; display: block; margin-bottom: 5px; font-style: normal; }  
+      
+    .btn-primary { width: 100%; background: var(--blue); color: white; padding: 18px; border: none; border-radius: 15px; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 0 20px var(--blue); }  
+    .btn-load { width: 100%; background: var(--white); color: var(--blue); padding: 12px; border: 1px solid var(--blue); border-radius: 12px; font-size: 14px; font-weight: 800; cursor: pointer; margin-top: 10px; }  
+      
+    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); display: flex; justify-content: space-around; padding: 12px; border-top: 1px solid var(--blue); box-shadow: 0 -5px 20px var(--neon-glow); max-width: 500px; margin: 0 auto; z-index: 99; }  
+    .nav-item { text-align: center; color: #94a3b8; font-size: 10px; font-weight: 700; cursor: pointer; text-decoration: none;}  
+    .nav-item.active { color: var(--blue); text-shadow: 0 0 10px var(--blue); }  
+    .nav-item i { font-size: 20px; display: block; margin-bottom: 3px; font-style: normal; }  
+    .hidden { display: none !important; }  
+      
+    .pill { background: #fff; padding: 8px 16px; border-radius: 50px; font-size: 12px; font-weight: 600; cursor: pointer; margin-bottom: 5px; color: var(--text-muted); border: 1px solid var(--blue); }  
+    .pill.active-pill { background: var(--blue) !important; color: white !important; }  
+      
+    .social-link-card { display: flex; align-items: center; justify-content: space-between; background: var(--white); padding: 15px; border-radius: 18px; margin-top: 10px; text-decoration: none; color: inherit; }  
+    .social-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }  
 
-<!-- YOUR FULL HTML BODY SAME AS BEFORE (ONLY REMOVE <style> AND <script>) -->
+    .job-card { background: var(--white); padding: 15px; border-radius: 15px; margin-bottom: 12px; display: block; text-decoration: none; color: inherit; cursor: pointer; }  
+    .job-title { font-weight: 800; font-size: 14px; color: var(--blue); margin-bottom: 5px; }  
+    .job-desc { font-size: 12px; color: var(--text-muted); line-height: 1.4; }  
 
-<script src="/static/api.js"></script>
-<script src="/static/script.js"></script>
+    .details-card { background: var(--white); padding: 25px; border-radius: 24px; margin-top: 10px; position: relative; }  
+    .info-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,0.05); }  
+    .info-label { font-size: 12px; font-weight: 800; color: var(--text-muted); }  
+    .info-val { font-size: 13px; font-weight: 700; color: var(--main); }  
 
-</body>
-</html>
+    .year-input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--blue); margin-top: 10px; font-weight: 600; font-size: 14px; outline: none; }  
+
+    #ai-trigger { position: fixed; bottom: 85px; right: 20px; z-index: 1001; cursor: pointer; display: flex; flex-direction: column; align-items: center; }  
+    .ai-robot { font-size: 45px; animation: float 3s ease-in-out infinite; display: block; filter: drop-shadow(0 0 15px var(--blue)); }  
+    .ai-label { background: var(--blue); color: white; padding: 6px 12px; border-radius: 12px; font-size: 11px; font-weight: 800; margin-top: -5px; }  
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }  
+
+    .ai-search-container { position: relative; margin-bottom: 25px; border-radius: 50px; background: var(--white); border: 2px solid transparent; background-origin: border-box; background-clip: content-box, border-box; background-image: linear-gradient(var(--white), var(--white)), var(--ai-gradient); box-shadow: 0 4px 20px rgba(0,0,0,0.1); overflow: hidden; }  
+    .ai-search-inner { display: flex; align-items: center; padding: 5px 15px; gap: 10px; }  
+    .ai-sparkle { font-size: 20px; background: var(--ai-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; }  
+    .ai-search-input { flex: 1; border: none; padding: 12px 5px; font-size: 14px; font-weight: 600; outline: none; background: transparent; color: var(--main); }  
+    .ai-btn { background: var(--ai-gradient); color: white; border: none; border-radius: 50%; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }  
+    .ai-mode-tag { position: absolute; bottom: 2px; right: 60px; font-size: 8px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; }  
+      
+    .voice-btn { background: none; border: none; font-size: 18px; cursor: pointer; padding: 5px; }  
+    .tracker-card { background: var(--white); padding: 15px; border-radius: 18px; margin-bottom: 20px; }  
+    .target-item { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 13px; font-weight: 600; }  
+
+    .comm-btn { background: var(--white); padding: 18px; border-radius: 20px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; margin-top: 10px; text-decoration: none; color: inherit; }  
+    .chat-container { background: var(--bg); height: 75vh; border-radius: 24px; display: flex; flex-direction: column; padding: 15px; border: 1px solid var(--blue); box-shadow: 0 0 20px var(--neon-glow); }  
+    .chat-display { flex: 1; overflow-y: auto; padding-bottom: 10px; }  
+    .chat-bubble { max-width: 80%; padding: 12px 16px; border-radius: 18px; margin-bottom: 12px; font-size: 13px; line-height: 1.4; position: relative; }  
+    .bubble-left { background: var(--white); color: var(--main); align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid #eee; }  
+    .bubble-right { background: #dcf8c6; color: #121212; align-self: flex-end; border-bottom-right-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }  
+    .dark-mode .bubble-right { background: #056162; color: white; }  
+    .chat-user { font-size: 10px; font-weight: 800; color: var(--blue); display: block; margin-bottom: 4px; }  
+    .chat-time { font-size: 9px; opacity: 0.6; text-align: right; display: block; margin-top: 4px; }  
+
+    /* ================= AI CHAT V10 FULL SCREEN UI ================= */  
+    #ai-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 2000; display: none; align-items: flex-start; justify-content: center; }  
+    #ai-modal.active { display: flex; }  
+    .ai-modal-content { width: 100%; max-width: 500px; background: var(--bg); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }  
+    .ai-modal-header { background: var(--white); padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--blue); box-shadow: 0 2px 10px rgba(0,0,0,0.1); }  
+      
+    .v8-chat-box { display: flex; flex-direction: column; height: 100%; background: var(--bg); }  
+    .v8-messages { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; padding-bottom: 100px; }  
+    .v8-input-box { display: flex; gap: 10px; padding: 15px; background: var(--white); border-top: 1px solid #eee; position: fixed; bottom: 0; width: 100%; max-width: 500px; box-sizing: border-box; }  
+    .v8-input { flex: 1; padding: 12px; border-radius: 12px; border: 1px solid var(--blue); outline: none; font-weight: 600; background: var(--bg); color: var(--main); }  
+    .v8-send { width: 50px; border: none; border-radius: 12px; background: var(--ai-gradient); color: white; font-size: 18px; cursor: pointer; }  
+
+    /* Typing Dots Animation */  
+    .typing-dot { animation: typing 1s infinite; display: inline-block; margin: 0 2px; }  
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }  
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }  
+    @keyframes typing { 0%, 100% { opacity: 0.2; transform: scale(1); } 50% { opacity: 1; transform: scale(1.2); } }  
+
+    /* Recent Chat Styling */  
+    .recent-chat-item { padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; background: var(--white); margin: 5px 10px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; }  
+      
+    /* NEW DASHBOARD BOX STYLING */  
+    .box { display:none; background:var(--white); padding:15px; border-radius:10px; margin-bottom:10px; }  
+    pre { white-space:pre-wrap; background:#f1f5f9; padding:10px; border-radius:8px; font-size:12px; color:var(--main); border:1px solid #eee;}  
+</style>
+
+</head>  
+<body id="app-body">  <div id="ai-modal">  
+    <div class="ai-modal-content">  
+        <div class="ai-modal-header">  
+            <div style="display:flex; align-items:center; gap:10px;">  
+                <button onclick="backHomeV10()" style="background:none; border:none; font-size:22px; color:var(--blue); cursor:pointer;">⬅</button>  
+                <span style="font-weight: 800; color: var(--blue);">🤖 VIDYAJOBS.AI V10 PRO</span>  
+            </div>  
+            <span style="font-size:10px; font-weight:800; color:var(--text-muted);">ONLINE</span>  
+        </div>  
+        <div class="v8-chat-box">  
+            <div id="ai-chat-body" class="v8-messages">  
+                </div>  
+            <div class="v8-input-box">  
+                <button id="voiceBtn" style="background:none; border:none; font-size:20px; cursor:pointer;">🎙️</button>  
+                <input type="text" id="ai-input" class="v8-input" placeholder="Kuch bhi puchiye...">  
+                <button onclick="askOpenRouter()" class="v8-send">➤</button>  
+            </div>  
+        </div>  
+    </div>  
+</div>  <div id="ai-trigger" onclick="openV10Home()">  
+    <span class="ai-robot">🤖</span>  
+    <div class="ai-label">ASK AI</div>  
+</div>  <div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>  <div class="side-menu" id="sideMenu">  
+    <h3 style="margin-top:0; color:var(--blue);">App Settings ⚙️</h3>  
+    <div class="menu-item" onclick="editProfile()">👤 Edit Profile</div>  
+    <div class="menu-item" onclick="showV10UltraDash()">🔥 V10 Ultra Dash</div>  
+    <div class="menu-item" onclick="showResumeSection()">📝 Build Resume (New)</div>  
+    <div class="menu-item" onclick="toggleDarkMode()">🌓 Switch Theme</div>  
+    <div class="menu-item" onclick="location.reload()">🔄 Refresh Updates</div>  
+    <div class="menu-item" onclick="startNewChat()" style="color:var(--blue);">✨ Start New Chat</div>  
+    <div class="menu-item" onclick="clearAllV10()" style="color:orange;">🧹 Clear AI History</div>  
+    <div class="menu-item" style="color:red; border:none;" onclick="logout()">🚪 Logout</div>  
+</div>  <header id="main-header" class="hidden">  
+    <div class="logo-text" onclick="toggleMenu()">VIDYAJOBS.AI</div>  
+    <div style="display: flex; align-items: center; gap: 15px;">  
+        <div onclick="toggleDarkMode()" id="mode-btn" style="cursor:pointer; font-size: 20px;">🌙</div>  
+        <div id="user-initial" style="background:var(--light-blue); color:var(--blue); width:35px; height:35px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; border: 1px solid var(--blue);">U</div>  
+    </div>  
+</header>  <div class="container">  
+    <div id="login-sec" class="hidden">  
+        <div class="login-card">  
+            <h1 style="text-align:center; font-weight:900;">Welcome! 🚀</h1>  
+            <label>Full Name</label>  
+            <input type="text" id="u-name" class="input-box" placeholder="e.g. Rahul Raj">  
+            <label>Education</label>  
+            <div class="edu-grid">  
+                <div class="edu-chip" onclick="toggleEdu(this, '10th')">10th Pass</div>  
+                <div class="edu-chip" onclick="toggleEdu(this, '12th')">12th Pass</div>  
+                <div class="edu-chip" onclick="toggleEdu(this, 'ITI')">ITI Pass</div>  
+                <div class="edu-chip" onclick="toggleEdu(this, 'UG')">Undergraduate</div>  
+            </div>  
+            <button onclick="saveLogin()" class="btn-primary">Save Profile ⚡</button>  
+        </div>  
+    </div>  <div id="v10-ultra-dash" class="hidden">  
+    <h3 style="font-weight:800; color:var(--blue);">🔥 V10 ULTRA AI TOOLS</h3>  
+    <div class="dash-grid" style="margin-bottom:20px;">  
+        <div class="edu-chip" onclick="showBox('ocr-box')">Image to Text</div>  
+        <div class="edu-chip" onclick="showBox('pdf-box')">PDF Reader</div>  
+    </div>  
+
+    <div id="ocr-box" class="box">  
+        <label>Upload Image for OCR</label>  
+        <input type="file" id="img-input" class="input-box" accept="image/*">  
+        <button onclick="performOCR()" class="btn-primary">Extract Text 🔍</button>  
+        <pre id="ocrout" style="margin-top:10px;">Text result will appear here...</pre>  
+    </div>  
+
+    <div id="pdf-box" class="box">  
+        <label>Upload PDF File</label>  
+        <input type="file" id="pdfFile-input" class="input-box" accept=".pdf">  
+        <button onclick="readPDFFile()" class="btn-primary">Read PDF 📄</button>  
+        <pre id="pdfout" style="margin-top:10px;">PDF text will appear here...</pre>  
+    </div>  
+      
+    <button onclick="showDash()" class="btn-load">Back to Home</button>  
+</div>  
+
+<div id="resume-sec" class="hidden">  
+    <h3 style="font-weight:800;">AI Resume Builder 📄</h3>  
+    <div class="card">  
+        <label>Father's Name</label>  
+        <input type="text" id="res-father" class="input-box" placeholder="Enter Father's Name">  
+        <label>Skills</label>  
+        <input type="text" id="res-skills" class="input-box" placeholder="e.g. Computer, ITI, Driving">  
+        <label>Experience</label>  
+        <textarea id="res-exp" class="input-box" style="height:80px;" placeholder="Any past work?"></textarea>  
+        <button class="btn-primary resume-btn" onclick="downloadResume()">Download Resume 📥</button>  
+        <button onclick="showDash()" style="width:100%; margin-top:10px; background:none; border:none; color:var(--text-muted); font-weight:800;">Back to Home</button>  
+    </div>  
+</div>  
+
+<div id="dash-sec" class="hidden">  
+    <div class="live-panel">  
+        <div class="live-header">  
+            <div class="live-dot"></div>  
+            <span style="color:white; font-weight:800; font-size:14px;">LIVE UPDATES 🛰️</span>  
+        </div>  
+        <div class="ticker-container">  
+            <div class="ticker-col">  
+                <div class="ticker-title">New Jobs</div>  
+                <div id="job-ticker" class="scroll-box"><div class="ticker-item">Loading...</div></div>  
+            </div>  
+            <div class="ticker-col">  
+                <div class="ticker-title">Admit Cards</div>  
+                <div id="admit-ticker" class="scroll-box"><div class="ticker-item">Loading...</div></div>  
+            </div>  
+        </div>  
+    </div>  
+
+    <div class="ai-search-container">  
+        <div class="ai-search-inner">  
+            <span class="ai-sparkle">✦</span>  
+            <input type="text" id="main-search-inp" class="ai-search-input" placeholder="Ask anything (Hinglish/Eng)...">  
+            <button class="voice-btn" onclick="startMicV10Search()">🎙️</button>  
+            <button onclick="triggerSearch()" class="ai-btn">✨</button>  
+        </div>  
+        <div class="ai-mode-tag">App AI Support</div>  
+    </div>  
+
+    <div class="tracker-card">  
+        <div style="font-weight:800; color:var(--blue); font-size:14px; margin-bottom:10px;">📅 DAILY EXAM TARGET</div>  
+        <div class="target-item"><input type="checkbox"> Today's Current Affairs</div>  
+        <div class="target-item"><input type="checkbox"> Math/Reasoning Practice</div>  
+        <div class="target-item"><input type="checkbox"> Science/GK Revision</div>  
+    </div>  
+
+    <h3 style="font-weight:800;">Top Categories</h3>  
+    <div class="dash-grid">  
+        <div class="dash-card" onclick="openJobs('latest Govt job vacancy 2026 apply online')"><i>🏛️</i><span>Govt Jobs</span></div>  
+        <div class="dash-card" onclick="openJobs('new Railway recruitment vacancy 2026 NTPC Group D ALP')"><i>🚂</i><span>Railway</span></div>  
+        <div class="dash-card" onclick="openJobs('latest ITI Pass Govt Jobs vacancy 2026 Apprentice')"><i>⚙️</i><span>ITI Jobs</span></div>  
+        <div class="dash-card" onclick="openJobs('latest Remote work from home jobs vacancy 2026')"><i>🏠</i><span>Remote/WFH</span></div>  
+    </div>  
+
+    <h3 style="font-weight:800; margin-top:30px;">Help Desk 👥</h3>  
+    <div class="comm-btn" onclick="showCommunityChat()">  
+        <div style="display:flex; align-items:center; gap:12px;">  
+            <div style="background:var(--light-blue); width:45px; height:45px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:22px;">💬</div>  
+            <div>  
+                <div style="font-weight:800; font-size:14px;">Community Help</div>  
+                <div style="font-size:11px; color:var(--text-muted);">Ask doubts & chat with others</div>  
+            </div>  
+        </div>  
+        <div style="color:var(--blue); font-weight:800;">OPEN</div>  
+    </div>  
+
+    <h3 style="font-weight:800; margin-top:30px;">Direct Support</h3>  
+    <a href="https://whatsapp.com/channel/0029VbCL3cTElagwBiU2aJ2N" target="_blank" class="social-link-card">  
+        <div style="display:flex; align-items:center; gap:12px;">  
+            <div class="social-icon" style="background:#e7fbf0; color:#22c55e;">💬</div>  
+            <div><div style="font-weight:800; font-size:14px;">WhatsApp Channel</div><div style="font-size:11px;">Join for daily updates</div></div>  
+        </div>  
+        <div style="color:var(--blue); font-weight:800;">JOIN</div>  
+    </a>  
+
+    <a href="https://www.instagram.com/___rahul_yadav_._?igsh=b3ltc2FwaDd4bzB1" target="_blank" class="social-link-card">  
+        <div style="display:flex; align-items:center; gap:12px;">  
+            <div class="social-icon" style="background:#fff0f6; color:#e1306c;">📸</div>  
+            <div><div style="font-weight:800; font-size:14px;">Instagram Profile</div><div style="font-size:11px;">Follow for latest updates</div></div>  
+        </div>  
+        <div style="color:var(--blue); font-weight:800;">FOLLOW</div>  
+    </a>  
+</div>  
+
+<div id="chat-sec" class="hidden">  
+    <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px;">  
+        <button onclick="showDash()" style="border:none; background:none; font-size:20px; cursor:pointer;">⬅️</button>  
+        <h3 style="margin:0; font-weight:800;">Community Chat</h3>  
+    </div>  
+    <div class="chat-container">  
+        <div id="chat-display" class="chat-display"></div>  
+        <div style="display:flex; gap:10px;">  
+            <input type="text" id="chat-input" class="input-box" placeholder="Type your doubt..." style="margin:0;">  
+            <button onclick="sendMessage()" class="ai-btn" style="border-radius:12px; width:50px; height:50px;">📤</button>  
+        </div>  
+    </div>  
+</div>  
+
+<div id="res-sec" class="hidden">  
+    <h3 style="font-weight:800; margin-bottom:15px;">Results Portal 📄</h3>  
+    <div class="dash-grid">  
+        <div class="dash-card" onclick="toggleResSub('magadh')" style="border: 2px solid var(--blue); background: var(--light-blue);"><i>🎓</i><span style="font-weight:800;">Magadh Uni.</span></div>  
+        <div class="dash-card" onclick="toggleResSub('bihar-board')"><i>🏫</i><span>Bihar Board</span></div>  
+        <div class="dash-card" onclick="toggleResSub('railway')"><i>🚂</i><span>Railway</span></div>  
+        <div class="dash-card" onclick="toggleResSub('ssc')"><i>🦁</i><span>SSC</span></div>  
+        <div class="dash-card" onclick="toggleResSub('police')"><i>👮</i><span>Bihar Police</span></div>  
+    </div>  
+
+    <div id="sub-magadh" class="card hidden" style="margin-top:15px; background:var(--white); border: 2px solid var(--blue);">  
+        <label>Select Session</label>  
+        <select id="mu-session" class="year-input" style="margin-bottom:15px; width:100%;" onchange="updateMUSemButtons()">  
+            <option value="">-- Choose Session --</option>  
+            <option value="2024-28">Session 2024-2028</option>  
+            <option value="2023-27">Session 2023-2027</option>  
+            <option value="2022-26">Session 2022-2026</option>  
+            <option value="2022-25">Session 2022-2025</option>  
+            <option value="2021-24">Session 2021-2024</option>  
+            <option value="2020-23">Session 2020-2023</option>  
+        </select>  
+
+        <label id="mu-type-label">Select Option</label>  
+        <div id="mu-sem-container" style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:15px;" class="hidden">  
+            <button onclick="setResType(this, 'Semester 1')" class="pill">Sem 1</button>  
+            <button onclick="setResType(this, 'Semester 2')" class="pill">Sem 2</button>  
+            <button onclick="setResType(this, 'Semester 3')" class="pill">Sem 3</button>  
+            <button onclick="setResType(this, 'Semester 4')" class="pill">Sem 4</button>  
+            <button onclick="setResType(this, 'Semester 5')" class="pill">Sem 5</button>  
+            <button onclick="setResType(this, 'Semester 6')" class="pill">Sem 6</button>  
+            <button onclick="setResType(this, 'Semester 7')" class="pill">Sem 7</button>  
+            <button onclick="setResType(this, 'Semester 8')" class="pill">Sem 8</button>  
+        </div>  
+        <div id="mu-part-container" style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:15px;" class="hidden">  
+            <button onclick="setResType(this, 'Part 1')" class="pill">Part 1</button>  
+            <button onclick="setResType(this, 'Part 2')" class="pill">Part 2</button>  
+            <button onclick="setResType(this, 'Part 3')" class="pill">Part 3</button>  
+        </div>  
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;" id="mu-action-grid">  
+            <button onclick="muAction('Result')" class="btn-primary" style="padding:12px; font-size:12px; background:#28a745;">Check Result ✅</button>  
+            <button id="mu-btn-exam" onclick="muAction('Exam Form')" class="btn-primary" style="padding:12px; font-size:12px; background:#ffc107; color:black;">Exam Form 📝</button>  
+        </div>  
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px;">  
+            <button id="mu-btn-adm" onclick="muAction('Admission')" class="btn-load" style="margin:0; width:100%; border-color:#17a2b8; color:#17a2b8;">Admission 🎓</button>  
+            <button onclick="muAction('Admit Card')" class="btn-load" style="margin:0; width:100%;">Admit Card 📥</button>  
+        </div>  
+    </div>  
+
+    <div id="sub-bihar-board" class="card hidden" style="margin-top:15px; background:var(--light-blue);">  
+        <div style="display:flex; gap:10px;"><button onclick="setResType(this, 'Matric')" class="pill" style="flex:1;">Matric (10th)</button><button onclick="setResType(this, 'Inter')" class="pill" style="flex:1;">Inter (12th)</button></div>  
+        <input type="number" id="year-bihar" class="year-input" placeholder="Enter Year (e.g. 2025)">  
+        <button onclick="finalResSearch('Bihar Board', 'year-bihar')" class="btn-primary" style="margin-top:10px;">Check Result ✅</button>  
+    </div>  
+
+    <div id="sub-railway" class="card hidden" style="margin-top:15px; background:var(--light-blue);">  
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">  
+            <button onclick="setResType(this, 'Group D')" class="pill">Group D</button>  
+            <button onclick="setResType(this, 'ALP')" class="pill">ALP</button>  
+            <button onclick="setResType(this, 'NTPC')" class="pill">NTPC</button>  
+            <button onclick="setResType(this, 'Technician')" class="pill">Technician</button>  
+        </div>  
+        <input type="number" id="year-railway" class="year-input" placeholder="Enter Year (e.g. 2024)">  
+        <button onclick="finalResSearch('Railway', 'year-railway')" class="btn-primary" style="margin-top:10px;">Check Result ✅</button>  
+    </div>  
+
+    <div id="sub-ssc" class="card hidden" style="margin-top:15px; background:var(--light-blue);">  
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">  
+            <button onclick="setResType(this, 'SSC MTS')" class="pill">MTS</button>  
+            <button onclick="setResType(this, 'SSC GD')" class="pill">GD</button>  
+            <button onclick="setResType(this, 'SSC CGL')" class="pill">CGL</button>  
+            <button onclick="setResType(this, 'SSC CHSL')" class="pill">CHSL</button>  
+        </div>  
+        <input type="number" id="year-ssc" class="year-input" placeholder="Enter Year (e.g. 2025)">  
+        <button onclick="finalResSearch('SSC', 'year-ssc')" class="btn-primary" style="margin-top:10px;">Check Result ✅</button>  
+    </div>  
+
+    <div id="sub-police" class="card hidden" style="margin-top:15px; background:var(--light-blue);">  
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">  
+            <button onclick="setResType(this, 'Constable')" class="pill">Constable</button>  
+            <button onclick="setResType(this, 'SI')" class="pill">SI (Daroga)</button>  
+            <button onclick="setResType(this, 'Driver')" class="pill">Driver</button>  
+        </div>  
+        <input type="number" id="year-police" class="year-input" placeholder="Enter Year (e.g. 2024)">  
+        <button onclick="finalResSearch('Bihar Police', 'year-police')" class="btn-primary" style="margin-top:10px;">Check Result ✅</button>  
+    </div>  
+</div>  
+
+<div id="feed-sec" class="hidden">  
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">  
+        <button onclick="goBackToList()" id="back-btn" class="hidden" style="color:var(--blue); border:none; background:none; font-weight:800;">← Back</button>  
+        <h3 id="f-title" style="margin:0; font-weight:800; font-size:16px;">LISTING</h3>  
+        <button onclick="showDash()" style="color:var(--blue); border:none; background:none; font-weight:800;">Home</button>  
+    </div>  
+    <div id="list"></div>  
+    <div id="load-more-container" class="hidden">  
+        <button onclick="loadMore()" class="btn-load">Load More 🔄</button>  
+    </div>  
+</div>
+
+</div>  <div id="bottom-bar" class="bottom-nav hidden">  
+    <div class="nav-item active" onclick="showDash()"><i>🏠</i>Home</div>  
+    <div class="nav-item" onclick="showResults()"><i>📄</i>Results</div>  
+    <div class="nav-item" onclick="openV10Home()"><i>🤖</i>AI Chat</div>  
+    <div class="nav-item" onclick="toggleMenu()"><i>⚙️</i>Settings</div>  
+</div>  <script>  
+    // ========= GLOBAL STATE & CORE VARS =========  
+    const API = "";   
+    let user = {}; let resType = ''; let currentCategory = ''; let lastResults = []; let currentType = '';   
+    let pageCount = 1; let currentScreen = 'home';  
+    let isAIModalOpen = false;  
+  
+    // NAYA STATE  
+    let currentChatId = localStorage.getItem("chat_uid") || createNewChatId();  
+    let chatHistory = [];  
+    let isTyping = false;  
+  
+    window.onload = async () => {  
+        if(localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');  
+        checkLogin();  
+        fetchLive();  
+        loadMessages();  
+        setInterval(loadMessages, 5000);  
+          
+        injectV10UI();   
+          
+        // Init AI Chat  
+        localStorage.setItem("chat_uid", currentChatId);  
+        await loadChatFromCloud();  
+        await loadRecentChats();  
+        initVoiceInput();  
+  
+        if(localStorage.getItem('userHub')) {  
+            history.replaceState({screen: 'home'}, '');  
+        }  
+    };  
+  
+    function createNewChatId() { return "chat_" + Date.now(); }  
+  
+    function injectV10UI() {  
+        document.body.insertAdjacentHTML("beforeend", `  
+        <div id="v10-home" style="position:fixed;top:0;left:0;width:100%;height:100%;background:var(--bg);color:var(--main);z-index:1999;overflow:auto;display:none;">  
+            <div style="padding:18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #eee; background:var(--white);">  
+                <div style="display:flex; align-items:center; gap:10px;">  
+                    <button onclick="closeV10Home()" style="background:none; border:none; font-size:22px; color:var(--blue); cursor:pointer;">⬅</button>  
+                    <div style="font-size:20px;font-weight:900;color:var(--blue);">AI CHAT HISTORY</div>  
+                </div>  
+            </div>  
+            <div style="padding:15px;font-size:12px;opacity:.7;font-weight:800;">RECENT CONVERSATIONS</div>  
+            <div id="recentChats" style="padding-bottom:100px;"></div>  
+            <button onclick="startNewChat()" style="position:fixed;right:20px;bottom:100px;background:var(--ai-gradient);color:#fff;border:none;padding:15px 20px;border-radius:40px;font-weight:900;font-size:14px;box-shadow:0 5px 15px rgba(0,0,0,0.2);z-index:2001;">+ NEW AI CHAT</button>  
+        </div>  
+        `);  
+    }  
+  
+    // ==========================================  
+    // AI LOGIC  
+    // ==========================================  
+      
+    async function startNewChat() {  
+        if (chatHistory.length > 0) await saveChatToCloud();  
+        currentChatId = createNewChatId();  
+        localStorage.setItem("chat_uid", currentChatId);  
+        chatHistory = [];  
+        clearChatUI();  
+        addBotMessage("New chat started 🚀");  
+        await loadRecentChats();  
+        openAIModal();  
+    }  
+  
+    function clearChatUI() {  
+        const body = document.getElementById("ai-chat-body");  
+        if (body) body.innerHTML = "";  
+    }  
+  
+    function addUserMessage(text) {  
+        const body = document.getElementById("ai-chat-body");  
+        body.innerHTML += `<div class="chat-bubble bubble-right"><span class="chat-user">You</span>${escapeHtml(text)}</div>`;  
+        body.scrollTop = body.scrollHeight;  
+    }  
+  
+    function addBotMessage(text) {  
+        const body = document.getElementById("ai-chat-body");  
+        body.innerHTML += `<div class="chat-bubble bubble-left"><span class="chat-user">VidyaJobs.AI</span>${formatMessage(text)}</div>`;  
+        body.scrollTop = body.scrollHeight;  
+    }  
+  
+    function showTyping() {  
+        if (isTyping) return;  
+        isTyping = true;  
+        const body = document.getElementById("ai-chat-body");  
+        body.innerHTML += `  
+            <div class="chat-bubble bubble-left" id="typingBox">  
+                <span class="chat-user">VidyaJobs.AI</span>  
+                <span class="typing-dot">●</span><span class="typing-dot">●</span><span class="typing-dot">●</span>  
+            </div>`;  
+        body.scrollTop = body.scrollHeight;  
+    }  
+  
+    function hideTyping() { isTyping = false; const box = document.getElementById("typingBox"); if (box) box.remove(); }  
+  
+    async function askOpenRouter() {  
+        const input = document.getElementById("ai-input");  
+        const msg = input.value.trim();  
+        if (!msg) return;  
+  
+        addUserMessage(msg);  
+        input.value = "";  
+        chatHistory.push({ role: "user", content: msg });  
+        showTyping();  
+  
+        try {  
+            const res = await fetch("/ask_ai_v10", {  
+                method: "POST", headers: { "Content-Type": "application/json" },  
+                body: JSON.stringify({ uid: currentChatId, message: msg })  
+            });  
+            const data = await res.json();  
+            hideTyping();  
+            addBotMessage(data.reply || "No reply");  
+            chatHistory.push({ role: "assistant", content: data.reply });  
+            await saveChatToCloud();  
+            await loadRecentChats();  
+        } catch (err) {  
+            hideTyping();  
+            addBotMessage("Server error 😔");  
+        }  
+    }  
+  
+    async function saveChatToCloud() {  
+        try {  
+            await fetch("/save_chat", {  
+                method: "POST", headers: { "Content-Type": "application/json" },  
+                body: JSON.stringify({ uid: currentChatId, chats: chatHistory })  
+            });  
+        } catch (e) {}  
+    }  
+  
+    async function loadChatFromCloud() {  
+        try {  
+            const res = await fetch("/load_chat", {  
+                method: "POST", headers: { "Content-Type": "application/json" },  
+                body: JSON.stringify({ uid: currentChatId })  
+            });  
+            const data = await res.json();  
+            chatHistory = data.chats || [];  
+            clearChatUI();  
+            if (chatHistory.length === 0) {  
+                addBotMessage("Namaste 👋 Main VidyaJobs.AI hoon.");  
+            } else {  
+                chatHistory.forEach(m => {  
+                    if (m.role === "user") addUserMessage(m.content);  
+                    else addBotMessage(m.content);  
+                });  
+            }  
+        } catch (e) {}  
+    }  
+  
+    async function loadRecentChats() {  
+        try {  
+            const res = await fetch("/recent_chats");  
+            const data = await res.json();  
+            const box = document.getElementById("recentChats");  
+            if (!box) return;  
+            box.innerHTML = "";  
+            data.users.reverse().forEach(uid => {  
+                box.innerHTML += `  
+                    <div class="recent-chat-item">  
+                        <span onclick="openRecentChat('${uid}')">${uid}</span>  
+                        <button onclick="deleteRecentChat('${uid}')" style="border:none; background:none; cursor:pointer;">🗑️</button>  
+                    </div>`;  
+            });  
+        } catch (e) {}  
+    }  
+  
+    async function openRecentChat(uid) {  
+        currentChatId = uid;  
+        localStorage.setItem("chat_uid", uid);  
+        await loadChatFromCloud();  
+        openAIModal();  
+    }  
+  
+    async function deleteRecentChat(uid) {  
+        await fetch("/delete_chat", {  
+            method: "POST", headers: { "Content-Type": "application/json" },  
+            body: JSON.stringify({ uid })  
+        });  
+        await loadRecentChats();  
+    }  
+  
+    function initVoiceInput() {  
+        const SpeechRecognition = window.SpeechRecognition || window.webkitRecognition || window.webkitSpeechRecognition;  
+        if (!SpeechRecognition) return;  
+        const recog = new SpeechRecognition();  
+        recog.lang = "hi-IN";  
+        const micBtn = document.getElementById("voiceBtn");  
+        if (micBtn) {  
+            micBtn.onclick = () => recog.start();  
+            recog.onresult = e => {  
+                document.getElementById("ai-input").value = e.results[0][0].transcript;  
+                askOpenRouter();  
+            };  
+        }  
+    }  
+  
+    function openV10Home() { document.getElementById("v10-home").style.display = "block"; loadRecentChats(); }  
+    function closeV10Home() { document.getElementById("v10-home").style.display = "none"; }  
+    function backHomeV10() { closeAIModal(); openV10Home(); }  
+  
+    function formatMessage(text) { return text.replace(/\n/g, "<br>").replace(/\*\*(.*?)\*\*/g, "<b>$1</b>"); }  
+    function escapeHtml(str) { return str.replace(/</g, "&lt;").replace(/>/g, "&gt;"); }  
+  
+    // ==========================================  
+    // NEW V10 ULTRA DASHBOARD LOGIC  
+    // ==========================================  
+    function showV10UltraDash() {  
+        hideAll();  
+        document.getElementById('v10-ultra-dash').classList.remove('hidden');  
+        document.getElementById('main-header').classList.remove('hidden');  
+        document.getElementById('bottom-bar').classList.remove('hidden');  
+        if(document.getElementById('sideMenu').classList.contains('active')) toggleMenu();  
+    }  
+  
+    function showBox(id) {  
+        document.querySelectorAll('.box').forEach(b => b.style.display = 'none');  
+        document.getElementById(id).style.display = 'block';  
+    }  
+  
+    async function performOCR() {  
+        let file = document.getElementById('img-input').files[0];  
+        if(!file) return alert("Select image first!");  
+        document.getElementById('ocrout').innerText = "Processing OCR...";  
+        let fd = new FormData(); fd.append("file", file);  
+        try {  
+            let res = await fetch("/ocr", {method:"POST", body:fd});  
+            let data = await res.json();  
+            document.getElementById('ocrout').innerText = data.text || "No text found.";  
+        } catch(e) { document.getElementById('ocrout').innerText = "OCR Failed!"; }  
+    }  
+  
+    async function readPDFFile() {  
+        let file = document.getElementById('pdfFile-input').files[0];  
+        if(!file) return alert("Select PDF first!");  
+        document.getElementById('pdfout').innerText = "Reading PDF...";  
+        let fd = new FormData(); fd.append("file", file);  
+        try {  
+            let res = await fetch("/read_pdf", {method:"POST", body:fd});  
+            let data = await res.json();  
+            document.getElementById('pdfout').innerText = data.text || "Could not extract text.";  
+        } catch(e) { document.getElementById('pdfout').innerText = "PDF Reading Failed!"; }  
+    }  
+  
+    // ==========================================  
+    // APP UI LOGIC  
+    // ==========================================  
+  
+    window.onpopstate = function(event) {  
+        if (isAIModalOpen) { closeAIModal(); return; }  
+        if (document.getElementById("v10-home").style.display === "block") { closeV10Home(); return; }  
+        if (event.state) {  
+            const screen = event.state.screen;  
+            if (screen === 'home') showDash(false);  
+            else if (screen === 'results') showResults(false);  
+            else if (screen === 'chat') showCommunityChat(false);  
+            else if (screen === 'resume') showResumeSection(false);  
+            else if (screen === 'list') {  
+                hideAll();  
+                document.getElementById('main-header').classList.remove('hidden');   
+                document.getElementById('feed-sec').classList.remove('hidden');   
+                document.getElementById('bottom-bar').classList.remove('hidden');  
+                renderList(lastResults);  
+            }  
+        } else { showDash(false); }  
+    };  
+  
+    function openAIModal() {   
+        document.getElementById('ai-modal').classList.add('active');   
+        document.body.style.overflow = 'hidden';   
+        isAIModalOpen = true;  
+        history.pushState({modal: 'ai'}, '');  
+    }  
+    function closeAIModal() {   
+        document.getElementById('ai-modal').classList.remove('active');  
+        document.body.style.overflow = 'auto';  
+        isAIModalOpen = false;  
+    }  
+  
+    function checkLogin() {  
+        let saved = localStorage.getItem('userHub');  
+        if(saved) {  
+            user = JSON.parse(saved);  
+            document.getElementById('user-initial').innerText = user.name ? user.name.charAt(0).toUpperCase() : 'U';  
+            showDash(false);  
+        } else {  
+            hideAll();  
+            document.getElementById('login-sec').classList.remove('hidden');  
+        }  
+    }  
+  
+    function saveLogin() {  
+        let name = document.getElementById('u-name').value;  
+        if(!name || !user.edu) return alert("Please fill Name and Select Education!");  
+        user.name = name;  
+        localStorage.setItem('userHub', JSON.stringify(user));  
+        location.reload();  
+    }  
+  
+    function toggleEdu(chip, val) {  
+        document.querySelectorAll('.edu-chip').forEach(c => c.classList.remove('selected'));  
+        chip.classList.add('selected');  
+        user.edu = val;  
+    }  
+  
+    function hideAll() {  
+        ['login-sec','dash-sec','res-sec','feed-sec','main-header','bottom-bar','resume-sec','chat-sec','v10-ultra-dash'].forEach(id => {  
+            let el = document.getElementById(id);  
+            if(el) el.classList.add('hidden');  
+        });  
+    }  
+  
+    function showDash(push = true) {  
+        hideAll();  
+        document.getElementById('main-header').classList.remove('hidden');  
+        document.getElementById('dash-sec').classList.remove('hidden');  
+        document.getElementById('bottom-bar').classList.remove('hidden');  
+        setActiveNav(0);  
+        currentScreen = 'home';  
+        if(push) history.pushState({screen: 'home'}, '');  
+    }  
+  
+    function showResults(push = true) {  
+        hideAll();  
+        document.getElementById('main-header').classList.remove('hidden');  
+        document.getElementById('res-sec').classList.remove('hidden');  
+        document.getElementById('bottom-bar').classList.remove('hidden');  
+        setActiveNav(1);  
+        currentScreen = 'results';  
+        if(push) history.pushState({screen: 'results'}, '');  
+    }  
+  
+    function showResumeSection(push = true) {  
+        hideAll();  
+        document.getElementById('main-header').classList.remove('hidden');  
+        document.getElementById('resume-sec').classList.remove('hidden');  
+        document.getElementById('bottom-bar').classList.remove('hidden');  
+        if(document.getElementById('sideMenu').classList.contains('active')) toggleMenu();  
+        if(push) history.pushState({screen: 'resume'}, '');  
+    }  
+  
+    function showCommunityChat(push = true) {  
+        hideAll();  
+        document.getElementById('main-header').classList.remove('hidden');  
+        document.getElementById('chat-sec').classList.remove('hidden');  
+        document.getElementById('bottom-bar').classList.remove('hidden');  
+        loadMessages();  
+        if(push) history.pushState({screen: 'chat'}, '');  
+    }  
+  
+    async function downloadResume() {  
+        const btn = document.querySelector('.resume-btn');  
+        btn.innerText = "Generating...";  
+        const formData = new FormData();  
+        formData.append('name', user.name || 'User');  
+        formData.append('father', document.getElementById('res-father').value || 'N/A');  
+        formData.append('edu', user.edu || 'N/A');  
+        formData.append('skills', document.getElementById('res-skills').value || 'N/A');  
+        formData.append('exp', document.getElementById('res-exp').value || 'N/A');  
+        try {  
+            const response = await fetch('/generate_resume', { method: 'POST', body: formData });  
+            if (response.ok) {  
+                const blob = await response.blob();  
+                const url = window.URL.createObjectURL(blob);  
+                const a = document.createElement('a');  
+                a.href = url; a.download = 'My_Resume.pdf';  
+                document.body.appendChild(a); a.click();  
+                btn.innerText = "Download Success!";  
+                setTimeout(() => btn.innerText = "Download Resume 📥", 2000);  
+            }  
+        } catch (err) { alert("Download fail!"); btn.innerText = "Try Again"; }  
+    }  
+  
+    async function loadMessages() {  
+        const chatBox = document.getElementById('chat-display');  
+        if(!chatBox || document.getElementById('chat-sec').classList.contains('hidden')) return;  
+        try {  
+            const res = await fetch('/get_messages');  
+            const messages = await res.json();  
+            chatBox.innerHTML = messages.map(m => `  
+                <div class="chat-bubble ${m.user.includes('Admin') ? 'bubble-right' : 'bubble-left'}">  
+                    <span class="chat-user">@${m.user}</span>  
+                    ${m.msg}<span class="chat-time">${m.time}</span>  
+                </div>  
+            `).join('');  
+            chatBox.scrollTop = chatBox.scrollHeight;  
+        } catch (e) {}  
+    }  
+  
+    async function sendMessage() {  
+        const input = document.getElementById('chat-input');  
+        const msg = input.value;  
+        if(!msg) return;  
+        await fetch('/send_message', {  
+            method: 'POST', headers: {'Content-Type': 'application/json'},  
+            body: JSON.stringify({ user: user.name || "Guest", msg: msg })  
+        });  
+        input.value = ''; loadMessages();  
+    }  
+  
+    async function fetchLive() {  
+        try {  
+            const res = await fetch('/get_live_updates');  
+            const data = await res.json();  
+            if(data.jobs && data.jobs.length) {  
+                document.getElementById('job-ticker').innerHTML = data.jobs.map(j => `<div onclick="showDetailsDirect('${j.title}', '${j.link}', 'Job')" class="ticker-item">${j.title}</div>`).join('');  
+            }  
+            if(data.admits && data.admits.length) {  
+                document.getElementById('admit-ticker').innerHTML = data.admits.map(a => `<div onclick="showDetailsDirect('${a.title}', '${a.link}', 'Admit Card')" class="ticker-item">${a.title}</div>`).join('');  
+            }  
+        } catch(e) {}  
+    }  
+  
+    function setActiveNav(idx) {  
+        document.querySelectorAll('.nav-item').forEach((n,i) => i === idx ? n.classList.add('active') : n.classList.remove('active'));  
+    }  
+  
+    function toggleMenu() { document.getElementById('sideMenu').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }  
+    function toggleDarkMode() { document.body.classList.toggle('dark-mode'); localStorage.setItem('darkMode', document.body.classList.contains('dark-mode')); }  
+    function editProfile() { localStorage.removeItem('userHub'); location.reload(); }  
+    function logout() { localStorage.removeItem('userHub'); location.reload(); }  
+    function clearAllV10() { if(confirm("Saari AI Chat delete kar dein?")) { localStorage.removeItem("chat_uid"); location.reload(); } }  
+  
+    function triggerSearch() {   
+        let v = document.getElementById('main-search-inp').value;   
+        if(!v) return; openJobs(v);  
+    }  
+  
+    function startMicV10Search() {  
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;  
+        if (!SpeechRecognition) return;  
+        const rec = new SpeechRecognition();  
+        rec.lang = "hi-IN";  
+        rec.start();  
+        rec.onresult = function(e) {  
+            document.getElementById("main-search-inp").value = e.results[0][0].transcript;  
+            triggerSearch();  
+        };  
+    }  
+  
+    function toggleResSub(id) {   
+        document.querySelectorAll('#res-sec .card').forEach(c => c.classList.add('hidden'));   
+        const sub = document.getElementById('sub-'+id);  
+        if(sub) sub.classList.remove('hidden');   
+        resType = '';   
+    }  
+  
+    function setResType(btn, type) {   
+        btn.parentElement.querySelectorAll('.pill').forEach(p => p.classList.remove('active-pill'));   
+        btn.classList.add('active-pill'); resType = type;   
+    }  
+  
+    function finalResSearch(cat, yearId) {   
+        let yearVal = document.getElementById(yearId).value;  
+        if(!resType) return alert("Pehle option select karein!");   
+        if(!yearVal) return alert("Pehle Year (saal) daalein!");  
+        let query = `${cat} ${resType} Result ${yearVal} official direct portal`;  
+        openJobs(query);   
+    }  
+  
+    function updateMUSemButtons() {  
+        const session = document.getElementById('mu-session').value;  
+        const semDiv = document.getElementById('mu-sem-container');  
+        const partDiv = document.getElementById('mu-part-container');  
+        const examBtn = document.getElementById('mu-btn-exam');  
+        const admBtn = document.getElementById('mu-btn-adm');  
+        resType = '';  
+        document.querySelectorAll('.pill').forEach(p => p.classList.remove('active-pill'));  
+        if (!session) { semDiv.classList.add('hidden'); partDiv.classList.add('hidden'); return; }  
+        if (session === "2023-27" || session === "2024-28") { semDiv.classList.remove('hidden'); partDiv.classList.add('hidden'); }  
+        else { semDiv.classList.add('hidden'); partDiv.classList.remove('hidden'); }  
+        if (["2020-23", "2021-24"].includes(session)) { examBtn.classList.add('hidden'); admBtn.classList.add('hidden'); }  
+        else { examBtn.classList.remove('hidden'); admBtn.classList.remove('hidden'); }  
+    }  
+  
+    function muAction(actionType) {  
+        let session = document.getElementById('mu-session').value;  
+        if(!session) return alert("Pehle Session chunein!");  
+        if(!resType) return alert("Pehle Semester ya Year chunein!");  
+        let query = `Magadh University ${session} ${resType} ${actionType} official direct link portal`;  
+        openJobs(query);   
+    }  
+  
+    async function openJobs(cat, isLoadMore = false) {   
+        if(!isLoadMore) {  
+            lastResults = []; pageCount = 1;  
+            document.getElementById('list').innerHTML = "<div style='padding:40px; text-align:center; font-weight:700; color:var(--blue);'>🔍 Searching...</div>";  
+            history.pushState({screen: 'list'}, '');  
+        }  
+        currentCategory = cat;  
+        let lowerCat = cat.toLowerCase();  
+        if(lowerCat.includes('result')) { currentType = 'Result'; }  
+        else if(lowerCat.includes('admit')) { currentType = 'Admit Card'; }  
+        else if(lowerCat.includes('admission')) { currentType = 'Admission'; }  
+        else { currentType = 'Info'; }  
+        hideAll();   
+        document.getElementById('main-header').classList.remove('hidden');   
+        document.getElementById('bottom-bar').classList.remove('hidden');   
+        document.getElementById('feed-sec').classList.remove('hidden');   
+        document.getElementById('f-title').innerText = cat.substring(0, 20).toUpperCase() + (cat.length > 20 ? '...' : '');   
+        try {  
+            const response = await fetch('/fetch_jobs', {  
+                method: 'POST', headers: { 'Content-Type': 'application/json' },  
+                body: JSON.stringify({ category: cat, edu: user.edu || '10th', page: pageCount })  
+            });  
+            let newResults = await response.json();  
+            lastResults = [...lastResults, ...newResults];  
+            renderList(lastResults);  
+            if(newResults.length > 0) document.getElementById('load-more-container').classList.remove('hidden');  
+            else document.getElementById('load-more-container').classList.add('hidden');  
+        } catch(e) { document.getElementById('list').innerHTML = "<div style='padding:40px; text-align:center;'>⚠️ Error!</div>"; }  
+    }  
+  
+    function loadMore() { pageCount++; openJobs(currentCategory, true); }  
+  
+    function renderList(results) {  
+        const listDiv = document.getElementById('list');  
+        if(!results || results.length === 0) { listDiv.innerHTML = "<div style='padding:40px; text-align:center;'>❌ No data found.</div>"; return; }  
+        listDiv.innerHTML = results.map((item, index) => `  
+            <div class="job-card" onclick="viewDetails(${index})">  
+                <div class="job-title">${item.title}</div>  
+                <div class="job-desc">${item.snippet ? item.snippet.substring(0, 120) : 'Details...'}</div>  
+                <div style="font-size:11px; color:var(--blue); margin-top:10px; font-weight:800;">READ MORE →</div>  
+            </div>  
+        `).join('');  
+    }  
+  
+    function viewDetails(index) {  
+        const item = lastResults[index];  
+        const listDiv = document.getElementById('list');  
+        document.getElementById('back-btn').classList.remove('hidden');  
+        document.getElementById('load-more-container').classList.add('hidden');  
+        history.pushState({screen: 'details'}, '');  
+        let btnText = "Open Link 🚀";  
+        if(currentType === 'Result') btnText = "Check Result ✅";  
+        if(currentType === 'Admit Card') btnText = "Download Card 📥";  
+        if(currentType === 'Admission') btnText = "Apply For Admission 🎓";  
+        listDiv.innerHTML = `  
+            <div class="details-card">  
+                <h2 style="color:var(--blue); margin-top:0; font-size:18px;">${item.title}</h2>  
+                <p style="font-size:14px; line-height:1.6; color:var(--main); margin-top:15px;">${item.snippet || 'No extra info.'}</p>  
+                <button onclick="window.open('${item.link}', '_blank')" class="btn-primary" style="margin-top:20px;">${btnText}</button>  
+            </div>  
+        `;  
+    }  
+  
+    function showDetailsDirect(title, link, type) {  
+        currentType = type;  
+        hideAll();  
+        document.getElementById('main-header').classList.remove('hidden');   
+        document.getElementById('feed-sec').classList.remove('hidden');  
+        document.getElementById('bottom-bar').classList.remove('hidden');  
+        history.pushState({screen: 'details'}, '');  
+        document.getElementById('list').innerHTML = `  
+            <div class="details-card">  
+                <h2 style="color:var(--blue); margin-top:0;">${title}</h2>  
+                <button onclick="window.open('${link}', '_blank')" class="btn-primary" style="margin-top:25px;">Check Now 🚀</button>  
+            </div>  
+        `;  
+    }  
+  
+    function goBackToList() { history.back(); }  
+  
+    document.addEventListener("keydown", e => {  
+        if (e.key === "Enter") {  
+            const active = document.activeElement;  
+            if (active && active.id === "ai-input") {  
+                askOpenRouter();  
+            }  
+        }  
+    });  
+</script>  </body>  
+</html>  
