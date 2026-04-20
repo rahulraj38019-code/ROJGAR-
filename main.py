@@ -51,7 +51,7 @@ MODELS = [
     "openai/gpt-3.5-turbo",
     "google/gemini-2.0-flash",
     "google/gemini-1.5-flash",
-    "mistralai/mistral-small"
+    "mistralai/mistral-small"]
 
 # ===============================
 # HELPERS & UTIL
