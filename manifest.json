@@ -1,10 +1,13 @@
 {
-  "name": "VidyaJobs.AI Professional",
-  "short_name": "VidyaJobs.AI",
-  "start_url": "index.html",
+  "name": "VidyaJobsAI",
+  "short_name": "VidyaJobsAI",
+  "description": "AI-powered job portal with live updates, resume generator and smart assistant",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#f8fafc",
+  "background_color": "#0f172a",
   "theme_color": "#007bff",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "https://cdn-icons-png.flaticon.com/512/2921/2921222.png",
