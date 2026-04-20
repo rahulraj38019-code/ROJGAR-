@@ -1,4 +1,4 @@
-const cacheName = 'rozgar-v1';
+const cacheName = 'vidyajobs.Ai-v1';
 const assets = ['./', './index.html'];
 
 self.addEventListener('install', e => {
