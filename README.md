@@ -1,7 +1,7 @@
-# 🚀 Rozgar Hub
+# 🚀 VidyaJobs.AI 
 **Your One-Stop Portal for Govt Jobs & Exam Results**
 
-Rozgar Hub is a professional web-based platform designed to help students track the latest career opportunities in Bihar and across India.
+VidyaJobs.AI is a professional web-based platform designed to help students track the latest career opportunities in Bihar and across India.
 
 ### ✨ Key Features:
 * 🏛️ **Latest Govt Jobs:** Real-time updates on state and central vacancies.
