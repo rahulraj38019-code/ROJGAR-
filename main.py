@@ -1,15 +1,9 @@
 import requests
-from flask import Flask, render_template, request, jsonify, send_from_directory, make_response, send_file
+from flask import Flask, render_template, request, jsonify, send_from_directory, send_file
 from flask_cors import CORS
-import os
-import json
-import time
-import uuid
+import os, json, time, io
 from bs4 import BeautifulSoup
-from fpdf import FPDF 
-import io
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from collections import defaultdict
+from fpdf import FPDF
 from werkzeug.utils import secure_filename
 from PyPDF2 import PdfReader
 from PIL import Image
@@ -18,393 +12,185 @@ import pytesseract
 app = Flask(__name__)
 CORS(app)
 
-# ===============================
-# CONFIG & API KEYS
-# ===============================
-SERPER_API_KEY = "675ec80f6858652b8add27fbe3ab09371a6faaae"
+# ================= CONFIG =================
+SERPER_API_KEY = "YOUR_SERPER_KEY"
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
 UPLOAD_FOLDER = "uploads"
 CHAT_FOLDER = "saved_chats"
+
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(CHAT_FOLDER, exist_ok=True)
 
-# -----------------
-# CACHE & MEMORY
-# -----------------
-cache = {}
-cache_time = {}
-CACHE_TTL = 300
-chat_memory = {} 
-users_db = {}
-
-# Community Chat Data
 chat_messages = [
-    {"user": "Sonu_Kumar", "msg": "Bhai Railway Group D ka form kab tak aayega?", "time": "10:45 AM"},
-    {"user": "Admin_Rahul", "msg": "November tak umeed hai, taiyari jaari rakhein!", "time": "10:48 AM"}
+    {"user": "Admin", "msg": "Welcome to VidyaJobs AI", "time": "10:00 AM"}
 ]
 
-# MODEL LIST (AUTO FALLBACK)
-MODELS = [
-    "openai/gpt-4o-mini",
-    "openai/gpt-3.5-turbo",
-    "google/gemini-2.0-flash-lite-preview-02-05:free",
-    "mistralai/mistral-small"
-]
-
-# ===============================
-# HELPERS & UTIL
-# ===============================
-def get_chat_file(uid):
+# ================= UTIL =================
+def chat_file(uid):
     return f"{CHAT_FOLDER}/{uid}.json"
 
-def load_user_chat(uid):
-    path = get_chat_file(uid)
+def load_chat(uid):
+    path = chat_file(uid)
     if os.path.exists(path):
-        with open(path, "r", encoding="utf-8") as f:
-            return json.load(f)
+        return json.load(open(path, "r", encoding="utf-8"))
     return []
 
-def save_user_chat(uid, data):
-    with open(get_chat_file(uid), "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+def save_chat(uid, data):
+    with open(chat_file(uid), "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2)
 
-# --- NEW FUNCTIONS ---
-def get_live_data(query):
-    headers = {"X-API-KEY": SERPER_API_KEY, "Content-Type": "application/json"}
-    payload = {"q": query, "gl": "in", "hl": "en"}
-
-    r = requests.post(
-        "https://google.serper.dev/search",
-        headers=headers,
-        json=payload,
-        timeout=10
-    )
-
-    results = r.json().get("organic", [])
-
-    context = ""
-    for item in results[:5]:
-        context += f"- {item.get('title')} : {item.get('snippet')}\n"
-
-    return context
-
-def ask_ai(messages):
-    headers = {
-        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-        "Content-Type": "application/json"
-    }
-
-    payload = {
-        "model": "openai/gpt-4o-mini",
-        "messages": messages,
-        "temperature": 0.7
-    }
-
-    r = requests.post(
-        "https://openrouter.ai/api/v1/chat/completions",
-        headers=headers,
-        json=payload,
-        timeout=40
-    )
-
-    return r.json()["choices"][0]["message"]["content"]
-
-# --- BASIC ROUTES ---
-@app.route('/manifest.json')
-def serve_manifest():
-    return send_from_directory(os.getcwd(), 'manifest.json')
-
-@app.route('/sw.js')
-def serve_sw():
-    return send_from_directory(os.getcwd(), 'sw.js')
-
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-# =========================================================
-# LOGIN & LIVE UPDATES
-# =========================================================
-@app.route("/login", methods=["POST"])
-def login():
-    data = request.json
-    username = data.get("username", "").strip()
-    if not username:
-        return jsonify({"status": "error", "msg": "Username required"})
-    users_db[username] = True
-    return jsonify({"status": "success", "username": username})
-
-@app.route('/get_live_updates')
-def get_live_updates():
+def serper(query):
     try:
-        headers = {'User-Agent': 'Mozilla/5.0'}
-        response = requests.get('https://sarkariresult.com.cm/', headers=headers, timeout=10)
-        soup = BeautifulSoup(response.text, 'html.parser')
-        jobs, admits = [], []
-        all_links = soup.find_all('a')
-        for link in all_links:
-            text = link.text.strip()
-            href = link.get('href', '')
-            if not href or len(text) < 10: continue
-            if "job" in href.lower() or "recruit" in href.lower():
-                if len(jobs) < 15: jobs.append({"title": text, "link": href})
-            elif "admit" in href.lower() or "hall-ticket" in href.lower():
-                if len(admits) < 15: admits.append({"title": text, "link": href})
-        return jsonify({"jobs": jobs, "admits": admits})
-    except Exception as e:
-        return jsonify({"jobs": [], "admits": []})
+        headers = {"X-API-KEY": SERPER_API_KEY}
+        res = requests.post(
+            "https://google.serper.dev/search",
+            headers=headers,
+            json={"q": query, "gl": "in"},
+            timeout=10
+        )
+        return res.json().get("organic", [])
+    except:
+        return []
 
-# --- JOB SEARCH SECTION ---
-@app.route('/fetch_jobs', methods=['POST'])
-@app.route('/jobs', methods=['POST'])
-def fetch_jobs():
-    try:
-        data = request.get_json()
-        category = data.get('category', 'latest jobs')
-        edu = data.get('edu', '')
-        query = data.get('query')
+# ================= ROUTES =================
+@app.route("/")
+def home():
+    return render_template("index.html")
 
-        if query:
-            final_query = query
-        elif "Railway" in category or "RRB" in category:
-            final_query = f"RRB Railway {category} official result notice 2026 site:indianrailways.gov.in OR site:sarkariresult.com"
-        elif "Bihar Board" in category:
-            final_query = f"BSEB {category} official result 2026 site:biharboardonline.bihar.gov.in OR site:sarkariresult.com"
-        elif "SSC" in category:
-            final_query = f"SSC {category} merit list result site:ssc.gov.in OR site:sarkariresult.com"
-        elif "Police" in category:
-            final_query = f"Bihar Police {category} result update site:csbc.bih.nic.in OR site:sarkariresult.com"
-        else:
-            final_query = f"latest {category} vacancies for {edu} pass 2026 India"
-
-        headers = {'X-API-KEY': SERPER_API_KEY, 'Content-Type': 'application/json'}
-        payload = {'q': final_query, 'num': 20, 'gl': 'in'}
-        response = requests.post('https://google.serper.dev/search', headers=headers, json=payload)
-        search_data = response.json()
-        return jsonify(search_data.get('organic', []))
-    except Exception as e:
-        return jsonify({"error": str(e)})
-
-# ===============================
-# LIVE SEARCH (V10)
-# ===============================
-@app.route("/live_search", methods=["POST"])
-def live_search():
-    try:
-        data = request.json
-        q = data.get("query")
-        headers = {"X-API-KEY": SERPER_API_KEY, "Content-Type": "application/json"}
-        payload = {"q": q, "gl": "in", "hl": "en"}
-        r = requests.post("https://google.serper.dev/search", headers=headers, json=payload)
-        return jsonify(r.json())
-    except Exception as e:
-        return jsonify({"error": str(e)})
-
-# --- RESUME GENERATOR ---
-@app.route('/generate_resume', methods=['POST'])
-@app.route('/resume', methods=['POST'])
-def generate_resume():
-    try:
-        if request.is_json:
-            data = request.json
-        else:
-            data = request.form
-            
-        pdf = FPDF()
-        pdf.add_page()
-        pdf.set_font("Arial", 'B', 16)
-        pdf.cell(200, 10, txt="VidyaJobs.AI ULTRA RESUME", ln=True, align='C')
-        pdf.ln(10)
-        pdf.set_font("Arial", size=12)
-        
-        if not request.is_json:
-            pdf.cell(200, 10, txt=f"Name: {data.get('name', 'N/A')}", ln=True)
-            pdf.cell(200, 10, txt=f"Education: {data.get('edu', 'N/A')}", ln=True)
-            pdf.multi_cell(0, 10, txt=f"Skills: {data.get('skills', 'N/A')}")
-            pdf.multi_cell(0, 10, txt=f"Experience: {data.get('exp', 'N/A')}")
-        else:
-            for k, v in data.items():
-                pdf.cell(200, 10, f"{k}: {v}", ln=True)
-
-        output = io.BytesIO()
-        pdf_content = pdf.output(dest='S').encode('latin-1')
-        output.write(pdf_content)
-        output.seek(0)
-        return send_file(output, download_name="resume.pdf", as_attachment=True)
-    except Exception as e:
-        return str(e)
-
-# ===============================
-# FILE & PDF & OCR HANDLING
-# ===============================
-@app.route("/upload_file", methods=["POST"])
-@app.route("/upload", methods=["POST"])
-def upload_file():
-    try:
-        file = request.files["file"]
-        filename = secure_filename(file.filename)
-        path = os.path.join(UPLOAD_FOLDER, filename)
-        file.save(path)
-        return jsonify({"success": True, "filename": filename, "path": path})
-    except Exception as e:
-        return jsonify({"error": str(e)})
-
-@app.route("/read_pdf", methods=["POST"])
-def read_pdf():
-    try:
-        file = request.files["file"]
-        filename = secure_filename(file.filename)
-        path = os.path.join(UPLOAD_FOLDER, filename)
-        file.save(path)
-        reader = PdfReader(path)
-        text = "".join([p.extract_text() or "" for p in reader.pages])
-        return jsonify({"success": True, "text": text[:15000]})
-    except Exception as e:
-        return jsonify({"error": str(e)})
-
-@app.route("/ocr", methods=["POST"])
-def ocr():
-    try:
-        file = request.files["file"]
-        img = Image.open(file)
-        text = pytesseract.image_to_string(img)
-        return jsonify({"success": True, "text": text})
-    except Exception as e:
-        return jsonify({"error": str(e)})
-
-# ===============================
-# IMAGE & AI ROUTES
-# ===============================
-@app.route("/generate_image", methods=["POST"])
-@app.route("/image", methods=["POST"])
-def generate_image():
-    try:
-        data = request.json
-        prompt = data.get("prompt")
-        payload = {"model": "openai/dall-e-3", "prompt": prompt, "n": 1}
-        headers = {"Authorization": f"Bearer {OPENROUTER_API_KEY}", "Content-Type": "application/json"}
-        r = requests.post("https://openrouter.ai/api/v1/images/generations", headers=headers, json=payload)
-        return jsonify(r.json())
-    except Exception as e:
-        return jsonify({"error": str(e)})
-
-# --- UPDATED AI ROUTE ---
+# ===== AI =====
 @app.route("/ask_ai_v10", methods=["POST"])
-def ask_ai_v10():
-    try:
-        data = request.json
-        msg = data.get("message")
-        uid = data.get("uid", "guest")
+def ai():
+    data = request.json
+    msg = data.get("message", "")
+    uid = data.get("uid", "guest")
 
-        history = load_user_chat(uid)
+    history = load_chat(uid)
 
-        # 🔥 detect if live data needed
-        keywords = ["job", "latest", "news", "result", "update", "vacancy"]
-        need_live = any(k in msg.lower() for k in keywords)
+    live = ""
+    if any(k in msg.lower() for k in ["job","result","news","vacancy"]):
+        live_data = serper(msg)
+        live = "\n".join([x["title"] for x in live_data[:5]])
 
-        live_context = ""
-        if need_live:
-            live_context = get_live_data(msg)
+    prompt = f"User query: {msg}\nLive data:\n{live}"
 
-        system_prompt = f"""
-You are VidyaJobs.AI V10 ULTRA AI.
+    reply = f"AI Reply: {msg}"
 
-RULES:
-- Always use latest info if provided
-- If live data exists, prioritize it
-- Be accurate and simple
-- If unsure, say "latest update may vary"
+    history.append({"role":"user","content":msg})
+    history.append({"role":"assistant","content":reply})
 
-LIVE DATA:
-{live_context}
-"""
+    save_chat(uid, history)
 
-        messages = [{"role": "system", "content": system_prompt}]
-        messages += history[-10:]
-        messages.append({"role": "user", "content": msg})
+    return jsonify({"reply": reply})
 
-        answer = ask_ai(messages)
+# ===== JOBS =====
+@app.route("/fetch_jobs", methods=["POST"])
+def jobs():
+    data = request.json
+    q = data.get("category","jobs")
+    return jsonify(serper(q))
 
-        history.append({"role": "user", "content": msg})
-        history.append({"role": "assistant", "content": answer})
-
-        save_user_chat(uid, history)
-
-        return jsonify({
-            "reply": answer,
-            "live_used": bool(live_context)
-        })
-
-    except Exception as e:
-        return jsonify({
-            "reply": "AI system busy hai bhai 😅",
-            "error": str(e)
-        })
-
-# ===============================
-# CHAT MANAGEMENT
-# ===============================
+# ===== CHAT =====
 @app.route("/save_chat", methods=["POST"])
-def save_chat():
-    try:
-        data = request.json
-        uid = data.get("uid")
-        chats = data.get("chats")
-        save_user_chat(uid, chats)
-        return jsonify({"success": True})
-    except Exception as e:
-        return jsonify({"error": str(e)})
+def save():
+    d = request.json
+    save_chat(d["uid"], d["chats"])
+    return jsonify({"ok":True})
 
 @app.route("/load_chat", methods=["POST"])
-def load_chat():
-    try:
-        data = request.json
-        uid = data.get("uid")
-        chats = load_user_chat(uid)
-        return jsonify({"success": True, "chats": chats})
-    except Exception as e:
-        return jsonify({"error": str(e)})
+def load():
+    uid = request.json["uid"]
+    return jsonify({"chats": load_chat(uid)})
 
-@app.route("/recent_chats", methods=["GET"])
-def recent_chats():
-    try:
-        files = os.listdir(CHAT_FOLDER)
-        users = [x.replace(".json", "") for x in files if x.endswith(".json")]
-        return jsonify({"users": users})
-    except Exception as e:
-        return jsonify({"error": str(e)})
+@app.route("/recent_chats")
+def recent():
+    files = os.listdir(CHAT_FOLDER)
+    return jsonify({"users":[f.replace(".json","") for f in files]})
 
 @app.route("/delete_chat", methods=["POST"])
-def delete_chat():
-    try:
-        data = request.json
-        uid = data.get("uid")
-        path = get_chat_file(uid)
-        if os.path.exists(path):
-            os.remove(path)
-        return jsonify({"success": True})
-    except Exception as e:
-        return jsonify({"error": str(e)})
+def delete():
+    uid = request.json["uid"]
+    path = chat_file(uid)
+    if os.path.exists(path):
+        os.remove(path)
+    return jsonify({"ok":True})
 
-# --- COMMUNITY CHAT SYSTEM ---
-@app.route('/get_messages')
-@app.route('/chat/get')
-def get_messages():
+# ===== COMMUNITY =====
+@app.route("/get_messages")
+def msgs():
     return jsonify(chat_messages)
 
-@app.route('/send_message', methods=['POST'])
-@app.route('/chat/send', methods=['POST'])
-def send_message():
-    data = request.get_json()
-    new_msg = {
-        "user": data.get('user', 'Guest'), 
-        "msg": data.get('msg', ''), 
-        "time": time.strftime("%I:%M %p") if "time" not in data else data.get("time")
-    }
-    chat_messages.append(new_msg)
-    return jsonify({"status": "sent", "ok": True})
+@app.route("/send_message", methods=["POST"])
+def send():
+    d = request.json
+    chat_messages.append({
+        "user": d.get("user","Guest"),
+        "msg": d.get("msg",""),
+        "time": time.strftime("%I:%M %p")
+    })
+    return jsonify({"ok":True})
+
+# ===== OCR =====
+@app.route("/ocr", methods=["POST"])
+def ocr():
+    file = request.files["file"]
+    img = Image.open(file)
+    text = pytesseract.image_to_string(img)
+    return jsonify({"text": text})
+
+# ===== PDF =====
+@app.route("/read_pdf", methods=["POST"])
+def pdf():
+    file = request.files["file"]
+    path = os.path.join(UPLOAD_FOLDER, file.filename)
+    file.save(path)
+
+    reader = PdfReader(path)
+    text = "".join([p.extract_text() or "" for p in reader.pages])
+
+    return jsonify({"text": text[:12000]})
+
+# ===== RESUME =====
+@app.route("/generate_resume", methods=["POST"])
+def resume():
+    d = request.form
+
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", size=12)
+
+    pdf.cell(200, 10, "VIDYAJOBS RESUME", ln=True)
+
+    for k,v in d.items():
+        pdf.cell(200, 10, f"{k}: {v}", ln=True)
+
+    out = io.BytesIO()
+    out.write(pdf.output(dest="S").encode("latin-1"))
+    out.seek(0)
+
+    return send_file(out, download_name="resume.pdf", as_attachment=True)
+
+# ===== LIVE =====
+@app.route("/get_live_updates")
+def live():
+    try:
+        r = requests.get("https://sarkariresult.com.cm/", timeout=10)
+        soup = BeautifulSoup(r.text,"html.parser")
+
+        jobs, admits = [], []
+
+        for a in soup.find_all("a"):
+            t = a.text.strip()
+            h = a.get("href","")
+            if "admit" in h:
+                admits.append({"title":t,"link":h})
+            else:
+                jobs.append({"title":t,"link":h})
+
+        return jsonify({"jobs":jobs[:10],"admits":admits[:10]})
+    except:
+        return jsonify({"jobs":[],"admits":[]})
 
 # ================= RUN =================
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)
