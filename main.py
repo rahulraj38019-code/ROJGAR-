@@ -296,7 +296,7 @@ def send():
 # AI CONTROL TOWER V2 ULTRA
 # ===============================
 
-ADMIN_PASSWORD = "1234"
+ADMIN_PASSWORD = "RAHUL8168@"
 admin_tokens = {}
 
 @app.route("/admin_login", methods=["POST"])
