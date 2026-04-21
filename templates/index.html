@@ -2,9 +2,10 @@
 <head>  
     <meta charset="UTF-8">  
     <meta name="viewport" content="width=device-width, initial-scale=1.0">  
-    <title>VIDYAJOBS.AI - Professional Portal</title>  <link rel="manifest" href="/manifest.json">  
-<meta name="theme-color" content="#007bff">  
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">  
+    <title>VIDYAJOBS.AI - Professional Portal</title>  
+    <link rel="manifest" href="/manifest.json">  
+    <meta name="theme-color" content="#007bff">  
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">  
   
 <style>  
     :root { --main: #121212; --blue: #007bff; --light-blue: #e7f1ff; --bg: #f8fafc; --white: #ffffff; --text-muted: #64748b; --neon-glow: rgba(0, 123, 255, 0.6); --ai-gradient: linear-gradient(90deg, #4285f4, #9b72cb, #d96570); }  
@@ -130,7 +131,9 @@
 </style>
 
 </head>  
-<body id="app-body">  <div id="ai-modal">  
+<body id="app-body">  
+
+<div id="ai-modal">  
     <div class="ai-modal-content">  
         <div class="ai-modal-header">  
             <div style="display:flex; align-items:center; gap:10px;">  
@@ -149,10 +152,16 @@
             </div>  
         </div>  
     </div>  
-</div>  <div id="ai-trigger" onclick="openV10Home()">  
+</div>  
+
+<div id="ai-trigger" onclick="openV10Home()">  
     <span class="ai-robot">🤖</span>  
     <div class="ai-label">ASK AI</div>  
-</div>  <div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>  <div class="side-menu" id="sideMenu">  
+</div>  
+
+<div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>  
+
+<div class="side-menu" id="sideMenu">  
     <h3 style="margin-top:0; color:var(--blue);">App Settings ⚙️</h3>  
     <div class="menu-item" onclick="editProfile()">👤 Edit Profile</div>  
     <div class="menu-item" onclick="showV10UltraDash()">🔥 V10 Ultra Dash</div>  
@@ -162,13 +171,17 @@
     <div class="menu-item" onclick="startNewChat()" style="color:var(--blue);">✨ Start New Chat</div>  
     <div class="menu-item" onclick="clearAllV10()" style="color:orange;">🧹 Clear AI History</div>  
     <div class="menu-item" style="color:red; border:none;" onclick="logout()">🚪 Logout</div>  
-</div>  <header id="main-header" class="hidden">  
+</div>  
+
+<header id="main-header" class="hidden">  
     <div class="logo-text" onclick="toggleMenu()">VIDYAJOBS.AI</div>  
     <div style="display: flex; align-items: center; gap: 15px;">  
         <div onclick="toggleDarkMode()" id="mode-btn" style="cursor:pointer; font-size: 20px;">🌙</div>  
         <div id="user-initial" style="background:var(--light-blue); color:var(--blue); width:35px; height:35px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; border: 1px solid var(--blue);">U</div>  
     </div>  
-</header>  <div class="container">  
+</header>  
+
+<div class="container">  
     <div id="login-sec" class="hidden">  
         <div class="login-card">  
             <h1 style="text-align:center; font-weight:900;">Welcome! 🚀</h1>  
@@ -183,7 +196,9 @@
             </div>  
             <button onclick="saveLogin()" class="btn-primary">Save Profile ⚡</button>  
         </div>  
-    </div>  <div id="v10-ultra-dash" class="hidden">  
+    </div>  
+
+    <div id="v10-ultra-dash" class="hidden">  
     <h3 style="font-weight:800; color:var(--blue);">🔥 V10 ULTRA AI TOOLS</h3>  
     <div class="dash-grid" style="margin-bottom:20px;">  
         <div class="edu-chip" onclick="showBox('ocr-box')">Image to Text</div>  
@@ -408,7 +423,9 @@
     </div>  
 </div>
 
-</div>  <div id="bottom-bar" class="bottom-nav hidden">  
+</div>  
+
+<div id="bottom-bar" class="bottom-nav hidden">  
     <div class="nav-item active" onclick="showDash()"><i>🏠</i>Home</div>  
     <div class="nav-item" onclick="showResults()"><i>📄</i>Results</div>  
     <div class="nav-item" onclick="openV10Home()"><i>🤖</i>AI Chat</div>  
@@ -417,7 +434,6 @@
 
 <button onclick="openTower()" 
 style="position:fixed;bottom:10px;right:10px;opacity:0.5;z-index:10002;">
-<!-- AI CONTROL TOWER V2 ULTRA -->
 <div id="tower" style="display:none; position:fixed; top:5%; left:5%; width:90%; height:90%; background:#111; color:#0f0; z-index:9999; padding:15px; overflow:auto; border-radius:12px;">
 
   <button onclick="closeTower()" style="float:right;">X</button>
@@ -442,6 +458,7 @@ style="position:fixed;bottom:10px;right:10px;opacity:0.5;z-index:10002;">
 
 <button onclick="openTower()">Open Tower</button>
 
+<script>
     // ========= GLOBAL STATE & CORE VARS =========  
     const API = "";   
     let user = {}; let resType = ''; let currentCategory = ''; let lastResults = []; let currentType = '';   
@@ -470,7 +487,10 @@ style="position:fixed;bottom:10px;right:10px;opacity:0.5;z-index:10002;">
   
         if(localStorage.getItem('userHub')) {  
             history.replaceState({screen: 'home'}, '');  
-        }  
+        }
+        
+        // UNIVERSAL BACK LOGIC INIT
+        window.history.pushState({page: 1}, "");
     };  
   
     function createNewChatId() { return "chat_" + Date.now(); }  
@@ -492,7 +512,7 @@ style="position:fixed;bottom:10px;right:10px;opacity:0.5;z-index:10002;">
     }  
   
     // ==========================================  
-    // AI LOGIC  
+    // AI LOGIC (ask_ai_v10, history, cloud)
     // ==========================================  
       
     async function startNewChat() {  
@@ -648,7 +668,7 @@ style="position:fixed;bottom:10px;right:10px;opacity:0.5;z-index:10002;">
     function escapeHtml(str) { return str.replace(/</g, "&lt;").replace(/>/g, "&gt;"); }  
   
     // ==========================================  
-    // NEW V10 ULTRA DASHBOARD LOGIC  
+    // TOOL LOGIC (OCR, PDF, Ultra Dash)
     // ==========================================  
     function showV10UltraDash() {  
         hideAll();  
@@ -688,7 +708,7 @@ style="position:fixed;bottom:10px;right:10px;opacity:0.5;z-index:10002;">
     }  
   
     // ==========================================  
-    // APP UI LOGIC  
+    // APP UI LOGIC (Navigation & Screen Swapping)
     // ==========================================  
   
     window.onpopstate = function(event) {  
@@ -707,7 +727,14 @@ style="position:fixed;bottom:10px;right:10px;opacity:0.5;z-index:10002;">
                 document.getElementById('bottom-bar').classList.remove('hidden');  
                 renderList(lastResults);  
             }  
-        } else { showDash(false); }  
+            else if (screen === 'details') {
+                hideAll();
+                document.getElementById('feed-sec').classList.remove('hidden');
+                renderList(lastResults);
+            }
+        } else { 
+            showDash(false); 
+        }  
     };  
   
     function openAIModal() {   
@@ -1015,7 +1042,7 @@ style="position:fixed;bottom:10px;right:10px;opacity:0.5;z-index:10002;">
         }  
     });
 
-    // ========= ADDED TOWER V2 JAVASCRIPT START =========
+    // ========= ADMIN TOWER V2 JAVASCRIPT =========
     let token = "";
 
     function openTower(){
@@ -1063,6 +1090,33 @@ style="position:fixed;bottom:10px;right:10px;opacity:0.5;z-index:10002;">
       document.getElementById("users").innerText =
         JSON.stringify(data.users, null, 2);
     }
-    // ========= ADDED TOWER V2 JAVASCRIPT END =========
-</script>  </body>  
+    
+    // ========= UNIVERSAL BACK BUTTON OVERRIDE =========
+    (function() {
+        window.history.pushState(null, null, window.location.href);
+        window.onpopstate = function() {
+            if (isAIModalOpen) {
+                closeAIModal();
+            } else if (document.getElementById("v10-home").style.display === "block") {
+                closeV10Home();
+            } else if (!document.getElementById("feed-sec").classList.contains("hidden")) {
+                if (document.getElementById("back-btn").offsetParent !== null) {
+                    hideAll();
+                    document.getElementById('main-header').classList.remove('hidden'); 
+                    document.getElementById('feed-sec').classList.remove('hidden'); 
+                    document.getElementById('bottom-bar').classList.remove('hidden');
+                    renderList(lastResults);
+                    document.getElementById('back-btn').classList.add('hidden');
+                } else {
+                    showDash(false);
+                }
+            } else if (document.getElementById("dash-sec").classList.contains("hidden")) {
+                showDash(false);
+            } else {
+                window.history.pushState(null, null, window.location.href);
+            }
+        };
+    })();
+</script>  
+</body>  
 </html>
