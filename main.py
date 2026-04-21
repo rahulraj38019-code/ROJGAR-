@@ -69,7 +69,7 @@ def load_user_chat(uid):
 
 def save_user_chat(uid, data):
     with open(get_chat_file(uid), "w", encoding="utf-8") as f:
-        json.dump(data, ensure_ascii=False, indent=2)
+        json.dump(data, f, ensure_ascii=False, indent=2)
 
 # ---------------- LIVE DATA ----------------
 def get_live_data(query):
@@ -287,31 +287,6 @@ def send():
         "time": time.strftime("%I:%M %p")
     })
     return jsonify({"ok": True})
-
-# ===============================
-# 🧠 AI CONTROL TOWER V2 ULTRA (ADDED)
-# ===============================
-
-tower_logs = []
-
-@app.route("/tower/login", methods=["POST"])
-def tower_login():
-    data = request.json
-    if data.get("password") == "admin123":
-        return jsonify({"status": "success", "msg": "Tower Access Granted 🔓"})
-    return jsonify({"status": "error", "msg": "Wrong Password ❌"})
-
-@app.route("/tower/status")
-def tower_status():
-    return jsonify({
-        "status": "AI CONTROL TOWER V2 ULTRA ONLINE ⚡",
-        "models": MODELS,
-        "logs": len(tower_logs)
-    })
-
-@app.route("/tower/logs")
-def tower_logs_view():
-    return jsonify(tower_logs[-50:])
 
 # ================= RUN =================
 if __name__ == "__main__":
