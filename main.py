@@ -288,6 +288,31 @@ def send():
     })
     return jsonify({"ok": True})
 
+# ===============================
+# 🧠 AI CONTROL TOWER V2 ULTRA (ADDED)
+# ===============================
+
+tower_logs = []
+
+@app.route("/tower/login", methods=["POST"])
+def tower_login():
+    data = request.json
+    if data.get("password") == "RAHUL8168@":
+        return jsonify({"status": "success", "msg": "Tower Access Granted 🔓"})
+    return jsonify({"status": "error", "msg": "Wrong Password ❌"})
+
+@app.route("/tower/status")
+def tower_status():
+    return jsonify({
+        "status": "AI CONTROL TOWER V2 ULTRA ONLINE ⚡",
+        "models": MODELS,
+        "logs": len(tower_logs)
+    })
+
+@app.route("/tower/logs")
+def tower_logs_view():
+    return jsonify(tower_logs[-50:])
+
 # ================= RUN =================
 if __name__ == "__main__":
     app.run(debug=True)
