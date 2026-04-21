@@ -417,31 +417,31 @@
 
 <button onclick="openTower()" 
 style="position:fixed;bottom:10px;right:10px;opacity:0.5;z-index:10002;">
-🚀 Tower v2
-</button>
+<!-- AI CONTROL TOWER V2 ULTRA -->
+<div id="tower" style="display:none; position:fixed; top:5%; left:5%; width:90%; height:90%; background:#111; color:#0f0; z-index:9999; padding:15px; overflow:auto; border-radius:12px;">
 
-<div id="tower" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:#0a0a0a;color:white;padding:15px;overflow:auto;z-index:10003;">
+  <button onclick="closeTower()" style="float:right;">X</button>
 
-<h2>🚀 AI CONTROL TOWER v2 ULTRA</h2>
+  <h2>🚀 AI CONTROL TOWER V2 ULTRA</h2>
 
-<input type="password" id="pass" placeholder="Admin Password" style="padding:10px; margin-bottom:10px;">
-<button onclick="loginTower()" style="padding:10px;">Login</button>
+  <input type="password" id="pass" placeholder="Enter Password" style="padding:8px; width:200px;">
+  <button onclick="loginTower()">Unlock</button>
 
-<hr>
+  <hr>
 
-<h3>📊 Model Usage</h3>
-<pre id="models"></pre>
+  <h3>📊 Model Usage</h3>
+  <pre id="models">Loading...</pre>
 
-<h3>⚡ Avg Speed</h3>
-<pre id="speed"></pre>
+  <h3>⚡ Speed</h3>
+  <div id="speed">Loading...</div>
 
-<h3>👥 Users</h3>
-<pre id="users"></pre>
-
-<button onclick="closeTower()" style="padding:10px; background:red; color:white; border:none; border-radius:5px;">Close</button>
+  <h3>👥 Users</h3>
+  <pre id="users">Loading...</pre>
 
 </div>
-<script>  
+
+<button onclick="openTower()">Open Tower</button>
+
     // ========= GLOBAL STATE & CORE VARS =========  
     const API = "";   
     let user = {}; let resType = ''; let currentCategory = ''; let lastResults = []; let currentType = '';   
