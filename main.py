@@ -292,26 +292,64 @@ def send():
 # 🧠 AI CONTROL TOWER V2 ULTRA (ADDED)
 # ===============================
 
-tower_logs = []
+# ===============================
+# AI CONTROL TOWER V2 ULTRA
+# ===============================
 
-@app.route("/tower/login", methods=["POST"])
-def tower_login():
-    data = request.json
-    if data.get("password") == "RAHUL8168@":
-        return jsonify({"status": "success", "msg": "Tower Access Granted 🔓"})
-    return jsonify({"status": "error", "msg": "Wrong Password ❌"})
+ADMIN_PASSWORD = "1234"
+admin_tokens = {}
 
-@app.route("/tower/status")
-def tower_status():
-    return jsonify({
-        "status": "AI CONTROL TOWER V2 ULTRA ONLINE ⚡",
-        "models": MODELS,
-        "logs": len(tower_logs)
-    })
+@app.route("/admin_login", methods=["POST"])
+def admin_login():
+    try:
+        data = request.json
+        password = data.get("password", "")
 
-@app.route("/tower/logs")
-def tower_logs_view():
-    return jsonify(tower_logs[-50:])
+        if password == ADMIN_PASSWORD:
+            token = str(uuid.uuid4())
+            admin_tokens[token] = True
+
+            return jsonify({
+                "status": "success",
+                "token": token
+            })
+
+        return jsonify({
+            "status": "error"
+        })
+
+    except Exception as e:
+        return jsonify({
+            "status": "error",
+            "msg": str(e)
+        })
+
+
+@app.route("/tower_v2", methods=["POST"])
+def tower_v2():
+    try:
+        data = request.json
+        token = data.get("token", "")
+
+        if token not in admin_tokens:
+            return jsonify({"status": "unauthorized"})
+
+        return jsonify({
+            "status": "success",
+            "model_usage": {
+                "GPT-4o-mini": 74,
+                "Gemini-2.0": 19,
+                "Mistral": 7
+            },
+            "avg_speed": 1.4,
+            "users": list(users_db.keys())
+        })
+
+    except Exception as e:
+        return jsonify({
+            "status": "error",
+            "msg": str(e)
+        })
 
 # ================= RUN =================
 if __name__ == "__main__":
