@@ -47,11 +47,9 @@ chat_messages = [
 
 # MODEL LIST (AUTO FALLBACK)
 MODELS = [
-    "openai/gpt-4o-mini",
-    "openai/gpt-3.5-turbo",
+    "openai/gpt-4o"
     "google/gemini-2.0-flash",
-    "google/gemini-1.5-flash",
-    "mistralai/mistral-small"
+
 ]
 
 # ===============================
